@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.launch
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -379,12 +380,13 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # VS Code files for those working on multiple tools
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
+# .vscode/*
+# !.vscode/settings.json
+# !.vscode/tasks.json
+# !.vscode/launch.json
+# !.vscode/extensions.json
+# *.code-workspace
+.vscode/
 
 # Local History for Visual Studio Code
 .history/
