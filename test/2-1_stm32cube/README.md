@@ -2,7 +2,7 @@
 
 ## 2.USB-TTL通信
 
-![](https://secure2.wostatic.cn/static/5SLAZoaiVSjmqrkVrJqPb4/image_1.png?auth_key=1698991349-oFW7ABgmbPFm8s1GnVPsEy-0-08ce37dd230dbb4287f9edf1e0855c8a)
+![](assets/image_1.webp)
 
 （左方为usb接口） （右方为ttl（Transistor Transistor Logic）接口）
 
@@ -20,15 +20,17 @@
 
 链接：
 
-[[https://www.wolai.com/tx-leo/cFTmzUo4SoUv61zKbC48HL](https://www.wolai.com/tx-leo/cFTmzUo4SoUv61zKbC48HL)](https://www.wolai.com/rorj5C3pzTsrUN5e86n6oR)
+![](assets/31-20e3.svg)[https://www.wolai.com/tx-leo/cFTmzUo4SoUv61zKbC48HL](https://www.wolai.com/tx-leo/rorj5C3pzTsrUN5e86n6oR)
 
 （2）usart串口开启
 
 在左侧connectivity栏中打开USART1（推荐，否则后续操作需要相应修改），设置模式为Asynchronous（异步），其他设置保持不变（波特率为115200）
 
-![](https://secure2.wostatic.cn/static/cgoeyRu4mGVYK3VTwLfrH6/image_2.png?auth_key=1698991696-qv5Ty4WesD4Ro8Nojvrsj3-0-2c60c0e2e444e618ee09057665bfe515)
+![](assets/image_2.webp)
 
 此时PA9，PA10被设置为了串口的TX和RX。
+
+![](assets/image_3.webp)
 
 （本小节中我们只需要向电脑发送信息而不用从电脑接受信息，故不用打开DMA,DMA的使用在后续蓝牙通信中会进行讲解。）
 
@@ -38,7 +40,7 @@ UART的通信连接方式为RX接TX，TX接RX。
 
 故将USB-TTL模块与开发板连接，RX-PA9（板子tx），TX-PA10（板子rx）（即在cubemx上设置的usart1通道的rx与tx）GND-GND，5V-5V。如图。其中5v与接地不一定要接，接上的同时会为stm32供电。
 
-![](https://secure2.wostatic.cn/static/d1w5TetBNRHrAzCogfcw6x/image_4.png?auth_key=1698991697-2YnCEUeV7gmVFg9BRN281L-0-e80ac774a4784e700df4eb2ca096986d)
+![](assets/image_4.webp)
 
 ### 2.4代码编辑
 
@@ -115,6 +117,6 @@ void u1_printf(char* fmt, ...);
 
 打开串口调试助手（下载链接：[清华大学云盘 (tsinghua.edu.cn)](https://cloud.tsinghua.edu.cn/d/90001529a9054982bacb/)，下载完成后打开即可），设置波特率为115200，可以看到通过串口的输出：
 
-![](https://secure2.wostatic.cn/static/s7jqYq8mK5nhVJ6pEEMXVK/image_5.png?auth_key=1698991697-6oy6Mr6EZ3afPr5BRHcZzv-0-5696373d8b084020dde79b1538ec550b)
+![](assets/image_5.webp)
 
 ps. 如果串口调试助手波特率设置不正确，会发现屏幕上打出乱码。
