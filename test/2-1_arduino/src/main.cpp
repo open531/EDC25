@@ -5,13 +5,13 @@
 #include <stdio.h>
 #include <string.h>
 
-HardwareSerial Serial1(PA10, PA9);
+HardwareSerial MySerial1(PA10, PA9);
 
 void u1_printf(char *fmt, ...);
 
 void setup()
 {
-  Serial1.begin(115200);
+  MySerial1.begin(115200);
 }
 
 void loop()
@@ -32,6 +32,6 @@ void u1_printf(char *fmt, ...)
   len = strlen((char *)buf);
   for (uint16_t i = 0; i < len; i++)
   {
-    Serial1.write(buf[i]);
+    MySerial1.write(buf[i]);
   }
 }

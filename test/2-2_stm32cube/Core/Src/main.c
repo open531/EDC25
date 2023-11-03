@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -44,7 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t u2_RX_Buf[8]; // main.c最前面的private variable部分
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,7 +87,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -98,9 +101,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    static int cnt = 1;
-    u1_printf("test: %d %f\r\n", cnt++, 1.0 / cnt);
-    HAL_Delay(500); // 可以用 delay_ms替换，替换方法本节最后介绍
+    // 以下代码在主循环中，如果用DMA式的话后不需要这部分代码
+    while (HAL_UART_Receive(&huart2, u2_RX_Buf, sizeof(u2_RX_Buf), 100) != HAL_OK)
+      ;
+    u1_printf("received:"); // 转发到串口1
+    HAL_UART_Transmit(&huart1, u2_RX_Buf, sizeof(u2_RX_Buf), HAL_MAX_DELAY);
+    u2_printf("received:"); // 转发到串口2
+    HAL_UART_Transmit(&huart2, u2_RX_Buf, sizeof(u2_RX_Buf), HAL_MAX_DELAY);
+    HAL_Delay(100); // 加入头文件后可以改成  delay_ms(100)，在补充6.3中会介绍
   }
   /* USER CODE END 3 */
 }
