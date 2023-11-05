@@ -8,6 +8,8 @@
 HardwareSerial MySerial1(PA10, PA9);
 HardwareSerial MySerial2(PA3, PA2);
 
+uint8_t MySerial2_Buf[8];
+
 void u1_printf(char *fmt, ...);
 void u2_printf(char *fmt, ...);
 
@@ -19,18 +21,14 @@ void setup()
 
 void loop()
 {
-  while (MySerial2.read() != HAL_OK)
+  while (MySerial2.readBytes(MySerial2_Buf, sizeof(MySerial2_Buf)) < sizeof(MySerial2_Buf))
     ;
   u1_printf("received:");
-  while (MySerial1.available())
-  {
-    u1_printf("%c", MySerial1.read());
-  }
+  MySerial1.setTimeout(HAL_MAX_DELAY);
+  MySerial1.write(MySerial2_Buf, sizeof(MySerial2_Buf));
   u2_printf("received:");
-  while (MySerial2.available())
-  {
-    u2_printf("%c", MySerial2.read());
-  }
+  MySerial2.setTimeout(HAL_MAX_DELAY);
+  MySerial2.write(MySerial2_Buf, sizeof(MySerial2_Buf));
   delay(100);
 }
 
@@ -43,10 +41,7 @@ void u1_printf(char *fmt, ...)
   vsprintf((char *)buf, fmt, ap);
   va_end(ap);
   len = strlen((char *)buf);
-  for (uint16_t i = 0; i < len; i++)
-  {
-    MySerial1.write(buf[i]);
-  }
+  MySerial1.write(buf, len);
 }
 
 void u2_printf(char *fmt, ...)
@@ -58,8 +53,5 @@ void u2_printf(char *fmt, ...)
   vsprintf((char *)buf, fmt, ap);
   va_end(ap);
   len = strlen((char *)buf);
-  for (uint16_t i = 0; i < len; i++)
-  {
-    MySerial2.write(buf[i]);
-  }
+  MySerial2.write(buf, len);
 }

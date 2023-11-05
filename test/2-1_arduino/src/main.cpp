@@ -30,8 +30,5 @@ void u1_printf(char *fmt, ...)
   vsprintf((char *)buf, fmt, ap);
   va_end(ap);
   len = strlen((char *)buf);
-  for (uint16_t i = 0; i < len; i++)
-  {
-    MySerial1.write(buf[i]);
-  }
+  MySerial1.write(buf, len);
 }
