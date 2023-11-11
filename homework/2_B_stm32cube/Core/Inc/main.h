@@ -30,21 +30,19 @@ extern "C"
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+  /* Private includes ----------------------------------------------------------*/
+  /* USER CODE BEGIN Includes */
 
-/* USER CODE END Includes */
+  /* USER CODE END Includes */
 
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
+  /* Exported types ------------------------------------------------------------*/
+  /* USER CODE BEGIN ET */
 
-/* USER CODE END ET */
+  /* USER CODE END ET */
 
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
-#define MAX_LEN 16
-#define RX_BUF_LEN 5
-  extern uint8_t u2_RX_Buf[MAX_LEN];
+  /* Exported constants --------------------------------------------------------*/
+  /* USER CODE BEGIN EC */
+
   /* USER CODE END EC */
 
   /* Exported macro ------------------------------------------------------------*/

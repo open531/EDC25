@@ -47,8 +47,6 @@ extern "C"
   /* USER CODE BEGIN Prototypes */
   void u1_printf(char *fmt, ...);
   void u2_printf(char *fmt, ...);
-  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
-  void Location_Transmit();
   /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -45,9 +45,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t u2_RX_Buf[MAX_LEN];
-uint8_t u2_RX_ReceiveByte;
-int rx_len = 0;
+uint8_t a = 0;
+uint8_t b = 0;
+uint8_t c = 0;
+uint8_t d = 0;
+uint8_t u2_RX_Buf[5];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,7 +60,13 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int randNext(int left, int right)
+{
+  static unsigned int seed = 0;
+  seed++;
+  srand((unsigned)time(NULL) + seed * seed);
+  return rand() % (right - left + 1) + left;
+}
 /* USER CODE END 0 */
 
 /**
@@ -92,10 +100,8 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
-  HAL_UART_Receive_IT(&huart2, &u2_RX_ReceiveByte, RX_BUF_LEN);
-  // 使用UART2作为接收B板数据的串口，采用IT方式
   /* USER CODE BEGIN 2 */
-  Location_Transmit();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,6 +111,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    a = randNext(10, 99);
+    b = randNext(10, 99);
+    c = randNext(10, 99);
+    d = randNext(10, 99);
+    u2_printf("%d %d %d %d\r\n", a, b, c, d);
+    u1_printf("%d %d %d %d\r\n", a, b, c, d);
+    while (HAL_UART_Receive(&huart2, u2_RX_Buf, sizeof(u2_RX_Buf), 100) != HAL_OK)
+      ;
+    u1_printf("%s\r\n", u2_RX_Buf);
+
+    HAL_Delay(2000);
   }
   /* USER CODE END 3 */
 }

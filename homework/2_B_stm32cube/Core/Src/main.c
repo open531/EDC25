@@ -45,7 +45,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t u2_RX_Buf[MAX_LEN];
+uint8_t a = 0;
+uint8_t b = 0;
+uint8_t c = 0;
+uint8_t d = 0;
+uint8_t u2_RX_Buf[11];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -56,7 +60,13 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t isNear(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
+{
+  if ((a == c && b - d <= 1 && b - d >= -1) || (b == d && a - c <= 1 && a - c >= -1))
+    return 1;
+  else
+    return 0;
+}
 /* USER CODE END 0 */
 
 /**
@@ -89,8 +99,9 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_DMA(&huart1, u2_RX_Buf, RX_BUF_LEN);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -100,6 +111,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    while (HAL_UART_Receive(&huart2, u2_RX_Buf, sizeof(u2_RX_Buf), 100) != HAL_OK)
+      ;
+    sscanf((char *)u2_RX_Buf, "%d %d %d %d", &a, &b, &c, &d);
+    if (isNear(a, b, c, d))
+    {
+      u2_printf("true ");
+    }
+    else
+    {
+      u2_printf("false");
+    }
   }
   /* USER CODE END 3 */
 }

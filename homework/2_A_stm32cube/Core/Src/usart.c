@@ -149,7 +149,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
     hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
     hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-    hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
+    hdma_usart2_rx.Init.Mode = DMA_NORMAL;
     hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
     if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
     {
@@ -236,48 +236,5 @@ void u2_printf(char *fmt, ...)
   va_end(ap);
   len = strlen((char *)buf);
   HAL_UART_Transmit(&huart2, buf, len, HAL_MAX_DELAY);
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if (huart == &huart2)
-  {
-    u2_RX_Buf[rx_len++] = u2_RX_ReceiveByte;
-    if (u2_RX_ReceiveByte == '\r' || u2_RX_ReceiveByte == '\n')
-    {
-      if (rx_len > 1)
-      {
-        u1_printf("received:\n");
-        HAL_UART_Transmit(&huart1, u2_RX_Buf, rx_len - 1, 100);
-        u1_printf("\n");
-        rx_len = 0;
-      }
-    }
-    else if (rx_len == MAX_LEN)
-    {
-      u1_printf("UART2 Receive Buffer is Full!\n");
-      u1_printf("received:\n");
-      HAL_UART_Transmit(&huart1, u2_RX_Buf, rx_len, 100);
-      u1_printf("\n");
-      rx_len = 0;
-    }
-  }
-  HAL_UART_Receive_IT(&huart2, &u2_RX_ReceiveByte, RX_BUF_LEN);
-}
-
-void Location_Transmit()
-{
-  uint8_t buf[5] = {'\0'};
-  srand(HAL_GetTick());
-  uint16_t randNum_Ax = rand() % 100;
-  buf[0] = randNum_Ax;
-  uint16_t randNum_Ay = rand() % 100;
-  buf[1] = randNum_Ay;
-  uint16_t randNum_Bx = rand() % 100;
-  buf[2] = randNum_Bx;
-  uint16_t randNum_By = rand() % 100;
-  buf[3] = randNum_By;
-  u1_printf("A:(%d,%d) B:(%d,%d)", randNum_Ax, randNum_Ay, randNum_Bx, randNum_By);
-  HAL_UART_Transmit(&huart2, buf, 4, 100);
 }
 /* USER CODE END 1 */
