@@ -64,7 +64,7 @@ int randNext(int left, int right)
 {
   static unsigned int seed = 0;
   seed++;
-  srand((unsigned)time(NULL) + seed * seed);
+  srand((unsigned)HAL_GetTick() + seed * seed);
   return rand() % (right - left + 1) + left;
 }
 /* USER CODE END 0 */
