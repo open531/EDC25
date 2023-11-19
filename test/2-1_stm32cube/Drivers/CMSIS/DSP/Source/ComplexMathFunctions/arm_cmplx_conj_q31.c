@@ -47,32 +47,30 @@
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * The function uses saturating arithmetic.
- * The Q31 value -1 (0x80000000) will be saturated to the maximum allowable positive value 0x7FFFFFFF.
+ * The Q31 value -1 (0x80000000) will be saturated to the maximum allowable
+ * positive value 0x7FFFFFFF.
  */
 
-void arm_cmplx_conj_q31(
-  q31_t * pSrc,
-  q31_t * pDst,
-  uint32_t numSamples)
-{
-  uint32_t blkCnt;                               /* loop counter */
-  q31_t in;                                      /* Input value */
+void arm_cmplx_conj_q31(q31_t *pSrc, q31_t *pDst, uint32_t numSamples) {
+  uint32_t blkCnt; /* loop counter */
+  q31_t in;        /* Input value */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
-  q31_t inR1, inR2, inR3, inR4;                  /* Temporary real variables */
-  q31_t inI1, inI2, inI3, inI4;                  /* Temporary imaginary variables */
+  q31_t inR1, inR2, inR3, inR4; /* Temporary real variables */
+  q31_t inI1, inI2, inI3, inI4; /* Temporary imaginary variables */
 
   /*loop Unrolling */
   blkCnt = numSamples >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+    /* Calculate Complex Conjugate and then store the results in the destination
+     * buffer. */
     /* Saturated to 0x7fffffff if the input is -1(0x80000000) */
     /* read real input sample */
     inR1 = pSrc[0];
@@ -138,7 +136,8 @@ void arm_cmplx_conj_q31(
     blkCnt--;
   }
 
-  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+  /* If the numSamples is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = numSamples % 0x4U;
 
@@ -147,13 +146,12 @@ void arm_cmplx_conj_q31(
   /* Run the below code for Cortex-M0 */
   blkCnt = numSamples;
 
-
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[0]+jC[1] = A[0]+ j (-1) A[1] */
-    /* Calculate Complex Conjugate and then store the results in the destination buffer. */
+    /* Calculate Complex Conjugate and then store the results in the destination
+     * buffer. */
     /* Saturated to 0x7fffffff if the input is -1(0x80000000) */
     *pDst++ = *pSrc++;
     in = *pSrc++;

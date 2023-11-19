@@ -37,7 +37,6 @@
  * @{
  */
 
-
 /**
  * @brief Maximum value of a Q15 vector.
  * @param[in]       *pSrc points to the input vector
@@ -47,17 +46,14 @@
  * @return none.
  */
 
-void arm_max_q15(
-  q15_t * pSrc,
-  uint32_t blockSize,
-  q15_t * pResult,
-  uint32_t * pIndex)
-{
-#if defined (ARM_MATH_DSP)
+void arm_max_q15(q15_t *pSrc, uint32_t blockSize, q15_t *pResult,
+                 uint32_t *pIndex) {
+#if defined(ARM_MATH_DSP)
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  q15_t maxVal1, maxVal2, out;                   /* Temporary variables to store the output value. */
-  uint32_t blkCnt, outIndex, count;              /* loop counter */
+  q15_t maxVal1, maxVal2,
+      out; /* Temporary variables to store the output value. */
+  uint32_t blkCnt, outIndex, count; /* loop counter */
 
   /* Initialise the count value. */
   count = 0U;
@@ -69,23 +65,20 @@ void arm_max_q15(
   /* Loop unrolling */
   blkCnt = (blockSize - 1U) >> 2U;
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* Initialize maxVal to the next consecutive values one by one */
     maxVal1 = *pSrc++;
     maxVal2 = *pSrc++;
 
     /* compare for the maximum value */
-    if (out < maxVal1)
-    {
+    if (out < maxVal1) {
       /* Update the maximum value and its index */
       out = maxVal1;
       outIndex = count + 1U;
     }
 
     /* compare for the maximum value */
-    if (out < maxVal2)
-    {
+    if (out < maxVal2) {
       /* Update the maximum value and its index */
       out = maxVal2;
       outIndex = count + 2U;
@@ -96,16 +89,14 @@ void arm_max_q15(
     maxVal2 = *pSrc++;
 
     /* compare for the maximum value */
-    if (out < maxVal1)
-    {
+    if (out < maxVal1) {
       /* Update the maximum value and its index */
       out = maxVal1;
       outIndex = count + 3U;
     }
 
     /* compare for the maximum value */
-    if (out < maxVal2)
-    {
+    if (out < maxVal2) {
       /* Update the maximum value and its index */
       out = maxVal2;
       outIndex = count + 4U;
@@ -123,8 +114,8 @@ void arm_max_q15(
 #else
   /* Run the below code for Cortex-M0 */
 
-  q15_t maxVal1, out;                            /* Temporary variables to store the output value. */
-  uint32_t blkCnt, outIndex;                     /* loop counter */
+  q15_t maxVal1, out; /* Temporary variables to store the output value. */
+  uint32_t blkCnt, outIndex; /* loop counter */
 
   /* Initialise the index value to zero. */
   outIndex = 0U;
@@ -135,14 +126,12 @@ void arm_max_q15(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* Initialize maxVal to the next consecutive values one by one */
     maxVal1 = *pSrc++;
 
     /* compare for the maximum value */
-    if (out < maxVal1)
-    {
+    if (out < maxVal1) {
       /* Update the maximum value and it's index */
       out = maxVal1;
       outIndex = blockSize - blkCnt;

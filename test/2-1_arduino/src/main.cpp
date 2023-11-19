@@ -9,20 +9,15 @@ HardwareSerial MySerial1(PA10, PA9);
 
 void u1_printf(char *fmt, ...);
 
-void setup()
-{
-  MySerial1.begin(115200);
-}
+void setup() { MySerial1.begin(115200); }
 
-void loop()
-{
+void loop() {
   static int cnt = 1;
   u1_printf("test: %d %f\r\n", cnt++, 1.0 / cnt);
   delay(500);
 }
 
-void u1_printf(char *fmt, ...)
-{
+void u1_printf(char *fmt, ...) {
   uint16_t len;
   va_list ap;
   va_start(ap, fmt);

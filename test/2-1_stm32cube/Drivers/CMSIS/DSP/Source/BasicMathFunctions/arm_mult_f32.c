@@ -58,27 +58,23 @@
  * @return none.
  */
 
-void arm_mult_f32(
-  float32_t * pSrcA,
-  float32_t * pSrcB,
-  float32_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counters */
-#if defined (ARM_MATH_DSP)
+void arm_mult_f32(float32_t *pSrcA, float32_t *pSrcB, float32_t *pDst,
+                  uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counters */
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
-  float32_t inA1, inA2, inA3, inA4;              /* temporary input variables */
-  float32_t inB1, inB2, inB3, inB4;              /* temporary input variables */
-  float32_t out1, out2, out3, out4;              /* temporary output variables */
+  float32_t inA1, inA2, inA3, inA4; /* temporary input variables */
+  float32_t inB1, inB2, inB3, inB4; /* temporary input variables */
+  float32_t out1, out2, out3, out4; /* temporary output variables */
 
   /* loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A * B */
     /* Multiply the inputs and store the results in output buffer */
     /* read sample from sourceA */
@@ -123,7 +119,6 @@ void arm_mult_f32(
     /* store result to destination buffer */
     *(pDst + 3) = out4;
 
-
     /* update pointers to process next samples */
     pSrcA += 4U;
     pSrcB += 4U;
@@ -133,7 +128,8 @@ void arm_mult_f32(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -146,8 +142,7 @@ void arm_mult_f32(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A * B */
     /* Multiply the inputs and store the results in output buffer */
     *pDst++ = (*pSrcA++) * (*pSrcB++);

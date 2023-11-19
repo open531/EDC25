@@ -38,80 +38,78 @@
  */
 
 /*
-  * @brief Q31 matrix transpose.
-  * @param[in]  *pSrc points to the input matrix
-  * @param[out] *pDst points to the output matrix
-  * @return 	The function returns either  <code>ARM_MATH_SIZE_MISMATCH</code>
-  * or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
+ * @brief Q31 matrix transpose.
+ * @param[in]  *pSrc points to the input matrix
+ * @param[out] *pDst points to the output matrix
+ * @return 	The function returns either  <code>ARM_MATH_SIZE_MISMATCH</code>
+ * or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
  */
 
-arm_status arm_mat_trans_q31(
-  const arm_matrix_instance_q31 * pSrc,
-  arm_matrix_instance_q31 * pDst)
-{
-  q31_t *pIn = pSrc->pData;                      /* input data matrix pointer  */
-  q31_t *pOut = pDst->pData;                     /* output data matrix pointer  */
-  q31_t *px;                                     /* Temporary output data matrix pointer */
-  uint16_t nRows = pSrc->numRows;                /* number of nRows */
-  uint16_t nColumns = pSrc->numCols;             /* number of nColumns  */
+arm_status arm_mat_trans_q31(const arm_matrix_instance_q31 *pSrc,
+                             arm_matrix_instance_q31 *pDst) {
+  q31_t *pIn = pSrc->pData;          /* input data matrix pointer  */
+  q31_t *pOut = pDst->pData;         /* output data matrix pointer  */
+  q31_t *px;                         /* Temporary output data matrix pointer */
+  uint16_t nRows = pSrc->numRows;    /* number of nRows */
+  uint16_t nColumns = pSrc->numCols; /* number of nColumns  */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  uint16_t blkCnt, i = 0U, row = nRows;          /* loop counters */
-  arm_status status;                             /* status of matrix transpose */
-
+  uint16_t blkCnt, i = 0U, row = nRows; /* loop counters */
+  arm_status status;                    /* status of matrix transpose */
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
-
   /* Check for matrix mismatch condition */
-  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
-  {
+  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows)) {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
-  }
-  else
+  } else
 #endif /*    #ifdef ARM_MATH_MATRIX_CHECK    */
 
   {
     /* Matrix transpose by exchanging the rows with columns */
     /* row loop     */
-    do
-    {
+    do {
       /* Apply loop unrolling and exchange the columns with row elements */
       blkCnt = nColumns >> 2U;
 
-      /* The pointer px is set to starting address of the column being processed */
+      /* The pointer px is set to starting address of the column being processed
+       */
       px = pOut + i;
 
-      /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+      /* First part of the processing with loop unrolling.  Compute 4 outputs at
+       *a time.
        ** a second loop below computes the remaining 1 to 3 samples. */
-      while (blkCnt > 0U)
-      {
+      while (blkCnt > 0U) {
         /* Read and store the input element in the destination */
         *px = *pIn++;
 
-        /* Update the pointer px to point to the next row of the transposed matrix */
+        /* Update the pointer px to point to the next row of the transposed
+         * matrix */
         px += nRows;
 
         /* Read and store the input element in the destination */
         *px = *pIn++;
 
-        /* Update the pointer px to point to the next row of the transposed matrix */
+        /* Update the pointer px to point to the next row of the transposed
+         * matrix */
         px += nRows;
 
         /* Read and store the input element in the destination */
         *px = *pIn++;
 
-        /* Update the pointer px to point to the next row of the transposed matrix */
+        /* Update the pointer px to point to the next row of the transposed
+         * matrix */
         px += nRows;
 
         /* Read and store the input element in the destination */
         *px = *pIn++;
 
-        /* Update the pointer px to point to the next row of the transposed matrix */
+        /* Update the pointer px to point to the next row of the transposed
+         * matrix */
         px += nRows;
 
         /* Decrement the column loop counter */
@@ -121,12 +119,12 @@ arm_status arm_mat_trans_q31(
       /* Perform matrix transpose for last 3 samples here. */
       blkCnt = nColumns % 0x4U;
 
-      while (blkCnt > 0U)
-      {
+      while (blkCnt > 0U) {
         /* Read and store the input element in the destination */
         *px = *pIn++;
 
-        /* Update the pointer px to point to the next row of the transposed matrix */
+        /* Update the pointer px to point to the next row of the transposed
+         * matrix */
         px += nRows;
 
         /* Decrement the column loop counter */
@@ -137,38 +135,35 @@ arm_status arm_mat_trans_q31(
 
   /* Run the below code for Cortex-M0 */
 
-  uint16_t col, i = 0U, row = nRows;             /* loop counters */
-  arm_status status;                             /* status of matrix transpose */
-
+  uint16_t col, i = 0U, row = nRows; /* loop counters */
+  arm_status status;                 /* status of matrix transpose */
 
 #ifdef ARM_MATH_MATRIX_CHECK
 
   /* Check for matrix mismatch condition */
-  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows))
-  {
+  if ((pSrc->numRows != pDst->numCols) || (pSrc->numCols != pDst->numRows)) {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
-  }
-  else
+  } else
 #endif /*    #ifdef ARM_MATH_MATRIX_CHECK    */
 
   {
     /* Matrix transpose by exchanging the rows with columns */
     /* row loop     */
-    do
-    {
-      /* The pointer px is set to starting address of the column being processed */
+    do {
+      /* The pointer px is set to starting address of the column being processed
+       */
       px = pOut + i;
 
       /* Initialize column loop counter */
       col = nColumns;
 
-      while (col > 0U)
-      {
+      while (col > 0U) {
         /* Read and store the input element in the destination */
         *px = *pIn++;
 
-        /* Update the pointer px to point to the next row of the transposed matrix */
+        /* Update the pointer px to point to the next row of the transposed
+         * matrix */
         px += nRows;
 
         /* Decrement the column loop counter */
@@ -182,8 +177,7 @@ arm_status arm_mat_trans_q31(
       /* Decrement the row loop counter */
       row--;
 
-    }
-    while (row > 0U);            /* row loop end */
+    } while (row > 0U); /* row loop end */
 
     /* set status as ARM_MATH_SUCCESS */
     status = ARM_MATH_SUCCESS;

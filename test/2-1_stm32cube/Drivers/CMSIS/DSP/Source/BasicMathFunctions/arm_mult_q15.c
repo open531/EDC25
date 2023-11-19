@@ -37,7 +37,6 @@
  * @{
  */
 
-
 /**
  * @brief           Q15 vector multiplication
  * @param[in]       *pSrcA points to the first input vector
@@ -52,28 +51,23 @@
  * Results outside of the allowable Q15 range [0x8000 0x7FFF] will be saturated.
  */
 
-void arm_mult_q15(
-  q15_t * pSrcA,
-  q15_t * pSrcB,
-  q15_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counters */
+void arm_mult_q15(q15_t *pSrcA, q15_t *pSrcB, q15_t *pDst, uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counters */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
-  q31_t inA1, inA2, inB1, inB2;                  /* temporary input variables */
-  q15_t out1, out2, out3, out4;                  /* temporary output variables */
-  q31_t mul1, mul2, mul3, mul4;                  /* temporary variables */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  q31_t inA1, inA2, inB1, inB2; /* temporary input variables */
+  q15_t out1, out2, out3, out4; /* temporary output variables */
+  q31_t mul1, mul2, mul3, mul4; /* temporary variables */
 
   /* loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* read two samples at a time from sourceA */
     inA1 = *__SIMD32(pSrcA)++;
     /* read two samples at a time from sourceB */
@@ -84,16 +78,16 @@ void arm_mult_q15(
     inB2 = *__SIMD32(pSrcB)++;
 
     /* multiply mul = sourceA * sourceB */
-    mul1 = (q31_t) ((q15_t) (inA1 >> 16) * (q15_t) (inB1 >> 16));
-    mul2 = (q31_t) ((q15_t) inA1 * (q15_t) inB1);
-    mul3 = (q31_t) ((q15_t) (inA2 >> 16) * (q15_t) (inB2 >> 16));
-    mul4 = (q31_t) ((q15_t) inA2 * (q15_t) inB2);
+    mul1 = (q31_t)((q15_t)(inA1 >> 16) * (q15_t)(inB1 >> 16));
+    mul2 = (q31_t)((q15_t)inA1 * (q15_t)inB1);
+    mul3 = (q31_t)((q15_t)(inA2 >> 16) * (q15_t)(inB2 >> 16));
+    mul4 = (q31_t)((q15_t)inA2 * (q15_t)inB2);
 
     /* saturate result to 16 bit */
-    out1 = (q15_t) __SSAT(mul1 >> 15, 16);
-    out2 = (q15_t) __SSAT(mul2 >> 15, 16);
-    out3 = (q15_t) __SSAT(mul3 >> 15, 16);
-    out4 = (q15_t) __SSAT(mul4 >> 15, 16);
+    out1 = (q15_t)__SSAT(mul1 >> 15, 16);
+    out2 = (q15_t)__SSAT(mul2 >> 15, 16);
+    out3 = (q15_t)__SSAT(mul3 >> 15, 16);
+    out4 = (q15_t)__SSAT(mul4 >> 15, 16);
 
     /* store the result */
 #ifndef ARM_MATH_BIG_ENDIAN
@@ -112,7 +106,8 @@ void arm_mult_q15(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -125,12 +120,10 @@ void arm_mult_q15(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A * B */
     /* Multiply the inputs and store the result in the destination buffer */
-    *pDst++ = (q15_t) __SSAT((((q31_t) (*pSrcA++) * (*pSrcB++)) >> 15), 16);
+    *pDst++ = (q15_t)__SSAT((((q31_t)(*pSrcA++) * (*pSrcB++)) >> 15), 16);
 
     /* Decrement the blockSize loop counter */
     blkCnt--;

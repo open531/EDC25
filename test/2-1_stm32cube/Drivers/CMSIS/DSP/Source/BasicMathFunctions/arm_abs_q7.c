@@ -51,33 +51,30 @@
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * The function uses saturating arithmetic.
- * The Q7 value -1 (0x80) will be saturated to the maximum allowable positive value 0x7F.
+ * The Q7 value -1 (0x80) will be saturated to the maximum allowable positive
+ * value 0x7F.
  */
 
-void arm_abs_q7(
-  q7_t * pSrc,
-  q7_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
-  q7_t in;                                       /* Input value1 */
+void arm_abs_q7(q7_t *pSrc, q7_t *pDst, uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counter */
+  q7_t in;         /* Input value1 */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
-  q31_t in1, in2, in3, in4;                      /* temporary input variables */
-  q31_t out1, out2, out3, out4;                  /* temporary output variables */
+  q31_t in1, in2, in3, in4;     /* temporary input variables */
+  q31_t out1, out2, out3, out4; /* temporary output variables */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = |A| */
     /* Read inputs */
-    in1 = (q31_t) * pSrc;
+    in1 = (q31_t)*pSrc;
     in2 = (q31_t) * (pSrc + 1);
     in3 = (q31_t) * (pSrc + 2);
 
@@ -91,7 +88,7 @@ void arm_abs_q7(
     out2 = (in2 > 0) ? in2 : (q31_t)__QSUB8(0, in2);
 
     /* store result to destination */
-    *pDst = (q7_t) out1;
+    *pDst = (q7_t)out1;
 
     /* find absolute value */
     out3 = (in3 > 0) ? in3 : (q31_t)__QSUB8(0, in3);
@@ -100,13 +97,13 @@ void arm_abs_q7(
     out4 = (in4 > 0) ? in4 : (q31_t)__QSUB8(0, in4);
 
     /* store result to destination */
-    *(pDst + 1) = (q7_t) out2;
+    *(pDst + 1) = (q7_t)out2;
 
     /* store result to destination */
-    *(pDst + 2) = (q7_t) out3;
+    *(pDst + 2) = (q7_t)out3;
 
     /* store result to destination */
-    *(pDst + 3) = (q7_t) out4;
+    *(pDst + 3) = (q7_t)out4;
 
     /* update pointers to process next samples */
     pSrc += 4U;
@@ -116,7 +113,8 @@ void arm_abs_q7(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 #else
@@ -126,14 +124,13 @@ void arm_abs_q7(
 
 #endif /* #define ARM_MATH_CM0_FAMILY */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = |A| */
     /* Read the input */
     in = *pSrc++;
 
     /* Store the Absolute result in the destination buffer */
-    *pDst++ = (in > 0) ? in : ((in == (q7_t) 0x80) ? 0x7f : -in);
+    *pDst++ = (in > 0) ? in : ((in == (q7_t)0x80) ? 0x7f : -in);
 
     /* Decrement the loop counter */
     blkCnt--;

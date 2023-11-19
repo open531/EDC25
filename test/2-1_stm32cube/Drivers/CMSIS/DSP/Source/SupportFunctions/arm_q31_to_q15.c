@@ -54,16 +54,11 @@
  *
  */
 
+void arm_q31_to_q15(q31_t *pSrc, q15_t *pDst, uint32_t blockSize) {
+  q31_t *pIn = pSrc; /* Src pointer */
+  uint32_t blkCnt;   /* loop counter */
 
-void arm_q31_to_q15(
-  q31_t * pSrc,
-  q15_t * pDst,
-  uint32_t blockSize)
-{
-  q31_t *pIn = pSrc;                             /* Src pointer */
-  uint32_t blkCnt;                               /* loop counter */
-
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
   q31_t in1, in2, in3, in4;
@@ -72,12 +67,13 @@ void arm_q31_to_q15(
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = (q15_t) A >> 16 */
-    /* convert from q31 to q15 and then store the results in the destination buffer */
+    /* convert from q31 to q15 and then store the results in the destination
+     * buffer */
     in1 = *pIn++;
     in2 = *pIn++;
     in3 = *pIn++;
@@ -103,7 +99,8 @@ void arm_q31_to_q15(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -116,16 +113,15 @@ void arm_q31_to_q15(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = (q15_t) A >> 16 */
-    /* convert from q31 to q15 and then store the results in the destination buffer */
-    *pDst++ = (q15_t) (*pIn++ >> 16);
+    /* convert from q31 to q15 and then store the results in the destination
+     * buffer */
+    *pDst++ = (q15_t)(*pIn++ >> 16);
 
     /* Decrement the loop counter */
     blkCnt--;
   }
-
 }
 
 /**

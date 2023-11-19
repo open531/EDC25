@@ -54,16 +54,11 @@
  *
  */
 
+void arm_q7_to_q31(q7_t *pSrc, q31_t *pDst, uint32_t blockSize) {
+  q7_t *pIn = pSrc; /* Src pointer */
+  uint32_t blkCnt;  /* loop counter */
 
-void arm_q7_to_q31(
-  q7_t * pSrc,
-  q31_t * pDst,
-  uint32_t blockSize)
-{
-  q7_t *pIn = pSrc;                              /* Src pointer */
-  uint32_t blkCnt;                               /* loop counter */
-
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   q31_t in;
 
@@ -72,12 +67,13 @@ void arm_q7_to_q31(
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = (q31_t) A << 24 */
-    /* convert from q7 to q31 and then store the results in the destination buffer */
+    /* convert from q7 to q31 and then store the results in the destination
+     * buffer */
     in = *__SIMD32(pIn)++;
 
 #ifndef ARM_MATH_BIG_ENDIAN
@@ -100,7 +96,8 @@ void arm_q7_to_q31(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -113,16 +110,15 @@ void arm_q7_to_q31(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = (q31_t) A << 24 */
-    /* convert from q7 to q31 and then store the results in the destination buffer */
-    *pDst++ = (q31_t) * pIn++ << 24;
+    /* convert from q7 to q31 and then store the results in the destination
+     * buffer */
+    *pDst++ = (q31_t)*pIn++ << 24;
 
     /* Decrement the loop counter */
     blkCnt--;
   }
-
 }
 
 /**

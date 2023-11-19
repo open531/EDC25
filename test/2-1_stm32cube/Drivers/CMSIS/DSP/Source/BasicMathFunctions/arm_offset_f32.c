@@ -60,27 +60,22 @@
  * @return none.
  */
 
+void arm_offset_f32(float32_t *pSrc, float32_t offset, float32_t *pDst,
+                    uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counter */
 
-void arm_offset_f32(
-  float32_t * pSrc,
-  float32_t offset,
-  float32_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
+#if defined(ARM_MATH_DSP)
 
-#if defined (ARM_MATH_DSP)
-
-/* Run the below code for Cortex-M4 and Cortex-M3 */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
   float32_t in1, in2, in3, in4;
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A + offset */
     /* Add offset and then store the results in the destination buffer. */
     /* read samples from source */
@@ -125,7 +120,8 @@ void arm_offset_f32(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -138,8 +134,7 @@ void arm_offset_f32(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A + offset */
     /* Add offset and then store the result in the destination buffer. */
     *pDst++ = (*pSrc++) + offset;

@@ -38,7 +38,8 @@
  */
 
 /**
- * @brief Processing function for the Q15 FIR decimator (fast variant) for Cortex-M3 and Cortex-M4.
+ * @brief Processing function for the Q15 FIR decimator (fast variant) for
+ *Cortex-M3 and Cortex-M4.
  * @param[in] *S points to an instance of the Q15 FIR decimator structure.
  * @param[in] *pSrc points to the block of input data.
  * @param[out] *pDst points to the block of output data
@@ -46,62 +47,62 @@
  * @return none
  *
  * \par Restrictions
- *  If the silicon does not support unaligned memory access enable the macro UNALIGNED_SUPPORT_DISABLE
- *	In this case input, output, state buffers should be aligned by 32-bit
+ *  If the silicon does not support unaligned memory access enable the macro
+ *UNALIGNED_SUPPORT_DISABLE In this case input, output, state buffers should be
+ *aligned by 32-bit
  *
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * This fast version uses a 32-bit accumulator with 2.30 format.
- * The accumulator maintains full precision of the intermediate multiplication results but provides only a single guard bit.
- * Thus, if the accumulator result overflows it wraps around and distorts the result.
- * In order to avoid overflows completely the input signal must be scaled down by log2(numTaps) bits (log2 is read as log to the base 2).
- * The 2.30 accumulator is then truncated to 2.15 format and saturated to yield the 1.15 result.
+ * The accumulator maintains full precision of the intermediate multiplication
+ *results but provides only a single guard bit. Thus, if the accumulator result
+ *overflows it wraps around and distorts the result. In order to avoid overflows
+ *completely the input signal must be scaled down by log2(numTaps) bits (log2 is
+ *read as log to the base 2). The 2.30 accumulator is then truncated to 2.15
+ *format and saturated to yield the 1.15 result.
  *
  * \par
- * Refer to the function <code>arm_fir_decimate_q15()</code> for a slower implementation of this function which uses 64-bit accumulation to avoid wrap around distortion.
- * Both the slow and the fast versions use the same instance structure.
- * Use the function <code>arm_fir_decimate_init_q15()</code> to initialize the filter structure.
+ * Refer to the function <code>arm_fir_decimate_q15()</code> for a slower
+ *implementation of this function which uses 64-bit accumulation to avoid wrap
+ *around distortion. Both the slow and the fast versions use the same instance
+ *structure. Use the function <code>arm_fir_decimate_init_q15()</code> to
+ *initialize the filter structure.
  */
 
 #ifndef UNALIGNED_SUPPORT_DISABLE
 
-void arm_fir_decimate_fast_q15(
-  const arm_fir_decimate_instance_q15 * S,
-  q15_t * pSrc,
-  q15_t * pDst,
-  uint32_t blockSize)
-{
-  q15_t *pState = S->pState;                     /* State pointer */
-  q15_t *pCoeffs = S->pCoeffs;                   /* Coefficient pointer */
-  q15_t *pStateCurnt;                            /* Points to the current sample of the state */
-  q15_t *px;                                     /* Temporary pointer for state buffer */
-  q15_t *pb;                                     /* Temporary pointer coefficient buffer */
-  q31_t x0, x1, c0, c1;                          /* Temporary variables to hold state and coefficient values */
-  q31_t sum0;                                    /* Accumulators */
+void arm_fir_decimate_fast_q15(const arm_fir_decimate_instance_q15 *S,
+                               q15_t *pSrc, q15_t *pDst, uint32_t blockSize) {
+  q15_t *pState = S->pState;   /* State pointer */
+  q15_t *pCoeffs = S->pCoeffs; /* Coefficient pointer */
+  q15_t *pStateCurnt;          /* Points to the current sample of the state */
+  q15_t *px;                   /* Temporary pointer for state buffer */
+  q15_t *pb;                   /* Temporary pointer coefficient buffer */
+  q31_t x0, x1, c0,
+      c1;     /* Temporary variables to hold state and coefficient values */
+  q31_t sum0; /* Accumulators */
   q31_t acc0, acc1;
   q15_t *px0, *px1;
   uint32_t blkCntN3;
-  uint32_t numTaps = S->numTaps;                 /* Number of taps */
-  uint32_t i, blkCnt, tapCnt, outBlockSize = blockSize / S->M;  /* Loop counters */
-
+  uint32_t numTaps = S->numTaps; /* Number of taps */
+  uint32_t i, blkCnt, tapCnt,
+      outBlockSize = blockSize / S->M; /* Loop counters */
 
   /* S->pState buffer contains previous frame (numTaps - 1) samples */
-  /* pStateCurnt points to the location where the new input data should be written */
+  /* pStateCurnt points to the location where the new input data should be
+   * written */
   pStateCurnt = S->pState + (numTaps - 1U);
-
 
   /* Total number of output samples to be computed */
   blkCnt = outBlockSize / 2;
   blkCntN3 = outBlockSize - (2 * blkCnt);
 
-
-  while (blkCnt > 0U)
-  {
-    /* Copy decimation factor number of new input samples into the state buffer */
+  while (blkCnt > 0U) {
+    /* Copy decimation factor number of new input samples into the state buffer
+     */
     i = 2 * S->M;
 
-    do
-    {
+    do {
       *pStateCurnt++ = *pSrc++;
 
     } while (--i);
@@ -115,7 +116,6 @@ void arm_fir_decimate_fast_q15(
 
     px1 = pState + S->M;
 
-
     /* Initialize coeff pointer */
     pb = pCoeffs;
 
@@ -124,8 +124,7 @@ void arm_fir_decimate_fast_q15(
 
     /* Loop over the number of taps.  Unroll by a factor of 4.
      ** Repeat until we've computed numTaps-4 coefficients. */
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read the Read b[numTaps-1] and b[numTaps-2]  coefficients */
       c0 = *__SIMD32(pb)++;
 
@@ -156,11 +155,11 @@ void arm_fir_decimate_fast_q15(
       tapCnt--;
     }
 
-    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    /* If the filter length is not a multiple of 4, compute the remaining filter
+     * taps */
     tapCnt = numTaps % 0x4U;
 
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read coefficients */
       c0 = *pb++;
 
@@ -183,22 +182,19 @@ void arm_fir_decimate_fast_q15(
 
     /* Store filter output, smlad returns the values in 2.14 format */
     /* so downsacle by 15 to get output in 1.15 */
-    *pDst++ = (q15_t) (__SSAT((acc0 >> 15), 16));
-    *pDst++ = (q15_t) (__SSAT((acc1 >> 15), 16));
+    *pDst++ = (q15_t)(__SSAT((acc0 >> 15), 16));
+    *pDst++ = (q15_t)(__SSAT((acc1 >> 15), 16));
 
     /* Decrement the loop counter */
     blkCnt--;
   }
 
-
-
-  while (blkCntN3 > 0U)
-  {
-    /* Copy decimation factor number of new input samples into the state buffer */
+  while (blkCntN3 > 0U) {
+    /* Copy decimation factor number of new input samples into the state buffer
+     */
     i = S->M;
 
-    do
-    {
+    do {
       *pStateCurnt++ = *pSrc++;
 
     } while (--i);
@@ -217,8 +213,7 @@ void arm_fir_decimate_fast_q15(
 
     /* Loop over the number of taps.  Unroll by a factor of 4.
      ** Repeat until we've computed numTaps-4 coefficients. */
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read the Read b[numTaps-1] and b[numTaps-2]  coefficients */
       c0 = *__SIMD32(pb)++;
 
@@ -241,11 +236,11 @@ void arm_fir_decimate_fast_q15(
       tapCnt--;
     }
 
-    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    /* If the filter length is not a multiple of 4, compute the remaining filter
+     * taps */
     tapCnt = numTaps % 0x4U;
 
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read coefficients */
       c0 = *pb++;
 
@@ -265,7 +260,7 @@ void arm_fir_decimate_fast_q15(
 
     /* Store filter output, smlad returns the values in 2.14 format */
     /* so downsacle by 15 to get output in 1.15 */
-    *pDst++ = (q15_t) (__SSAT((sum0 >> 15), 16));
+    *pDst++ = (q15_t)(__SSAT((sum0 >> 15), 16));
 
     /* Decrement the loop counter */
     blkCntN3--;
@@ -281,8 +276,7 @@ void arm_fir_decimate_fast_q15(
   i = (numTaps - 1U) >> 2U;
 
   /* copy data */
-  while (i > 0U)
-  {
+  while (i > 0U) {
     *__SIMD32(pStateCurnt)++ = *__SIMD32(pState)++;
     *__SIMD32(pStateCurnt)++ = *__SIMD32(pState)++;
 
@@ -293,8 +287,7 @@ void arm_fir_decimate_fast_q15(
   i = (numTaps - 1U) % 0x04U;
 
   /* copy data */
-  while (i > 0U)
-  {
+  while (i > 0U) {
     *pStateCurnt++ = *pState++;
 
     /* Decrement the loop counter */
@@ -304,43 +297,38 @@ void arm_fir_decimate_fast_q15(
 
 #else
 
-
-void arm_fir_decimate_fast_q15(
-  const arm_fir_decimate_instance_q15 * S,
-  q15_t * pSrc,
-  q15_t * pDst,
-  uint32_t blockSize)
-{
-  q15_t *pState = S->pState;                     /* State pointer */
-  q15_t *pCoeffs = S->pCoeffs;                   /* Coefficient pointer */
-  q15_t *pStateCurnt;                            /* Points to the current sample of the state */
-  q15_t *px;                                     /* Temporary pointer for state buffer */
-  q15_t *pb;                                     /* Temporary pointer coefficient buffer */
-  q15_t x0, x1, c0;                              /* Temporary variables to hold state and coefficient values */
-  q31_t sum0;                                    /* Accumulators */
+void arm_fir_decimate_fast_q15(const arm_fir_decimate_instance_q15 *S,
+                               q15_t *pSrc, q15_t *pDst, uint32_t blockSize) {
+  q15_t *pState = S->pState;   /* State pointer */
+  q15_t *pCoeffs = S->pCoeffs; /* Coefficient pointer */
+  q15_t *pStateCurnt;          /* Points to the current sample of the state */
+  q15_t *px;                   /* Temporary pointer for state buffer */
+  q15_t *pb;                   /* Temporary pointer coefficient buffer */
+  q15_t x0, x1,
+      c0;     /* Temporary variables to hold state and coefficient values */
+  q31_t sum0; /* Accumulators */
   q31_t acc0, acc1;
   q15_t *px0, *px1;
   uint32_t blkCntN3;
-  uint32_t numTaps = S->numTaps;                 /* Number of taps */
-  uint32_t i, blkCnt, tapCnt, outBlockSize = blockSize / S->M;  /* Loop counters */
-
+  uint32_t numTaps = S->numTaps; /* Number of taps */
+  uint32_t i, blkCnt, tapCnt,
+      outBlockSize = blockSize / S->M; /* Loop counters */
 
   /* S->pState buffer contains previous frame (numTaps - 1) samples */
-  /* pStateCurnt points to the location where the new input data should be written */
+  /* pStateCurnt points to the location where the new input data should be
+   * written */
   pStateCurnt = S->pState + (numTaps - 1U);
-
 
   /* Total number of output samples to be computed */
   blkCnt = outBlockSize / 2;
   blkCntN3 = outBlockSize - (2 * blkCnt);
 
-  while (blkCnt > 0U)
-  {
-    /* Copy decimation factor number of new input samples into the state buffer */
+  while (blkCnt > 0U) {
+    /* Copy decimation factor number of new input samples into the state buffer
+     */
     i = 2 * S->M;
 
-    do
-    {
+    do {
       *pStateCurnt++ = *pSrc++;
 
     } while (--i);
@@ -354,7 +342,6 @@ void arm_fir_decimate_fast_q15(
 
     px1 = pState + S->M;
 
-
     /* Initialize coeff pointer */
     pb = pCoeffs;
 
@@ -363,8 +350,7 @@ void arm_fir_decimate_fast_q15(
 
     /* Loop over the number of taps.  Unroll by a factor of 4.
      ** Repeat until we've computed numTaps-4 coefficients. */
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read the Read b[numTaps-1] coefficients */
       c0 = *pb++;
 
@@ -413,11 +399,11 @@ void arm_fir_decimate_fast_q15(
       tapCnt--;
     }
 
-    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    /* If the filter length is not a multiple of 4, compute the remaining filter
+     * taps */
     tapCnt = numTaps % 0x4U;
 
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read coefficients */
       c0 = *pb++;
 
@@ -440,21 +426,19 @@ void arm_fir_decimate_fast_q15(
     /* Store filter output, smlad returns the values in 2.14 format */
     /* so downsacle by 15 to get output in 1.15 */
 
-    *pDst++ = (q15_t) (__SSAT((acc0 >> 15), 16));
-    *pDst++ = (q15_t) (__SSAT((acc1 >> 15), 16));
-
+    *pDst++ = (q15_t)(__SSAT((acc0 >> 15), 16));
+    *pDst++ = (q15_t)(__SSAT((acc1 >> 15), 16));
 
     /* Decrement the loop counter */
     blkCnt--;
   }
 
-  while (blkCntN3 > 0U)
-  {
-    /* Copy decimation factor number of new input samples into the state buffer */
+  while (blkCntN3 > 0U) {
+    /* Copy decimation factor number of new input samples into the state buffer
+     */
     i = S->M;
 
-    do
-    {
+    do {
       *pStateCurnt++ = *pSrc++;
 
     } while (--i);
@@ -473,8 +457,7 @@ void arm_fir_decimate_fast_q15(
 
     /* Loop over the number of taps.  Unroll by a factor of 4.
      ** Repeat until we've computed numTaps-4 coefficients. */
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read the Read b[numTaps-1] coefficients */
       c0 = *pb++;
 
@@ -515,11 +498,11 @@ void arm_fir_decimate_fast_q15(
       tapCnt--;
     }
 
-    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    /* If the filter length is not a multiple of 4, compute the remaining filter
+     * taps */
     tapCnt = numTaps % 0x4U;
 
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
       /* Read coefficients */
       c0 = *pb++;
 
@@ -539,7 +522,7 @@ void arm_fir_decimate_fast_q15(
 
     /* Store filter output, smlad returns the values in 2.14 format */
     /* so downsacle by 15 to get output in 1.15 */
-    *pDst++ = (q15_t) (__SSAT((sum0 >> 15), 16));
+    *pDst++ = (q15_t)(__SSAT((sum0 >> 15), 16));
 
     /* Decrement the loop counter */
     blkCntN3--;
@@ -555,8 +538,7 @@ void arm_fir_decimate_fast_q15(
   i = (numTaps - 1U) >> 2U;
 
   /* copy data */
-  while (i > 0U)
-  {
+  while (i > 0U) {
     *pStateCurnt++ = *pState++;
     *pStateCurnt++ = *pState++;
     *pStateCurnt++ = *pState++;
@@ -569,8 +551,7 @@ void arm_fir_decimate_fast_q15(
   i = (numTaps - 1U) % 0x04U;
 
   /* copy data */
-  while (i > 0U)
-  {
+  while (i > 0U) {
     *pStateCurnt++ = *pState++;
 
     /* Decrement the loop counter */
@@ -578,8 +559,7 @@ void arm_fir_decimate_fast_q15(
   }
 }
 
-
-#endif	/*	#ifndef UNALIGNED_SUPPORT_DISABLE	*/
+#endif /*	#ifndef UNALIGNED_SUPPORT_DISABLE	*/
 
 /**
  * @} end of FIR_decimate group
