@@ -194,8 +194,8 @@ void arm_biquad_cascade_stereo_df2T_f32(
     pCoeffs += 5U;
 
     /* First part of the processing with loop unrolling.  Compute 8 outputs at a
-    *time.
-    ** a second loop below computes the remaining 1 to 7 samples. */
+     *time.
+     ** a second loop below computes the remaining 1 to 7 samples. */
     while (sample > 0U) {
 
       /* y[n] = b0 * x[n] + d1 */
@@ -514,8 +514,8 @@ void arm_biquad_cascade_stereo_df2T_f32(
     sample = blockSize >> 2U;
 
     /* First part of the processing with loop unrolling.  Compute 4 outputs at a
-    *time.
-    ** a second loop below computes the remaining 1 to 3 samples. */
+     *time.
+     ** a second loop below computes the remaining 1 to 3 samples. */
     while (sample > 0U) {
 
       /* y[n] = b0 * x[n] + d1 */

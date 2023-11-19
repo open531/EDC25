@@ -489,12 +489,11 @@ __STATIC_INLINE __ASM void __FPU_Enable(void) {
 
           // Initialise VFP/NEON registers to 0
           MOV R2,
-      #0
+# 0
 
       // Initialise D16 registers to 0
-      VMOV D0,
-      R2, R2 VMOV D1, R2, R2 VMOV D2, R2, R2 VMOV D3, R2, R2 VMOV D4, R2,
-      R2 VMOV D5, R2, R2 VMOV D6, R2, R2 VMOV D7, R2, R2 VMOV D8, R2,
+      VMOV D0, R2, R2 VMOV D1, R2, R2 VMOV D2, R2, R2 VMOV D3, R2, R2 VMOV D4,
+      R2, R2 VMOV D5, R2, R2 VMOV D6, R2, R2 VMOV D7, R2, R2 VMOV D8, R2,
       R2 VMOV D9, R2, R2 VMOV D10, R2, R2 VMOV D11, R2, R2 VMOV D12, R2,
       R2 VMOV D13, R2, R2 VMOV D14, R2, R2 VMOV D15, R2,
       R2

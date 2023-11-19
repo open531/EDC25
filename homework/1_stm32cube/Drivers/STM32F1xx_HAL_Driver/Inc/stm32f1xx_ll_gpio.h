@@ -217,28 +217,34 @@ typedef struct {
  * @{
  */
 
-#define LL_GPIO_AF_EVENTOUT_PIN_0 AFIO_EVCR_PIN_PX0   /*!< EVENTOUT on pin 0 */
-#define LL_GPIO_AF_EVENTOUT_PIN_1 AFIO_EVCR_PIN_PX1   /*!< EVENTOUT on pin 1 */
-#define LL_GPIO_AF_EVENTOUT_PIN_2 AFIO_EVCR_PIN_PX2   /*!< EVENTOUT on pin 2 */
-#define LL_GPIO_AF_EVENTOUT_PIN_3 AFIO_EVCR_PIN_PX3   /*!< EVENTOUT on pin 3 */
-#define LL_GPIO_AF_EVENTOUT_PIN_4 AFIO_EVCR_PIN_PX4   /*!< EVENTOUT on pin 4 */
-#define LL_GPIO_AF_EVENTOUT_PIN_5 AFIO_EVCR_PIN_PX5   /*!< EVENTOUT on pin 5 */
-#define LL_GPIO_AF_EVENTOUT_PIN_6 AFIO_EVCR_PIN_PX6   /*!< EVENTOUT on pin 6 */
-#define LL_GPIO_AF_EVENTOUT_PIN_7 AFIO_EVCR_PIN_PX7   /*!< EVENTOUT on pin 7 */
-#define LL_GPIO_AF_EVENTOUT_PIN_8 AFIO_EVCR_PIN_PX8   /*!< EVENTOUT on pin 8 */
-#define LL_GPIO_AF_EVENTOUT_PIN_9 AFIO_EVCR_PIN_PX9   /*!< EVENTOUT on pin 9 */
-#define LL_GPIO_AF_EVENTOUT_PIN_10 AFIO_EVCR_PIN_PX10 /*!< EVENTOUT on pin 10  \
-                                                       */
-#define LL_GPIO_AF_EVENTOUT_PIN_11 AFIO_EVCR_PIN_PX11 /*!< EVENTOUT on pin 11  \
-                                                       */
-#define LL_GPIO_AF_EVENTOUT_PIN_12 AFIO_EVCR_PIN_PX12 /*!< EVENTOUT on pin 12  \
-                                                       */
-#define LL_GPIO_AF_EVENTOUT_PIN_13 AFIO_EVCR_PIN_PX13 /*!< EVENTOUT on pin 13  \
-                                                       */
-#define LL_GPIO_AF_EVENTOUT_PIN_14 AFIO_EVCR_PIN_PX14 /*!< EVENTOUT on pin 14  \
-                                                       */
-#define LL_GPIO_AF_EVENTOUT_PIN_15 AFIO_EVCR_PIN_PX15 /*!< EVENTOUT on pin 15  \
-                                                       */
+#define LL_GPIO_AF_EVENTOUT_PIN_0 AFIO_EVCR_PIN_PX0 /*!< EVENTOUT on pin 0 */
+#define LL_GPIO_AF_EVENTOUT_PIN_1 AFIO_EVCR_PIN_PX1 /*!< EVENTOUT on pin 1 */
+#define LL_GPIO_AF_EVENTOUT_PIN_2 AFIO_EVCR_PIN_PX2 /*!< EVENTOUT on pin 2 */
+#define LL_GPIO_AF_EVENTOUT_PIN_3 AFIO_EVCR_PIN_PX3 /*!< EVENTOUT on pin 3 */
+#define LL_GPIO_AF_EVENTOUT_PIN_4 AFIO_EVCR_PIN_PX4 /*!< EVENTOUT on pin 4 */
+#define LL_GPIO_AF_EVENTOUT_PIN_5 AFIO_EVCR_PIN_PX5 /*!< EVENTOUT on pin 5 */
+#define LL_GPIO_AF_EVENTOUT_PIN_6 AFIO_EVCR_PIN_PX6 /*!< EVENTOUT on pin 6 */
+#define LL_GPIO_AF_EVENTOUT_PIN_7 AFIO_EVCR_PIN_PX7 /*!< EVENTOUT on pin 7 */
+#define LL_GPIO_AF_EVENTOUT_PIN_8 AFIO_EVCR_PIN_PX8 /*!< EVENTOUT on pin 8 */
+#define LL_GPIO_AF_EVENTOUT_PIN_9 AFIO_EVCR_PIN_PX9 /*!< EVENTOUT on pin 9 */
+#define LL_GPIO_AF_EVENTOUT_PIN_10                                             \
+  AFIO_EVCR_PIN_PX10 /*!< EVENTOUT on pin 10                                   \
+                      */
+#define LL_GPIO_AF_EVENTOUT_PIN_11                                             \
+  AFIO_EVCR_PIN_PX11 /*!< EVENTOUT on pin 11                                   \
+                      */
+#define LL_GPIO_AF_EVENTOUT_PIN_12                                             \
+  AFIO_EVCR_PIN_PX12 /*!< EVENTOUT on pin 12                                   \
+                      */
+#define LL_GPIO_AF_EVENTOUT_PIN_13                                             \
+  AFIO_EVCR_PIN_PX13 /*!< EVENTOUT on pin 13                                   \
+                      */
+#define LL_GPIO_AF_EVENTOUT_PIN_14                                             \
+  AFIO_EVCR_PIN_PX14 /*!< EVENTOUT on pin 14                                   \
+                      */
+#define LL_GPIO_AF_EVENTOUT_PIN_15                                             \
+  AFIO_EVCR_PIN_PX15 /*!< EVENTOUT on pin 15                                   \
+                      */
 
 /**
  * @}
@@ -248,16 +254,21 @@ typedef struct {
  * @{
  */
 
-#define LL_GPIO_AF_EVENTOUT_PORT_A AFIO_EVCR_PORT_PA /*!< EVENTOUT on port A   \
-                                                      */
-#define LL_GPIO_AF_EVENTOUT_PORT_B AFIO_EVCR_PORT_PB /*!< EVENTOUT on port B   \
-                                                      */
-#define LL_GPIO_AF_EVENTOUT_PORT_C AFIO_EVCR_PORT_PC /*!< EVENTOUT on port C   \
-                                                      */
-#define LL_GPIO_AF_EVENTOUT_PORT_D AFIO_EVCR_PORT_PD /*!< EVENTOUT on port D   \
-                                                      */
-#define LL_GPIO_AF_EVENTOUT_PORT_E AFIO_EVCR_PORT_PE /*!< EVENTOUT on port E   \
-                                                      */
+#define LL_GPIO_AF_EVENTOUT_PORT_A                                             \
+  AFIO_EVCR_PORT_PA /*!< EVENTOUT on port A                                    \
+                     */
+#define LL_GPIO_AF_EVENTOUT_PORT_B                                             \
+  AFIO_EVCR_PORT_PB /*!< EVENTOUT on port B                                    \
+                     */
+#define LL_GPIO_AF_EVENTOUT_PORT_C                                             \
+  AFIO_EVCR_PORT_PC /*!< EVENTOUT on port C                                    \
+                     */
+#define LL_GPIO_AF_EVENTOUT_PORT_D                                             \
+  AFIO_EVCR_PORT_PD /*!< EVENTOUT on port D                                    \
+                     */
+#define LL_GPIO_AF_EVENTOUT_PORT_E                                             \
+  AFIO_EVCR_PORT_PE /*!< EVENTOUT on port E                                    \
+                     */
 
 /**
  * @}

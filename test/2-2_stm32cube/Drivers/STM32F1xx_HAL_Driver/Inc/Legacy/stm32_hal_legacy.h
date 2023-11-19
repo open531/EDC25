@@ -1940,7 +1940,7 @@ extern "C" {
 #define HAL_I2C_Slave_Sequential_Transmit_IT HAL_I2C_Slave_Seq_Transmit_IT
 #define HAL_I2C_Slave_Sequential_Receive_IT HAL_I2C_Slave_Seq_Receive_IT
 #endif /* STM32H7 || STM32WB  || STM32G0 || STM32F0 || STM32F1 || STM32F2 ||   \
-          STM32F3 || STM32F4 || STM32F7 || STM32L0 || STM32L4 || STM32L5 ||                                                         \
+          STM32F3 || STM32F4 || STM32F7 || STM32L0 || STM32L4 || STM32L5 ||    \
           STM32G4 || STM32L1 */
 #if defined(STM32H7) || defined(STM32WB) || defined(STM32G0) ||                \
     defined(STM32F4) || defined(STM32F7) || defined(STM32L0) ||                \
@@ -3483,8 +3483,9 @@ extern "C" {
 #define __HAL_RCC_WWDG_CLK_SLEEP_DISABLE __HAL_RCC_WWDG1_CLK_SLEEP_DISABLE
 #define __HAL_RCC_WWDG_CLK_SLEEP_ENABLE __HAL_RCC_WWDG1_CLK_SLEEP_ENABLE
 
-#define __HAL_RCC_WWDG_FORCE_RESET ((void)0U) /* Not available on the          \
-                                                 STM32H7*/
+#define __HAL_RCC_WWDG_FORCE_RESET                                             \
+  ((void)0U) /* Not available on the                                           \
+                STM32H7*/
 #define __HAL_RCC_WWDG_RELEASE_RESET                                           \
   ((void)0U) /* Not available on the STM32H7*/
 

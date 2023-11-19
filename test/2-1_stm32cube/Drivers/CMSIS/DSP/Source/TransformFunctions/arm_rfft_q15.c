@@ -260,8 +260,8 @@ void arm_split_rfft_q15(q15_t *pSrc, uint32_t fftLen, q15_t *pATable,
  * @param[in]   *pBTable 			points to the twiddle Coef B
  * buffer.
  * @param[out]  *pDst 				points to the output buffer.
- * @param[in]   modifier 	        twiddle coefficient modifier that supports
- * different size FFTs with the same twiddle factor table.
+ * @param[in]   modifier 	        twiddle coefficient modifier that
+ * supports different size FFTs with the same twiddle factor table.
  * @return none.
  * The function implements a Real IFFT
  */

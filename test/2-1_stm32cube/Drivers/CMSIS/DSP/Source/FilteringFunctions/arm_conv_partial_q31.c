@@ -266,7 +266,7 @@ arm_status arm_conv_partial_q31(q31_t *pSrcA, uint32_t srcALen, q31_t *pSrcB,
         /* First part of the processing with loop unrolling.  Compute 3 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 2 samples.
-        */
+         */
         do {
           /* Read y[srcBLen - 1] sample */
           c0 = *(py);
@@ -379,7 +379,7 @@ arm_status arm_conv_partial_q31(q31_t *pSrcA, uint32_t srcALen, q31_t *pSrcB,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         while (k > 0U) {
           /* Perform the multiply-accumulates */
           sum += (q63_t)*px++ * (*py--);

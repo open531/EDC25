@@ -291,7 +291,7 @@ arm_status arm_conv_partial_q7(q7_t *pSrcA, uint32_t srcALen, q7_t *pSrcB,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         do {
           /* Read y[srcBLen - 1] sample */
           c0 = *(py--);
@@ -468,7 +468,7 @@ arm_status arm_conv_partial_q7(q7_t *pSrcA, uint32_t srcALen, q7_t *pSrcB,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         while (k > 0U) {
 
           /* Reading two inputs of SrcA buffer and packing */

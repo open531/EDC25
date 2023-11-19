@@ -124,8 +124,8 @@ void arm_rfft_f32(const arm_rfft_instance_f32 *S, float32_t *pSrc,
  * @param[in]   *pBTable 			points to the twiddle Coef B
  * buffer.
  * @param[out]  *pDst 				points to the output buffer.
- * @param[in]   modifier 	        twiddle coefficient modifier that supports
- * different size FFTs with the same twiddle factor table.
+ * @param[in]   modifier 	        twiddle coefficient modifier that
+ * supports different size FFTs with the same twiddle factor table.
  * @return none.
  */
 
@@ -218,8 +218,8 @@ void arm_split_rfft_f32(float32_t *pSrc, uint32_t fftLen, float32_t *pATable,
  * @param[in]   *pBTable 			points to the twiddle Coef B
  * buffer.
  * @param[out]  *pDst 				points to the output buffer.
- * @param[in]   modifier 	        twiddle coefficient modifier that supports
- * different size FFTs with the same twiddle factor table.
+ * @param[in]   modifier 	        twiddle coefficient modifier that
+ * supports different size FFTs with the same twiddle factor table.
  * @return none.
  */
 

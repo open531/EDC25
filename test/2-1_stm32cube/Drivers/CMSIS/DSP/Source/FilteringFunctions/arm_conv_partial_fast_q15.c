@@ -314,7 +314,7 @@ arm_status arm_conv_partial_fast_q15(q15_t *pSrcA, uint32_t srcALen,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         do {
           /* Read the last two inputB samples using SIMD:
            * y[srcBLen - 1] and y[srcBLen - 2] */
@@ -487,7 +487,7 @@ arm_status arm_conv_partial_fast_q15(q15_t *pSrcA, uint32_t srcALen,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         while (k > 0U) {
           /* Perform the multiply-accumulates */
           sum += ((q31_t)*px++ * *py--);
@@ -965,7 +965,7 @@ arm_status arm_conv_partial_fast_q15(q15_t *pSrcA, uint32_t srcALen,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         do {
           /* Read the last two inputB samples using SIMD:
            * y[srcBLen - 1] and y[srcBLen - 2] */
@@ -1256,7 +1256,7 @@ arm_status arm_conv_partial_fast_q15(q15_t *pSrcA, uint32_t srcALen,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         while (k > 0U) {
           /* Perform the multiply-accumulates */
           sum += ((q31_t)*px++ * *py--);

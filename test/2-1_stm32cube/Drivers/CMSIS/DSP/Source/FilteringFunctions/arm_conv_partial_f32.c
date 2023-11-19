@@ -305,7 +305,7 @@ arm_status arm_conv_partial_f32(float32_t *pSrcA, uint32_t srcALen,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         do {
           /* Read y[srcBLen - 1] sample */
           c0 = *(py--);
@@ -443,7 +443,7 @@ arm_status arm_conv_partial_f32(float32_t *pSrcA, uint32_t srcALen,
         /* First part of the processing with loop unrolling.  Compute 4 MACs at
          *a time.
          ** a second loop below computes MACs for the remaining 1 to 3 samples.
-        */
+         */
         while (k > 0U) {
           /* Perform the multiply-accumulates */
           sum += *px++ * *py--;

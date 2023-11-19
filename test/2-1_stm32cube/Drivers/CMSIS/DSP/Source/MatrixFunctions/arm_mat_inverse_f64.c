@@ -112,7 +112,8 @@ arm_status arm_mat_inverse_f64(const arm_matrix_instance_f64 *pSrc,
      *by a bar to form an augmented matrix as follows: _ 	      	       _
      *_	       _ |  a11  a12 | 1   0  |       |  X11 X12  | |           | |   =
      *|           |
-     *					   |_ a21  a22 | 0   1 _|       |_ X21 X21
+     *					   |_ a21  a22 | 0   1 _|       |_ X21
+     *X21
      *_|
      *
      *		2. In our implementation, pDst Matrix is used as identity
@@ -138,9 +139,9 @@ arm_status arm_mat_inverse_f64(const arm_matrix_instance_f64 *pSrc,
      *	    7. Move to the next row and column and repeat steps 2 through 5
      *until you have zeros for every element below and above the main diagonal.
      *
-     *		8. Now an identical matrix is formed to the left of the bar(input
-     *matrix, pSrc). Therefore, the matrix to the right of the bar is our
-     *solution(pDst matrix, pDst).
+     *		8. Now an identical matrix is formed to the left of the
+     *bar(input matrix, pSrc). Therefore, the matrix to the right of the bar is
+     *our solution(pDst matrix, pDst).
      *----------------------------------------------------------------------------------------------------------------*/
 
     /* Working pointer for destination matrix */
@@ -418,10 +419,11 @@ arm_status arm_mat_inverse_f64(const arm_matrix_instance_f64 *pSrc,
      *
      *	   1. First combine the identity matrix and the input matrix separated
      *by a bar to form an augmented matrix as follows:
-     *				        _  _	      _	    _	   _   _         _
-     *_ |  |  a11  a12  | | | 1   0  |   |       |  X11 X12  | |  |            |
-     *| |        |   |   =   |           |
-     *					   |_ |_ a21  a22 _| | |_0   1 _|  _|       |_ X21 X21
+     *				        _  _	      _	    _	   _   _ _ _ |
+     *|  a11  a12  | | | 1   0  |   |       |  X11 X12  | |  |            | | |
+     *|   |   =   |           |
+     *					   |_ |_ a21  a22 _| | |_0   1 _|  _|       |_ X21
+     *X21
      *_|
      *
      *		2. In our implementation, pDst Matrix is used as identity
@@ -445,9 +447,9 @@ arm_status arm_mat_inverse_f64(const arm_matrix_instance_f64 *pSrc,
      *	    7. Move to the next row and column and repeat steps 2 through 5
      *until you have zeros for every element below and above the main diagonal.
      *
-     *		8. Now an identical matrix is formed to the left of the bar(input
-     *matrix, src). Therefore, the matrix to the right of the bar is our
-     *solution(dst matrix, dst).
+     *		8. Now an identical matrix is formed to the left of the
+     *bar(input matrix, src). Therefore, the matrix to the right of the bar is
+     *our solution(dst matrix, dst).
      *----------------------------------------------------------------------------------------------------------------*/
 
     /* Working pointer for destination matrix */

@@ -188,12 +188,13 @@ typedef struct {
 #define LL_USART_SR_NE USART_SR_NE     /*!< Noise detected flag */
 #define LL_USART_SR_ORE USART_SR_ORE   /*!< Overrun error flag */
 #define LL_USART_SR_IDLE USART_SR_IDLE /*!< Idle line detected flag */
-#define LL_USART_SR_RXNE USART_SR_RXNE /*!< Read data register not empty flag  \
-                                        */
-#define LL_USART_SR_TC USART_SR_TC     /*!< Transmission complete flag */
-#define LL_USART_SR_TXE USART_SR_TXE   /*!< Transmit data register empty flag */
-#define LL_USART_SR_LBD USART_SR_LBD   /*!< LIN break detection flag */
-#define LL_USART_SR_CTS USART_SR_CTS   /*!< CTS flag */
+#define LL_USART_SR_RXNE                                                       \
+  USART_SR_RXNE                      /*!< Read data register not empty flag    \
+                                      */
+#define LL_USART_SR_TC USART_SR_TC   /*!< Transmission complete flag */
+#define LL_USART_SR_TXE USART_SR_TXE /*!< Transmit data register empty flag */
+#define LL_USART_SR_LBD USART_SR_LBD /*!< LIN break detection flag */
+#define LL_USART_SR_CTS USART_SR_CTS /*!< CTS flag */
 /**
  * @}
  */

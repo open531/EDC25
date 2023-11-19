@@ -118,8 +118,9 @@ typedef struct {
 #define LL_RCC_CIR_PLLRDYC RCC_CIR_PLLRDYC /*!< PLL Ready Interrupt Clear */
 #define LL_RCC_CIR_PLL3RDYC                                                    \
   RCC_CIR_PLL3RDYC /*!< PLL3(PLLI2S) Ready Interrupt Clear */
-#define LL_RCC_CIR_PLL2RDYC RCC_CIR_PLL2RDYC /*!< PLL2 Ready Interrupt Clear   \
-                                              */
+#define LL_RCC_CIR_PLL2RDYC                                                    \
+  RCC_CIR_PLL2RDYC /*!< PLL2 Ready Interrupt Clear                             \
+                    */
 #define LL_RCC_CIR_CSSC                                                        \
   RCC_CIR_CSSC /*!< Clock Security System Interrupt Clear */
 /**
@@ -145,7 +146,8 @@ typedef struct {
 #define LL_RCC_CSR_SFTRSTF RCC_CSR_SFTRSTF /*!< Software Reset flag */
 #define LL_RCC_CSR_IWDGRSTF                                                    \
   RCC_CSR_IWDGRSTF /*!< Independent Watchdog reset flag */
-#define LL_RCC_CSR_WWDGRSTF RCC_CSR_WWDGRSTF /*!< Window watchdog reset flag   \
+#define LL_RCC_CSR_WWDGRSTF                                                    \
+  RCC_CSR_WWDGRSTF                           /*!< Window watchdog reset flag   \
                                               */
 #define LL_RCC_CSR_LPWRRSTF RCC_CSR_LPWRRSTF /*!< Low-Power reset flag */
 /**
@@ -157,16 +159,21 @@ typedef struct {
  * LL_RCC_WriteReg functions
  * @{
  */
-#define LL_RCC_CIR_LSIRDYIE RCC_CIR_LSIRDYIE /*!< LSI Ready Interrupt Enable   \
-                                              */
-#define LL_RCC_CIR_LSERDYIE RCC_CIR_LSERDYIE /*!< LSE Ready Interrupt Enable   \
-                                              */
-#define LL_RCC_CIR_HSIRDYIE RCC_CIR_HSIRDYIE /*!< HSI Ready Interrupt Enable   \
-                                              */
-#define LL_RCC_CIR_HSERDYIE RCC_CIR_HSERDYIE /*!< HSE Ready Interrupt Enable   \
-                                              */
-#define LL_RCC_CIR_PLLRDYIE RCC_CIR_PLLRDYIE /*!< PLL Ready Interrupt Enable   \
-                                              */
+#define LL_RCC_CIR_LSIRDYIE                                                    \
+  RCC_CIR_LSIRDYIE /*!< LSI Ready Interrupt Enable                             \
+                    */
+#define LL_RCC_CIR_LSERDYIE                                                    \
+  RCC_CIR_LSERDYIE /*!< LSE Ready Interrupt Enable                             \
+                    */
+#define LL_RCC_CIR_HSIRDYIE                                                    \
+  RCC_CIR_HSIRDYIE /*!< HSI Ready Interrupt Enable                             \
+                    */
+#define LL_RCC_CIR_HSERDYIE                                                    \
+  RCC_CIR_HSERDYIE /*!< HSE Ready Interrupt Enable                             \
+                    */
+#define LL_RCC_CIR_PLLRDYIE                                                    \
+  RCC_CIR_PLLRDYIE /*!< PLL Ready Interrupt Enable                             \
+                    */
 #define LL_RCC_CIR_PLL3RDYIE                                                   \
   RCC_CIR_PLL3RDYIE /*!< PLL3(PLLI2S) Ready Interrupt Enable */
 #define LL_RCC_CIR_PLL2RDYIE                                                   \
@@ -246,18 +253,21 @@ typedef struct {
 /** @defgroup RCC_LL_EC_SYSCLK_DIV  AHB prescaler
  * @{
  */
-#define LL_RCC_SYSCLK_DIV_1 RCC_CFGR_HPRE_DIV1     /*!< SYSCLK not divided */
-#define LL_RCC_SYSCLK_DIV_2 RCC_CFGR_HPRE_DIV2     /*!< SYSCLK divided by 2 */
-#define LL_RCC_SYSCLK_DIV_4 RCC_CFGR_HPRE_DIV4     /*!< SYSCLK divided by 4 */
-#define LL_RCC_SYSCLK_DIV_8 RCC_CFGR_HPRE_DIV8     /*!< SYSCLK divided by 8 */
-#define LL_RCC_SYSCLK_DIV_16 RCC_CFGR_HPRE_DIV16   /*!< SYSCLK divided by 16 */
-#define LL_RCC_SYSCLK_DIV_64 RCC_CFGR_HPRE_DIV64   /*!< SYSCLK divided by 64 */
-#define LL_RCC_SYSCLK_DIV_128 RCC_CFGR_HPRE_DIV128 /*!< SYSCLK divided by 128  \
-                                                    */
-#define LL_RCC_SYSCLK_DIV_256 RCC_CFGR_HPRE_DIV256 /*!< SYSCLK divided by 256  \
-                                                    */
-#define LL_RCC_SYSCLK_DIV_512 RCC_CFGR_HPRE_DIV512 /*!< SYSCLK divided by 512  \
-                                                    */
+#define LL_RCC_SYSCLK_DIV_1 RCC_CFGR_HPRE_DIV1   /*!< SYSCLK not divided */
+#define LL_RCC_SYSCLK_DIV_2 RCC_CFGR_HPRE_DIV2   /*!< SYSCLK divided by 2 */
+#define LL_RCC_SYSCLK_DIV_4 RCC_CFGR_HPRE_DIV4   /*!< SYSCLK divided by 4 */
+#define LL_RCC_SYSCLK_DIV_8 RCC_CFGR_HPRE_DIV8   /*!< SYSCLK divided by 8 */
+#define LL_RCC_SYSCLK_DIV_16 RCC_CFGR_HPRE_DIV16 /*!< SYSCLK divided by 16 */
+#define LL_RCC_SYSCLK_DIV_64 RCC_CFGR_HPRE_DIV64 /*!< SYSCLK divided by 64 */
+#define LL_RCC_SYSCLK_DIV_128                                                  \
+  RCC_CFGR_HPRE_DIV128 /*!< SYSCLK divided by 128                              \
+                        */
+#define LL_RCC_SYSCLK_DIV_256                                                  \
+  RCC_CFGR_HPRE_DIV256 /*!< SYSCLK divided by 256                              \
+                        */
+#define LL_RCC_SYSCLK_DIV_512                                                  \
+  RCC_CFGR_HPRE_DIV512 /*!< SYSCLK divided by 512                              \
+                        */
 /**
  * @}
  */
@@ -420,8 +430,9 @@ typedef struct {
 /** @defgroup RCC_LL_EC_ADC Peripheral ADC get clock source
  * @{
  */
-#define LL_RCC_ADC_CLKSOURCE RCC_CFGR_ADCPRE /*!< ADC Clock source selection   \
-                                              */
+#define LL_RCC_ADC_CLKSOURCE                                                   \
+  RCC_CFGR_ADCPRE /*!< ADC Clock source selection                              \
+                   */
 /**
  * @}
  */
@@ -429,8 +440,9 @@ typedef struct {
 /** @defgroup RCC_LL_EC_RTC_CLKSOURCE  RTC clock source selection
  * @{
  */
-#define LL_RCC_RTC_CLKSOURCE_NONE 0x00000000U /*!< No clock used as RTC clock  \
-                                               */
+#define LL_RCC_RTC_CLKSOURCE_NONE                                              \
+  0x00000000U /*!< No clock used as RTC clock                                  \
+               */
 #define LL_RCC_RTC_CLKSOURCE_LSE                                               \
   RCC_BDCR_RTCSEL_0 /*!< LSE oscillator clock used as RTC clock */
 #define LL_RCC_RTC_CLKSOURCE_LSI                                               \
@@ -664,22 +676,29 @@ typedef struct {
 /** @defgroup RCC_LL_EC_PLLI2S_MUL PLLI2S MUL
  * @{
  */
-#define LL_RCC_PLLI2S_MUL_8 RCC_CFGR2_PLL3MUL8   /*!< PLLI2S input clock * 8 */
-#define LL_RCC_PLLI2S_MUL_9 RCC_CFGR2_PLL3MUL9   /*!< PLLI2S input clock * 9 */
-#define LL_RCC_PLLI2S_MUL_10 RCC_CFGR2_PLL3MUL10 /*!< PLLI2S input clock * 10  \
-                                                  */
-#define LL_RCC_PLLI2S_MUL_11 RCC_CFGR2_PLL3MUL11 /*!< PLLI2S input clock * 11  \
-                                                  */
-#define LL_RCC_PLLI2S_MUL_12 RCC_CFGR2_PLL3MUL12 /*!< PLLI2S input clock * 12  \
-                                                  */
-#define LL_RCC_PLLI2S_MUL_13 RCC_CFGR2_PLL3MUL13 /*!< PLLI2S input clock * 13  \
-                                                  */
-#define LL_RCC_PLLI2S_MUL_14 RCC_CFGR2_PLL3MUL14 /*!< PLLI2S input clock * 14  \
-                                                  */
-#define LL_RCC_PLLI2S_MUL_16 RCC_CFGR2_PLL3MUL16 /*!< PLLI2S input clock * 16  \
-                                                  */
-#define LL_RCC_PLLI2S_MUL_20 RCC_CFGR2_PLL3MUL20 /*!< PLLI2S input clock * 20  \
-                                                  */
+#define LL_RCC_PLLI2S_MUL_8 RCC_CFGR2_PLL3MUL8 /*!< PLLI2S input clock * 8 */
+#define LL_RCC_PLLI2S_MUL_9 RCC_CFGR2_PLL3MUL9 /*!< PLLI2S input clock * 9 */
+#define LL_RCC_PLLI2S_MUL_10                                                   \
+  RCC_CFGR2_PLL3MUL10 /*!< PLLI2S input clock * 10                             \
+                       */
+#define LL_RCC_PLLI2S_MUL_11                                                   \
+  RCC_CFGR2_PLL3MUL11 /*!< PLLI2S input clock * 11                             \
+                       */
+#define LL_RCC_PLLI2S_MUL_12                                                   \
+  RCC_CFGR2_PLL3MUL12 /*!< PLLI2S input clock * 12                             \
+                       */
+#define LL_RCC_PLLI2S_MUL_13                                                   \
+  RCC_CFGR2_PLL3MUL13 /*!< PLLI2S input clock * 13                             \
+                       */
+#define LL_RCC_PLLI2S_MUL_14                                                   \
+  RCC_CFGR2_PLL3MUL14 /*!< PLLI2S input clock * 14                             \
+                       */
+#define LL_RCC_PLLI2S_MUL_16                                                   \
+  RCC_CFGR2_PLL3MUL16 /*!< PLLI2S input clock * 16                             \
+                       */
+#define LL_RCC_PLLI2S_MUL_20                                                   \
+  RCC_CFGR2_PLL3MUL20 /*!< PLLI2S input clock * 20                             \
+                       */
 /**
  * @}
  */

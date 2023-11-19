@@ -162,8 +162,8 @@ void arm_fir_f32(const arm_fir_instance_f32 *S, float32_t *pSrc,
   blkCnt = blockSize >> 3;
 
   /* First part of the processing with loop unrolling.  Compute 8 outputs at a
-  *time.
-  ** a second loop below computes the remaining 1 to 7 samples. */
+   *time.
+   ** a second loop below computes the remaining 1 to 7 samples. */
   while (blkCnt > 0U) {
     /* Copy four new input samples into the state buffer */
     *pStateCurnt++ = *pSrc++;
@@ -406,8 +406,8 @@ void arm_fir_f32(const arm_fir_instance_f32 *S, float32_t *pSrc,
   }
 
   /* If the blockSize is not a multiple of 8, compute any remaining output
-  *samples here.
-  ** No loop unrolling is used. */
+   *samples here.
+   ** No loop unrolling is used. */
   blkCnt = blockSize % 0x8U;
 
   while (blkCnt > 0U) {
@@ -588,8 +588,8 @@ void arm_fir_f32(const arm_fir_instance_f32 *S, float32_t *pSrc,
   blkCnt = blockSize >> 3;
 
   /* First part of the processing with loop unrolling.  Compute 8 outputs at a
-  *time.
-  ** a second loop below computes the remaining 1 to 7 samples. */
+   *time.
+   ** a second loop below computes the remaining 1 to 7 samples. */
   while (blkCnt > 0U) {
     /* Copy four new input samples into the state buffer */
     *pStateCurnt++ = *pSrc++;
@@ -914,8 +914,8 @@ void arm_fir_f32(const arm_fir_instance_f32 *S, float32_t *pSrc,
   }
 
   /* If the blockSize is not a multiple of 8, compute any remaining output
-  *samples here.
-  ** No loop unrolling is used. */
+   *samples here.
+   ** No loop unrolling is used. */
   blkCnt = blockSize % 0x8U;
 
   while (blkCnt > 0U) {

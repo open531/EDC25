@@ -10,8 +10,7 @@ float rpm;
 float goal = 5;
 int pwm;
 
-int PID(float goal, float now)
-{
+int PID(float goal, float now) {
   dderr = goal - now - err - derr;
   derr = goal - now - err;
   err = goal - now;
@@ -20,73 +19,52 @@ int PID(float goal, float now)
   return PWM;
 }
 
-void Code0()
-{
-  if (digitalRead(ENC_A) == LOW)
-  {
-    if (digitalRead(ENC_B) == LOW)
-    {
+void Code0() {
+  if (digitalRead(ENC_A) == LOW) {
+    if (digitalRead(ENC_B) == LOW) {
       count += 1;
     }
-    if (digitalRead(ENC_B) == HIGH)
-    {
+    if (digitalRead(ENC_B) == HIGH) {
       count -= 1;
     }
-  }
-  else
-  {
-    if (digitalRead(ENC_B) == LOW)
-    {
+  } else {
+    if (digitalRead(ENC_B) == LOW) {
       count -= 1;
     }
-    if (digitalRead(ENC_B) == HIGH)
-    {
+    if (digitalRead(ENC_B) == HIGH) {
       count += 1;
     }
   }
 }
 
-void Code1()
-{
-  if (digitalRead(ENC_B) == LOW)
-  {
-    if (digitalRead(ENC_A) == LOW)
-    {
+void Code1() {
+  if (digitalRead(ENC_B) == LOW) {
+    if (digitalRead(ENC_A) == LOW) {
       count -= 1;
     }
-    if (digitalRead(ENC_A) == HIGH)
-    {
+    if (digitalRead(ENC_A) == HIGH) {
       count += 1;
     }
-  }
-  else
-  {
-    if (digitalRead(ENC_A) == LOW)
-    {
+  } else {
+    if (digitalRead(ENC_A) == LOW) {
       count += 1;
     }
-    if (digitalRead(ENC_A) == HIGH)
-    {
+    if (digitalRead(ENC_A) == HIGH) {
       count -= 1;
     }
   }
 }
 
-void TimerIsr()
-{
+void TimerIsr() {
   rpm = (count * 60.0 / 13.0) / 4;
   count = 0;
   pwm = PID(goal, rpm);
   // SerialUART1.print("pwm:");
   // SerialUART1.print(pwm);
-  if (abs(pwm) > 255)
-  {
-    if (pwm < 0)
-    {
+  if (abs(pwm) > 255) {
+    if (pwm < 0) {
       pwm = -255;
-    }
-    else
-    {
+    } else {
       pwm = 255;
     }
   }

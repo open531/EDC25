@@ -82,7 +82,7 @@ void arm_biquad_cascade_df1_q15(const arm_biquad_casd_df1_inst_q15 *S,
   q63_t acc; /*  Accumulator                                  */
   int32_t lShift = (15 - (int32_t)S->postShift); /*  Post shift */
   q15_t *pState = S->pState; /*  State pointer                                */
-  q15_t *pCoeffs = S->pCoeffs;                     /*  Coefficient pointer                     */
+  q15_t *pCoeffs = S->pCoeffs; /*  Coefficient pointer                     */
   uint32_t sample, stage = (uint32_t)S->numStages; /*  Stage loop counter */
   int32_t uShift = (32 - lShift);
 
@@ -308,7 +308,7 @@ void arm_biquad_cascade_df1_q15(const arm_biquad_casd_df1_inst_q15 *S,
   q63_t acc;                /*  Accumulator                                  */
   int32_t shift = (15 - (int32_t)S->postShift); /*  Post shift */
   q15_t *pState = S->pState; /*  State pointer                                */
-  q15_t *pCoeffs = S->pCoeffs;                     /*  Coefficient pointer                     */
+  q15_t *pCoeffs = S->pCoeffs; /*  Coefficient pointer                     */
   uint32_t sample, stage = (uint32_t)S->numStages; /*  Stage loop counter */
 
   do {

@@ -1,8 +1,7 @@
-#include <Arduino.h>
 #include "pwm.h"
+#include <Arduino.h>
 
-void setup()
-{
+void setup() {
   SerialUART1.begin(115200);
   pinMode(ENA, OUTPUT);
   pinMode(ENC_A, INPUT);
@@ -15,6 +14,4 @@ void setup()
   TimerTIM1.resume();
 }
 
-void loop()
-{
-}
+void loop() {}

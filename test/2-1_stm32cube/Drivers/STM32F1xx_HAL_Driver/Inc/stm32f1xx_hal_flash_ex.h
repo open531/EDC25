@@ -380,59 +380,81 @@ typedef struct {
 #if defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F103x6) ||    \
     defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F102xB) ||    \
     defined(STM32F103xB)
-#define OB_WRP_PAGES0TO3 0x00000001U   /*!< Write protection of page 0 to 3 */
-#define OB_WRP_PAGES4TO7 0x00000002U   /*!< Write protection of page 4 to 7 */
-#define OB_WRP_PAGES8TO11 0x00000004U  /*!< Write protection of page 8 to 11 */
-#define OB_WRP_PAGES12TO15 0x00000008U /*!< Write protection of page 12 to 15  \
-                                        */
-#define OB_WRP_PAGES16TO19 0x00000010U /*!< Write protection of page 16 to 19  \
-                                        */
-#define OB_WRP_PAGES20TO23 0x00000020U /*!< Write protection of page 20 to 23  \
-                                        */
-#define OB_WRP_PAGES24TO27 0x00000040U /*!< Write protection of page 24 to 27  \
-                                        */
-#define OB_WRP_PAGES28TO31 0x00000080U /*!< Write protection of page 28 to 31  \
-                                        */
-#endif /* STM32F101x6 || STM32F102x6 || STM32F103x6 */
-       /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
+#define OB_WRP_PAGES0TO3 0x00000001U  /*!< Write protection of page 0 to 3 */
+#define OB_WRP_PAGES4TO7 0x00000002U  /*!< Write protection of page 4 to 7 */
+#define OB_WRP_PAGES8TO11 0x00000004U /*!< Write protection of page 8 to 11 */
+#define OB_WRP_PAGES12TO15                                                     \
+  0x00000008U /*!< Write protection of page 12 to 15                           \
+               */
+#define OB_WRP_PAGES16TO19                                                     \
+  0x00000010U /*!< Write protection of page 16 to 19                           \
+               */
+#define OB_WRP_PAGES20TO23                                                     \
+  0x00000020U /*!< Write protection of page 20 to 23                           \
+               */
+#define OB_WRP_PAGES24TO27                                                     \
+  0x00000040U /*!< Write protection of page 24 to 27                           \
+               */
+#define OB_WRP_PAGES28TO31                                                     \
+  0x00000080U /*!< Write protection of page 28 to 31                           \
+               */
+#endif        /* STM32F101x6 || STM32F102x6 || STM32F103x6 */
+              /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
 
 /* STM32 Medium-density devices */
 #if defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F102xB) ||    \
     defined(STM32F103xB)
-#define OB_WRP_PAGES32TO35 0x00000100U /*!< Write protection of page 32 to 35  \
-                                        */
-#define OB_WRP_PAGES36TO39 0x00000200U /*!< Write protection of page 36 to 39  \
-                                        */
-#define OB_WRP_PAGES40TO43 0x00000400U /*!< Write protection of page 40 to 43  \
-                                        */
-#define OB_WRP_PAGES44TO47 0x00000800U /*!< Write protection of page 44 to 47  \
-                                        */
-#define OB_WRP_PAGES48TO51 0x00001000U /*!< Write protection of page 48 to 51  \
-                                        */
-#define OB_WRP_PAGES52TO55 0x00002000U /*!< Write protection of page 52 to 55  \
-                                        */
-#define OB_WRP_PAGES56TO59 0x00004000U /*!< Write protection of page 56 to 59  \
-                                        */
-#define OB_WRP_PAGES60TO63 0x00008000U /*!< Write protection of page 60 to 63  \
-                                        */
-#define OB_WRP_PAGES64TO67 0x00010000U /*!< Write protection of page 64 to 67  \
-                                        */
-#define OB_WRP_PAGES68TO71 0x00020000U /*!< Write protection of page 68 to 71  \
-                                        */
-#define OB_WRP_PAGES72TO75 0x00040000U /*!< Write protection of page 72 to 75  \
-                                        */
-#define OB_WRP_PAGES76TO79 0x00080000U /*!< Write protection of page 76 to 79  \
-                                        */
-#define OB_WRP_PAGES80TO83 0x00100000U /*!< Write protection of page 80 to 83  \
-                                        */
-#define OB_WRP_PAGES84TO87 0x00200000U /*!< Write protection of page 84 to 87  \
-                                        */
-#define OB_WRP_PAGES88TO91 0x00400000U /*!< Write protection of page 88 to 91  \
-                                        */
-#define OB_WRP_PAGES92TO95 0x00800000U /*!< Write protection of page 92 to 95  \
-                                        */
-#define OB_WRP_PAGES96TO99 0x01000000U /*!< Write protection of page 96 to 99  \
-                                        */
+#define OB_WRP_PAGES32TO35                                                     \
+  0x00000100U /*!< Write protection of page 32 to 35                           \
+               */
+#define OB_WRP_PAGES36TO39                                                     \
+  0x00000200U /*!< Write protection of page 36 to 39                           \
+               */
+#define OB_WRP_PAGES40TO43                                                     \
+  0x00000400U /*!< Write protection of page 40 to 43                           \
+               */
+#define OB_WRP_PAGES44TO47                                                     \
+  0x00000800U /*!< Write protection of page 44 to 47                           \
+               */
+#define OB_WRP_PAGES48TO51                                                     \
+  0x00001000U /*!< Write protection of page 48 to 51                           \
+               */
+#define OB_WRP_PAGES52TO55                                                     \
+  0x00002000U /*!< Write protection of page 52 to 55                           \
+               */
+#define OB_WRP_PAGES56TO59                                                     \
+  0x00004000U /*!< Write protection of page 56 to 59                           \
+               */
+#define OB_WRP_PAGES60TO63                                                     \
+  0x00008000U /*!< Write protection of page 60 to 63                           \
+               */
+#define OB_WRP_PAGES64TO67                                                     \
+  0x00010000U /*!< Write protection of page 64 to 67                           \
+               */
+#define OB_WRP_PAGES68TO71                                                     \
+  0x00020000U /*!< Write protection of page 68 to 71                           \
+               */
+#define OB_WRP_PAGES72TO75                                                     \
+  0x00040000U /*!< Write protection of page 72 to 75                           \
+               */
+#define OB_WRP_PAGES76TO79                                                     \
+  0x00080000U /*!< Write protection of page 76 to 79                           \
+               */
+#define OB_WRP_PAGES80TO83                                                     \
+  0x00100000U /*!< Write protection of page 80 to 83                           \
+               */
+#define OB_WRP_PAGES84TO87                                                     \
+  0x00200000U /*!< Write protection of page 84 to 87                           \
+               */
+#define OB_WRP_PAGES88TO91                                                     \
+  0x00400000U /*!< Write protection of page 88 to 91                           \
+               */
+#define OB_WRP_PAGES92TO95                                                     \
+  0x00800000U /*!< Write protection of page 92 to 95                           \
+               */
+#define OB_WRP_PAGES96TO99                                                     \
+  0x01000000U /*!< Write protection of page 96 to 99                           \
+               */
 #define OB_WRP_PAGES100TO103                                                   \
   0x02000000U /*!< Write protection of page 100 to 103 */
 #define OB_WRP_PAGES104TO107                                                   \
@@ -453,63 +475,89 @@ typedef struct {
 #if defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F103xE) ||    \
     defined(STM32F101xG) || defined(STM32F103xG) || defined(STM32F105xC) ||    \
     defined(STM32F107xC)
-#define OB_WRP_PAGES0TO1 0x00000001U   /*!< Write protection of page 0 TO 1 */
-#define OB_WRP_PAGES2TO3 0x00000002U   /*!< Write protection of page 2 TO 3 */
-#define OB_WRP_PAGES4TO5 0x00000004U   /*!< Write protection of page 4 TO 5 */
-#define OB_WRP_PAGES6TO7 0x00000008U   /*!< Write protection of page 6 TO 7 */
-#define OB_WRP_PAGES8TO9 0x00000010U   /*!< Write protection of page 8 TO 9 */
-#define OB_WRP_PAGES10TO11 0x00000020U /*!< Write protection of page 10 TO 11  \
-                                        */
-#define OB_WRP_PAGES12TO13 0x00000040U /*!< Write protection of page 12 TO 13  \
-                                        */
-#define OB_WRP_PAGES14TO15 0x00000080U /*!< Write protection of page 14 TO 15  \
-                                        */
-#define OB_WRP_PAGES16TO17 0x00000100U /*!< Write protection of page 16 TO 17  \
-                                        */
-#define OB_WRP_PAGES18TO19 0x00000200U /*!< Write protection of page 18 TO 19  \
-                                        */
-#define OB_WRP_PAGES20TO21 0x00000400U /*!< Write protection of page 20 TO 21  \
-                                        */
-#define OB_WRP_PAGES22TO23 0x00000800U /*!< Write protection of page 22 TO 23  \
-                                        */
-#define OB_WRP_PAGES24TO25 0x00001000U /*!< Write protection of page 24 TO 25  \
-                                        */
-#define OB_WRP_PAGES26TO27 0x00002000U /*!< Write protection of page 26 TO 27  \
-                                        */
-#define OB_WRP_PAGES28TO29 0x00004000U /*!< Write protection of page 28 TO 29  \
-                                        */
-#define OB_WRP_PAGES30TO31 0x00008000U /*!< Write protection of page 30 TO 31  \
-                                        */
-#define OB_WRP_PAGES32TO33 0x00010000U /*!< Write protection of page 32 TO 33  \
-                                        */
-#define OB_WRP_PAGES34TO35 0x00020000U /*!< Write protection of page 34 TO 35  \
-                                        */
-#define OB_WRP_PAGES36TO37 0x00040000U /*!< Write protection of page 36 TO 37  \
-                                        */
-#define OB_WRP_PAGES38TO39 0x00080000U /*!< Write protection of page 38 TO 39  \
-                                        */
-#define OB_WRP_PAGES40TO41 0x00100000U /*!< Write protection of page 40 TO 41  \
-                                        */
-#define OB_WRP_PAGES42TO43 0x00200000U /*!< Write protection of page 42 TO 43  \
-                                        */
-#define OB_WRP_PAGES44TO45 0x00400000U /*!< Write protection of page 44 TO 45  \
-                                        */
-#define OB_WRP_PAGES46TO47 0x00800000U /*!< Write protection of page 46 TO 47  \
-                                        */
-#define OB_WRP_PAGES48TO49 0x01000000U /*!< Write protection of page 48 TO 49  \
-                                        */
-#define OB_WRP_PAGES50TO51 0x02000000U /*!< Write protection of page 50 TO 51  \
-                                        */
-#define OB_WRP_PAGES52TO53 0x04000000U /*!< Write protection of page 52 TO 53  \
-                                        */
-#define OB_WRP_PAGES54TO55 0x08000000U /*!< Write protection of page 54 TO 55  \
-                                        */
-#define OB_WRP_PAGES56TO57 0x10000000U /*!< Write protection of page 56 TO 57  \
-                                        */
-#define OB_WRP_PAGES58TO59 0x20000000U /*!< Write protection of page 58 TO 59  \
-                                        */
-#define OB_WRP_PAGES60TO61 0x40000000U /*!< Write protection of page 60 TO 61  \
-                                        */
+#define OB_WRP_PAGES0TO1 0x00000001U /*!< Write protection of page 0 TO 1 */
+#define OB_WRP_PAGES2TO3 0x00000002U /*!< Write protection of page 2 TO 3 */
+#define OB_WRP_PAGES4TO5 0x00000004U /*!< Write protection of page 4 TO 5 */
+#define OB_WRP_PAGES6TO7 0x00000008U /*!< Write protection of page 6 TO 7 */
+#define OB_WRP_PAGES8TO9 0x00000010U /*!< Write protection of page 8 TO 9 */
+#define OB_WRP_PAGES10TO11                                                     \
+  0x00000020U /*!< Write protection of page 10 TO 11                           \
+               */
+#define OB_WRP_PAGES12TO13                                                     \
+  0x00000040U /*!< Write protection of page 12 TO 13                           \
+               */
+#define OB_WRP_PAGES14TO15                                                     \
+  0x00000080U /*!< Write protection of page 14 TO 15                           \
+               */
+#define OB_WRP_PAGES16TO17                                                     \
+  0x00000100U /*!< Write protection of page 16 TO 17                           \
+               */
+#define OB_WRP_PAGES18TO19                                                     \
+  0x00000200U /*!< Write protection of page 18 TO 19                           \
+               */
+#define OB_WRP_PAGES20TO21                                                     \
+  0x00000400U /*!< Write protection of page 20 TO 21                           \
+               */
+#define OB_WRP_PAGES22TO23                                                     \
+  0x00000800U /*!< Write protection of page 22 TO 23                           \
+               */
+#define OB_WRP_PAGES24TO25                                                     \
+  0x00001000U /*!< Write protection of page 24 TO 25                           \
+               */
+#define OB_WRP_PAGES26TO27                                                     \
+  0x00002000U /*!< Write protection of page 26 TO 27                           \
+               */
+#define OB_WRP_PAGES28TO29                                                     \
+  0x00004000U /*!< Write protection of page 28 TO 29                           \
+               */
+#define OB_WRP_PAGES30TO31                                                     \
+  0x00008000U /*!< Write protection of page 30 TO 31                           \
+               */
+#define OB_WRP_PAGES32TO33                                                     \
+  0x00010000U /*!< Write protection of page 32 TO 33                           \
+               */
+#define OB_WRP_PAGES34TO35                                                     \
+  0x00020000U /*!< Write protection of page 34 TO 35                           \
+               */
+#define OB_WRP_PAGES36TO37                                                     \
+  0x00040000U /*!< Write protection of page 36 TO 37                           \
+               */
+#define OB_WRP_PAGES38TO39                                                     \
+  0x00080000U /*!< Write protection of page 38 TO 39                           \
+               */
+#define OB_WRP_PAGES40TO41                                                     \
+  0x00100000U /*!< Write protection of page 40 TO 41                           \
+               */
+#define OB_WRP_PAGES42TO43                                                     \
+  0x00200000U /*!< Write protection of page 42 TO 43                           \
+               */
+#define OB_WRP_PAGES44TO45                                                     \
+  0x00400000U /*!< Write protection of page 44 TO 45                           \
+               */
+#define OB_WRP_PAGES46TO47                                                     \
+  0x00800000U /*!< Write protection of page 46 TO 47                           \
+               */
+#define OB_WRP_PAGES48TO49                                                     \
+  0x01000000U /*!< Write protection of page 48 TO 49                           \
+               */
+#define OB_WRP_PAGES50TO51                                                     \
+  0x02000000U /*!< Write protection of page 50 TO 51                           \
+               */
+#define OB_WRP_PAGES52TO53                                                     \
+  0x04000000U /*!< Write protection of page 52 TO 53                           \
+               */
+#define OB_WRP_PAGES54TO55                                                     \
+  0x08000000U /*!< Write protection of page 54 TO 55                           \
+               */
+#define OB_WRP_PAGES56TO57                                                     \
+  0x10000000U /*!< Write protection of page 56 TO 57                           \
+               */
+#define OB_WRP_PAGES58TO59                                                     \
+  0x20000000U /*!< Write protection of page 58 TO 59                           \
+               */
+#define OB_WRP_PAGES60TO61                                                     \
+  0x40000000U /*!< Write protection of page 60 TO 61                           \
+               */
 #define OB_WRP_PAGES62TO127                                                    \
   0x80000000U /*!< Write protection of page 62 TO 127 */
 #define OB_WRP_PAGES62TO255                                                    \
