@@ -1,0 +1,13 @@
+name: format
+
+on: [push, pull_request]
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: DoozyX/clang-format-lint-action@v0.15
+      with:
+        clangFormatVersion: 15
+        inplace: true
+        style: llvm
