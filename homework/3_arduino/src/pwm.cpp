@@ -59,8 +59,6 @@ void TimerIsr() {
   rpm = (count * 60.0 / 13.0) / 4;
   count = 0;
   pwm = PID(goal, rpm);
-  // SerialUART1.print("pwm:");
-  // SerialUART1.print(pwm);
   if (abs(pwm) > 255) {
     if (pwm < 0) {
       pwm = -255;
@@ -68,21 +66,7 @@ void TimerIsr() {
       pwm = 255;
     }
   }
-  // if (pwm < 0)
-  // {
-  //   digitalWrite(IN1, LOW);
-  //   digitalWrite(IN2, HIGH);
-  //   pwm = -pwm;
-  // }
-  // else
-  // {
-  //   digitalWrite(IN1, HIGH);
-  //   digitalWrite(IN2, LOW);
-  // }
   analogWrite(ENA, pwm);
-  // digitalWrite(ENA, HIGH);
-  // SerialUART1.print(" goal:");
-  // SerialUART1.print(goal);
   SerialUART1.print("rpm=");
   SerialUART1.println(rpm);
 }
