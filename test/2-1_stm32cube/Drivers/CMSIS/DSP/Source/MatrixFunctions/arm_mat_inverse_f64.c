@@ -422,8 +422,8 @@ arm_status arm_mat_inverse_f64(const arm_matrix_instance_f64 *pSrc,
      *				        _  _	      _	    _	   _   _ _ _ |
      *|  a11  a12  | | | 1   0  |   |       |  X11 X12  | |  |            | | |
      *|   |   =   |           |
-     *					   |_ |_ a21  a22 _| | |_0   1 _|  _|       |_ X21
-     *X21
+     *					   |_ |_ a21  a22 _| | |_0   1 _|  _|       |_
+     *X21 X21
      *_|
      *
      *		2. In our implementation, pDst Matrix is used as identity
