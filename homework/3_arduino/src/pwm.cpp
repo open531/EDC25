@@ -5,9 +5,9 @@ HardwareTimer TimerTIM1(TIM1);
 
 int count = 0;
 float serr = 0, err = 0, derr = 0, dderr = 0;
-float Kp = 0.2, Ki = 0.15, Kd = 0.125;
+float Kp = 0.08, Ki = 0.07, Kd = 0.06;
 float rpm;
-float goal = 5;
+float goal = 9.23;
 int pwm;
 
 int PID(float goal, float now) {
@@ -56,7 +56,7 @@ void Code1() {
 }
 
 void TimerIsr() {
-  rpm = (count * 60.0 / 13.0) / 4;
+  rpm = count / 0.05 * 60 / 13 / 20;
   count = 0;
   pwm = PID(goal, rpm);
   if (abs(pwm) > 255) {
