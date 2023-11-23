@@ -61,7 +61,6 @@
  * @{
  */
 
-
 /**
  * @brief  Floating-point complex magnitude squared
  * @param[in]  *pSrc points to the complex input vector
@@ -70,28 +69,29 @@
  * @return none.
  */
 
-void arm_cmplx_mag_squared_f32(
-  float32_t * pSrc,
-  float32_t * pDst,
-  uint32_t numSamples)
-{
-  float32_t real, imag;                          /* Temporary variables to store real and imaginary values */
-  uint32_t blkCnt;                               /* loop counter */
+void arm_cmplx_mag_squared_f32(float32_t *pSrc, float32_t *pDst,
+                               uint32_t numSamples) {
+  float32_t real,
+      imag;        /* Temporary variables to store real and imaginary values */
+  uint32_t blkCnt; /* loop counter */
 
-#if defined (ARM_MATH_DSP)
-  float32_t real1, real2, real3, real4;          /* Temporary variables to hold real values */
-  float32_t imag1, imag2, imag3, imag4;          /* Temporary variables to hold imaginary values */
-  float32_t mul1, mul2, mul3, mul4;              /* Temporary variables */
-  float32_t mul5, mul6, mul7, mul8;              /* Temporary variables */
-  float32_t out1, out2, out3, out4;              /* Temporary variables to hold output values */
+#if defined(ARM_MATH_DSP)
+  float32_t real1, real2, real3,
+      real4; /* Temporary variables to hold real values */
+  float32_t imag1, imag2, imag3,
+      imag4; /* Temporary variables to hold imaginary values */
+  float32_t mul1, mul2, mul3, mul4; /* Temporary variables */
+  float32_t mul5, mul6, mul7, mul8; /* Temporary variables */
+  float32_t out1, out2, out3,
+      out4; /* Temporary variables to hold output values */
 
   /*loop Unrolling */
   blkCnt = numSamples >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[0] = (A[0] * A[0] + A[1] * A[1]) */
     /* read real input sample from source buffer */
     real1 = pSrc[0];
@@ -172,7 +172,8 @@ void arm_cmplx_mag_squared_f32(
     blkCnt--;
   }
 
-  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+  /* If the numSamples is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = numSamples % 0x4U;
 
@@ -184,8 +185,7 @@ void arm_cmplx_mag_squared_f32(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[0] = (A[0] * A[0] + A[1] * A[1]) */
     real = *pSrc++;
     imag = *pSrc++;

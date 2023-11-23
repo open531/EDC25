@@ -37,7 +37,6 @@
  * @{
  */
 
-
 /**
  * @brief Q31 vector addition.
  * @param[in]       *pSrcA points to the first input vector
@@ -49,30 +48,26 @@
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * The function uses saturating arithmetic.
- * Results outside of the allowable Q31 range[0x80000000 0x7FFFFFFF] will be saturated.
+ * Results outside of the allowable Q31 range[0x80000000 0x7FFFFFFF] will be
+ * saturated.
  */
 
-void arm_add_q31(
-  q31_t * pSrcA,
-  q31_t * pSrcB,
-  q31_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
+void arm_add_q31(q31_t *pSrcA, q31_t *pSrcB, q31_t *pDst, uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counter */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
   q31_t inA1, inA2, inA3, inA4;
   q31_t inB1, inB2, inB3, inB4;
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
     inA1 = *pSrcA++;
@@ -94,12 +89,12 @@ void arm_add_q31(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
     *pDst++ = __QADD(*pSrcA++, *pSrcB++);
@@ -112,23 +107,19 @@ void arm_add_q31(
 
   /* Run the below code for Cortex-M0 */
 
-
-
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
-    *pDst++ = (q31_t) clip_q63_to_q31((q63_t) * pSrcA++ + *pSrcB++);
+    *pDst++ = (q31_t)clip_q63_to_q31((q63_t)*pSrcA++ + *pSrcB++);
 
     /* Decrement the loop counter */
     blkCnt--;
   }
 
 #endif /* #if defined (ARM_MATH_DSP) */
-
 }
 
 /**

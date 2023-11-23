@@ -47,53 +47,56 @@
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * The function is implemented using a 32-bit internal accumulator.
- * Both coefficients and state variables are represented in 1.7 format and multiplications yield a 2.14 result.
- * The 2.14 intermediate results are accumulated in a 32-bit accumulator in 18.14 format.
- * There is no risk of internal overflow with this approach and the full precision of intermediate multiplications is preserved.
- * The accumulator is converted to 18.7 format by discarding the low 7 bits.
- * Finally, the result is truncated to 1.7 format.
+ * Both coefficients and state variables are represented in 1.7 format and
+ * multiplications yield a 2.14 result. The 2.14 intermediate results are
+ * accumulated in a 32-bit accumulator in 18.14 format. There is no risk of
+ * internal overflow with this approach and the full precision of intermediate
+ * multiplications is preserved. The accumulator is converted to 18.7 format by
+ * discarding the low 7 bits. Finally, the result is truncated to 1.7 format.
  */
 
-void arm_fir_q7(
-  const arm_fir_instance_q7 * S,
-  q7_t * pSrc,
-  q7_t * pDst,
-  uint32_t blockSize)
-{
+void arm_fir_q7(const arm_fir_instance_q7 *S, q7_t *pSrc, q7_t *pDst,
+                uint32_t blockSize) {
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  q7_t *pState = S->pState;                      /* State pointer */
-  q7_t *pCoeffs = S->pCoeffs;                    /* Coefficient pointer */
-  q7_t *pStateCurnt;                             /* Points to the current sample of the state */
-  q7_t x0, x1, x2, x3;                           /* Temporary variables to hold state */
-  q7_t c0;                                       /* Temporary variable to hold coefficient value */
-  q7_t *px;                                      /* Temporary pointer for state */
-  q7_t *pb;                                      /* Temporary pointer for coefficient buffer */
-  q31_t acc0, acc1, acc2, acc3;                  /* Accumulators */
-  uint32_t numTaps = S->numTaps;                 /* Number of filter coefficients in the filter */
-  uint32_t i, tapCnt, blkCnt;                    /* Loop counters */
+  q7_t *pState = S->pState;   /* State pointer */
+  q7_t *pCoeffs = S->pCoeffs; /* Coefficient pointer */
+  q7_t *pStateCurnt;          /* Points to the current sample of the state */
+  q7_t x0, x1, x2, x3;        /* Temporary variables to hold state */
+  q7_t c0;                    /* Temporary variable to hold coefficient value */
+  q7_t *px;                   /* Temporary pointer for state */
+  q7_t *pb;                   /* Temporary pointer for coefficient buffer */
+  q31_t acc0, acc1, acc2, acc3; /* Accumulators */
+  uint32_t numTaps =
+      S->numTaps;             /* Number of filter coefficients in the filter */
+  uint32_t i, tapCnt, blkCnt; /* Loop counters */
 
-  /* S->pState points to state array which contains previous frame (numTaps - 1) samples */
-  /* pStateCurnt points to the location where the new input data should be written */
+  /* S->pState points to state array which contains previous frame (numTaps - 1)
+   * samples */
+  /* pStateCurnt points to the location where the new input data should be
+   * written */
   pStateCurnt = &(S->pState[(numTaps - 1U)]);
 
   /* Apply loop unrolling and compute 4 output values simultaneously.
    * The variables acc0 ... acc3 hold output values that are being computed:
    *
-   *    acc0 =  b[numTaps-1] * x[n-numTaps-1] + b[numTaps-2] * x[n-numTaps-2] + b[numTaps-3] * x[n-numTaps-3] +...+ b[0] * x[0]
-   *    acc1 =  b[numTaps-1] * x[n-numTaps] +   b[numTaps-2] * x[n-numTaps-1] + b[numTaps-3] * x[n-numTaps-2] +...+ b[0] * x[1]
-   *    acc2 =  b[numTaps-1] * x[n-numTaps+1] + b[numTaps-2] * x[n-numTaps] +   b[numTaps-3] * x[n-numTaps-1] +...+ b[0] * x[2]
-   *    acc3 =  b[numTaps-1] * x[n-numTaps+2] + b[numTaps-2] * x[n-numTaps+1] + b[numTaps-3] * x[n-numTaps]   +...+ b[0] * x[3]
+   *    acc0 =  b[numTaps-1] * x[n-numTaps-1] + b[numTaps-2] * x[n-numTaps-2] +
+   * b[numTaps-3] * x[n-numTaps-3] +...+ b[0] * x[0] acc1 =  b[numTaps-1] *
+   * x[n-numTaps] +   b[numTaps-2] * x[n-numTaps-1] + b[numTaps-3] *
+   * x[n-numTaps-2] +...+ b[0] * x[1] acc2 =  b[numTaps-1] * x[n-numTaps+1] +
+   * b[numTaps-2] * x[n-numTaps] +   b[numTaps-3] * x[n-numTaps-1] +...+ b[0] *
+   * x[2] acc3 =  b[numTaps-1] * x[n-numTaps+2] + b[numTaps-2] * x[n-numTaps+1]
+   * + b[numTaps-3] * x[n-numTaps]   +...+ b[0] * x[3]
    */
   blkCnt = blockSize >> 2;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* Copy four new input samples into the state buffer */
     *pStateCurnt++ = *pSrc++;
     *pStateCurnt++ = *pSrc++;
@@ -122,8 +125,7 @@ void arm_fir_q7(
     tapCnt = numTaps >> 2;
     i = tapCnt;
 
-    while (i > 0U)
-    {
+    while (i > 0U) {
       /* Read the b[numTaps] coefficient */
       c0 = *pb;
 
@@ -131,16 +133,16 @@ void arm_fir_q7(
       x3 = *px;
 
       /* acc0 +=  b[numTaps] * x[n-numTaps] */
-      acc0 += ((q15_t) x0 * c0);
+      acc0 += ((q15_t)x0 * c0);
 
       /* acc1 +=  b[numTaps] * x[n-numTaps-1] */
-      acc1 += ((q15_t) x1 * c0);
+      acc1 += ((q15_t)x1 * c0);
 
       /* acc2 +=  b[numTaps] * x[n-numTaps-2] */
-      acc2 += ((q15_t) x2 * c0);
+      acc2 += ((q15_t)x2 * c0);
 
       /* acc3 +=  b[numTaps] * x[n-numTaps-3] */
-      acc3 += ((q15_t) x3 * c0);
+      acc3 += ((q15_t)x3 * c0);
 
       /* Read the b[numTaps-1] coefficient */
       c0 = *(pb + 1U);
@@ -149,10 +151,10 @@ void arm_fir_q7(
       x0 = *(px + 1U);
 
       /* Perform the multiply-accumulates */
-      acc0 += ((q15_t) x1 * c0);
-      acc1 += ((q15_t) x2 * c0);
-      acc2 += ((q15_t) x3 * c0);
-      acc3 += ((q15_t) x0 * c0);
+      acc0 += ((q15_t)x1 * c0);
+      acc1 += ((q15_t)x2 * c0);
+      acc2 += ((q15_t)x3 * c0);
+      acc3 += ((q15_t)x0 * c0);
 
       /* Read the b[numTaps-2] coefficient */
       c0 = *(pb + 2U);
@@ -161,10 +163,10 @@ void arm_fir_q7(
       x1 = *(px + 2U);
 
       /* Perform the multiply-accumulates */
-      acc0 += ((q15_t) x2 * c0);
-      acc1 += ((q15_t) x3 * c0);
-      acc2 += ((q15_t) x0 * c0);
-      acc3 += ((q15_t) x1 * c0);
+      acc0 += ((q15_t)x2 * c0);
+      acc1 += ((q15_t)x3 * c0);
+      acc2 += ((q15_t)x0 * c0);
+      acc3 += ((q15_t)x1 * c0);
 
       /* Read the b[numTaps-3] coefficients */
       c0 = *(pb + 3U);
@@ -173,10 +175,10 @@ void arm_fir_q7(
       x2 = *(px + 3U);
 
       /* Perform the multiply-accumulates */
-      acc0 += ((q15_t) x3 * c0);
-      acc1 += ((q15_t) x0 * c0);
-      acc2 += ((q15_t) x1 * c0);
-      acc3 += ((q15_t) x2 * c0);
+      acc0 += ((q15_t)x3 * c0);
+      acc1 += ((q15_t)x0 * c0);
+      acc2 += ((q15_t)x1 * c0);
+      acc3 += ((q15_t)x2 * c0);
 
       /* update coefficient pointer */
       pb += 4U;
@@ -186,11 +188,11 @@ void arm_fir_q7(
       i--;
     }
 
-    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    /* If the filter length is not a multiple of 4, compute the remaining filter
+     * taps */
 
     i = numTaps - (tapCnt * 4U);
-    while (i > 0U)
-    {
+    while (i > 0U) {
       /* Read coefficients */
       c0 = *(pb++);
 
@@ -198,10 +200,10 @@ void arm_fir_q7(
       x3 = *(px++);
 
       /* Perform the multiply-accumulates */
-      acc0 += ((q15_t) x0 * c0);
-      acc1 += ((q15_t) x1 * c0);
-      acc2 += ((q15_t) x2 * c0);
-      acc3 += ((q15_t) x3 * c0);
+      acc0 += ((q15_t)x0 * c0);
+      acc1 += ((q15_t)x1 * c0);
+      acc2 += ((q15_t)x2 * c0);
+      acc3 += ((q15_t)x3 * c0);
 
       /* Reuse the present sample states for next sample */
       x0 = x1;
@@ -230,13 +232,12 @@ void arm_fir_q7(
     blkCnt--;
   }
 
-
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 4U;
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* Copy one sample at a time into state buffer */
     *pStateCurnt++ = *pSrc++;
 
@@ -252,8 +253,7 @@ void arm_fir_q7(
     i = numTaps;
 
     /* Perform the multiply-accumulates */
-    do
-    {
+    do {
       acc0 += (q15_t) * (px++) * (*(pb++));
       i--;
     } while (i > 0U);
@@ -279,8 +279,7 @@ void arm_fir_q7(
   tapCnt = (numTaps - 1U) >> 2U;
 
   /* copy data */
-  while (tapCnt > 0U)
-  {
+  while (tapCnt > 0U) {
     *pStateCurnt++ = *pState++;
     *pStateCurnt++ = *pState++;
     *pStateCurnt++ = *pState++;
@@ -294,8 +293,7 @@ void arm_fir_q7(
   tapCnt = (numTaps - 1U) % 0x4U;
 
   /* Copy the remaining q31_t data */
-  while (tapCnt > 0U)
-  {
+  while (tapCnt > 0U) {
     *pStateCurnt++ = *pState++;
 
     /* Decrement the loop counter */
@@ -304,27 +302,27 @@ void arm_fir_q7(
 
 #else
 
-/* Run the below code for Cortex-M0 */
+  /* Run the below code for Cortex-M0 */
 
-  uint32_t numTaps = S->numTaps;                 /* Number of taps in the filter */
-  uint32_t i, blkCnt;                            /* Loop counters */
-  q7_t *pState = S->pState;                      /* State pointer */
-  q7_t *pCoeffs = S->pCoeffs;                    /* Coefficient pointer */
-  q7_t *px, *pb;                                 /* Temporary pointers to state and coeff */
-  q31_t acc = 0;                                 /* Accumlator */
-  q7_t *pStateCurnt;                             /* Points to the current sample of the state */
+  uint32_t numTaps = S->numTaps; /* Number of taps in the filter */
+  uint32_t i, blkCnt;            /* Loop counters */
+  q7_t *pState = S->pState;      /* State pointer */
+  q7_t *pCoeffs = S->pCoeffs;    /* Coefficient pointer */
+  q7_t *px, *pb;                 /* Temporary pointers to state and coeff */
+  q31_t acc = 0;                 /* Accumlator */
+  q7_t *pStateCurnt;             /* Points to the current sample of the state */
 
-
-  /* S->pState points to state array which contains previous frame (numTaps - 1) samples */
-  /* pStateCurnt points to the location where the new input data should be written */
+  /* S->pState points to state array which contains previous frame (numTaps - 1)
+   * samples */
+  /* pStateCurnt points to the location where the new input data should be
+   * written */
   pStateCurnt = S->pState + (numTaps - 1U);
 
   /* Initialize blkCnt with blockSize */
   blkCnt = blockSize;
 
   /* Perform filtering upto BlockSize - BlockSize%4  */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* Copy one sample at a time into state buffer */
     *pStateCurnt++ = *pSrc++;
 
@@ -337,18 +335,17 @@ void arm_fir_q7(
     /* Initialize coeff pointer of type q7 */
     pb = pCoeffs;
 
-
     i = numTaps;
 
-    while (i > 0U)
-    {
-      /* acc =  b[numTaps-1] * x[n-numTaps-1] + b[numTaps-2] * x[n-numTaps-2] + b[numTaps-3] * x[n-numTaps-3] +...+ b[0] * x[0] */
-      acc += (q15_t) * px++ * *pb++;
+    while (i > 0U) {
+      /* acc =  b[numTaps-1] * x[n-numTaps-1] + b[numTaps-2] * x[n-numTaps-2] +
+       * b[numTaps-3] * x[n-numTaps-3] +...+ b[0] * x[0] */
+      acc += (q15_t)*px++ * *pb++;
       i--;
     }
 
     /* Store the 1.7 format filter output in destination buffer */
-    *pDst++ = (q7_t) __SSAT((acc >> 7), 8);
+    *pDst++ = (q7_t)__SSAT((acc >> 7), 8);
 
     /* Advance the state pointer by 1 to process the next sample */
     pState = pState + 1;
@@ -361,23 +358,19 @@ void arm_fir_q7(
    ** Now copy the last numTaps - 1 samples to the satrt of the state buffer.
    ** This prepares the state buffer for the next function call. */
 
-
   /* Points to the start of the state buffer */
   pStateCurnt = S->pState;
-
 
   /* Copy numTaps number of values */
   i = (numTaps - 1U);
 
   /* Copy q7_t data */
-  while (i > 0U)
-  {
+  while (i > 0U) {
     *pStateCurnt++ = *pState++;
     i--;
   }
 
 #endif /*   #if defined (ARM_MATH_DSP) */
-
 }
 
 /**

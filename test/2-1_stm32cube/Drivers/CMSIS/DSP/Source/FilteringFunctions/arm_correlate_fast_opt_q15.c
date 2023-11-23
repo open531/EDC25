@@ -38,56 +38,58 @@
  */
 
 /**
- * @brief Correlation of Q15 sequences (fast version) for Cortex-M3 and Cortex-M4.
+ * @brief Correlation of Q15 sequences (fast version) for Cortex-M3 and
+ * Cortex-M4.
  * @param[in] *pSrcA points to the first input sequence.
  * @param[in] srcALen length of the first input sequence.
  * @param[in] *pSrcB points to the second input sequence.
  * @param[in] srcBLen length of the second input sequence.
- * @param[out] *pDst points to the location where the output result is written.  Length 2 * max(srcALen, srcBLen) - 1.
- * @param[in]  *pScratch points to scratch buffer of size max(srcALen, srcBLen) + 2*min(srcALen, srcBLen) - 2.
+ * @param[out] *pDst points to the location where the output result is written.
+ * Length 2 * max(srcALen, srcBLen) - 1.
+ * @param[in]  *pScratch points to scratch buffer of size max(srcALen, srcBLen)
+ * + 2*min(srcALen, srcBLen) - 2.
  * @return none.
  *
  *
  * \par Restrictions
- *  If the silicon does not support unaligned memory access enable the macro UNALIGNED_SUPPORT_DISABLE
- *  In this case input, output, scratch buffers should be aligned by 32-bit
+ *  If the silicon does not support unaligned memory access enable the macro
+ * UNALIGNED_SUPPORT_DISABLE In this case input, output, scratch buffers should
+ * be aligned by 32-bit
  *
  *
  * <b>Scaling and Overflow Behavior:</b>
  *
  * \par
  * This fast version uses a 32-bit accumulator with 2.30 format.
- * The accumulator maintains full precision of the intermediate multiplication results but provides only a single guard bit.
- * There is no saturation on intermediate additions.
- * Thus, if the accumulator overflows it wraps around and distorts the result.
- * The input signals should be scaled down to avoid intermediate overflows.
- * Scale down one of the inputs by 1/min(srcALen, srcBLen) to avoid overflow since a
- * maximum of min(srcALen, srcBLen) number of additions is carried internally.
- * The 2.30 accumulator is right shifted by 15 bits and then saturated to 1.15 format to yield the final result.
+ * The accumulator maintains full precision of the intermediate multiplication
+ * results but provides only a single guard bit. There is no saturation on
+ * intermediate additions. Thus, if the accumulator overflows it wraps around
+ * and distorts the result. The input signals should be scaled down to avoid
+ * intermediate overflows. Scale down one of the inputs by 1/min(srcALen,
+ * srcBLen) to avoid overflow since a maximum of min(srcALen, srcBLen) number of
+ * additions is carried internally. The 2.30 accumulator is right shifted by 15
+ * bits and then saturated to 1.15 format to yield the final result.
  *
  * \par
- * See <code>arm_correlate_q15()</code> for a slower implementation of this function which uses a 64-bit accumulator to avoid wrap around distortion.
+ * See <code>arm_correlate_q15()</code> for a slower implementation of this
+ * function which uses a 64-bit accumulator to avoid wrap around distortion.
  */
 
-void arm_correlate_fast_opt_q15(
-  q15_t * pSrcA,
-  uint32_t srcALen,
-  q15_t * pSrcB,
-  uint32_t srcBLen,
-  q15_t * pDst,
-  q15_t * pScratch)
-{
-  q15_t *pIn1;                                   /* inputA pointer               */
-  q15_t *pIn2;                                   /* inputB pointer               */
-  q31_t acc0, acc1, acc2, acc3;                  /* Accumulators                  */
-  q15_t *py;                                     /* Intermediate inputB pointer  */
-  q31_t x1, x2, x3;                              /* temporary variables for holding input and coefficient values */
-  uint32_t j, blkCnt, outBlockSize;              /* loop counter                 */
-  int32_t inc = 1;                               /* Destination address modifier */
+void arm_correlate_fast_opt_q15(q15_t *pSrcA, uint32_t srcALen, q15_t *pSrcB,
+                                uint32_t srcBLen, q15_t *pDst,
+                                q15_t *pScratch) {
+  q15_t *pIn1;                  /* inputA pointer               */
+  q15_t *pIn2;                  /* inputB pointer               */
+  q31_t acc0, acc1, acc2, acc3; /* Accumulators                  */
+  q15_t *py;                    /* Intermediate inputB pointer  */
+  q31_t x1, x2,
+      x3; /* temporary variables for holding input and coefficient values */
+  uint32_t j, blkCnt, outBlockSize; /* loop counter                 */
+  int32_t inc = 1;                  /* Destination address modifier */
   uint32_t tapCnt;
   q31_t y1, y2;
-  q15_t *pScr;                                   /* Intermediate pointers        */
-  q15_t *pOut = pDst;                            /* output pointer               */
+  q15_t *pScr;        /* Intermediate pointers        */
+  q15_t *pOut = pDst; /* output pointer               */
 #ifdef UNALIGNED_SUPPORT_DISABLE
 
   q15_t a, b;
@@ -98,17 +100,21 @@ void arm_correlate_fast_opt_q15(
   /* srcB is always made to slide across srcA. */
   /* So srcBLen is always considered as shorter or equal to srcALen */
   /* But CORR(x, y) is reverse of CORR(y, x) */
-  /* So, when srcBLen > srcALen, output pointer is made to point to the end of the output buffer */
+  /* So, when srcBLen > srcALen, output pointer is made to point to the end of
+   * the output buffer */
   /* and the destination pointer modifier, inc is set to -1 */
-  /* If srcALen > srcBLen, zero pad has to be done to srcB to make the two inputs of same length */
+  /* If srcALen > srcBLen, zero pad has to be done to srcB to make the two
+   * inputs of same length */
   /* But to improve the performance,
-   * we include zeroes in the output instead of zero padding either of the the inputs*/
+   * we include zeroes in the output instead of zero padding either of the the
+   * inputs*/
   /* If srcALen > srcBLen,
-   * (srcALen - srcBLen) zeroes has to included in the starting of the output buffer */
+   * (srcALen - srcBLen) zeroes has to included in the starting of the output
+   * buffer */
   /* If srcALen < srcBLen,
-   * (srcALen - srcBLen) zeroes has to included in the ending of the output buffer */
-  if (srcALen >= srcBLen)
-  {
+   * (srcALen - srcBLen) zeroes has to included in the ending of the output
+   * buffer */
+  if (srcALen >= srcBLen) {
     /* Initialization of inputA pointer */
     pIn1 = (pSrcA);
 
@@ -127,9 +133,7 @@ void arm_correlate_fast_opt_q15(
     /* Updating the pointer position to non zero value */
     pOut += j;
 
-  }
-  else
-  {
+  } else {
     /* Initialization of inputA pointer */
     pIn1 = (pSrcB);
 
@@ -147,7 +151,6 @@ void arm_correlate_fast_opt_q15(
 
     /* Destination address modifier is set to -1 */
     inc = -1;
-
   }
 
   pScr = pScratch;
@@ -171,10 +174,10 @@ void arm_correlate_fast_opt_q15(
   /* Apply loop unrolling and do 4 Copies simultaneously. */
   j = srcALen >> 2U;
 
-  /* First part of the processing with loop unrolling copies 4 data points at a time.
+  /* First part of the processing with loop unrolling copies 4 data points at a
+   *time.
    ** a second loop below copies for the remaining 1 to 3 samples. */
-  while (j > 0U)
-  {
+  while (j > 0U) {
     /* copy second buffer in reversal manner */
     *pScr++ = *pIn1++;
     *pScr++ = *pIn1++;
@@ -189,8 +192,7 @@ void arm_correlate_fast_opt_q15(
    ** No loop unrolling is used. */
   j = srcALen % 0x4U;
 
-  while (j > 0U)
-  {
+  while (j > 0U) {
     /* copy second buffer in reversal manner for remaining samples */
     *pScr++ = *pIn1++;
 
@@ -210,13 +212,13 @@ void arm_correlate_fast_opt_q15(
 
 #else
 
-/* Apply loop unrolling and do 4 Copies simultaneously. */
+  /* Apply loop unrolling and do 4 Copies simultaneously. */
   j = (srcBLen - 1U) >> 2U;
 
-  /* First part of the processing with loop unrolling copies 4 data points at a time.
+  /* First part of the processing with loop unrolling copies 4 data points at a
+   *time.
    ** a second loop below copies for the remaining 1 to 3 samples. */
-  while (j > 0U)
-  {
+  while (j > 0U) {
     /* copy second buffer in reversal manner */
     *pScr++ = 0;
     *pScr++ = 0;
@@ -231,8 +233,7 @@ void arm_correlate_fast_opt_q15(
    ** No loop unrolling is used. */
   j = (srcBLen - 1U) % 0x4U;
 
-  while (j > 0U)
-  {
+  while (j > 0U) {
     /* copy second buffer in reversal manner for remaining samples */
     *pScr++ = 0;
 
@@ -245,12 +246,10 @@ void arm_correlate_fast_opt_q15(
   /* Temporary pointer for scratch2 */
   py = pIn2;
 
-
   /* Actual correlation process starts here */
   blkCnt = (srcALen + srcBLen - 1U) >> 2;
 
-  while (blkCnt > 0)
-  {
+  while (blkCnt > 0) {
     /* Initialze temporary scratch pointer as scratch1 */
     pScr = pScratch;
 
@@ -268,8 +267,7 @@ void arm_correlate_fast_opt_q15(
 
     tapCnt = (srcBLen) >> 2U;
 
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
 
 #ifndef UNALIGNED_SUPPORT_DISABLE
 
@@ -392,22 +390,18 @@ void arm_correlate_fast_opt_q15(
 
       pScr += 4U;
 
-
       /* Decrement the loop counter */
       tapCnt--;
     }
 
-
-
-    /* Update scratch pointer for remaining samples of smaller length sequence */
+    /* Update scratch pointer for remaining samples of smaller length sequence
+     */
     pScr -= 4U;
 
-
     /* apply same above for remaining samples of smaller length sequence */
-    tapCnt = (srcBLen) & 3U;
+    tapCnt = (srcBLen)&3U;
 
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
 
       /* accumlate the results */
       acc0 += (*pScr++ * *pIn2);
@@ -423,7 +417,6 @@ void arm_correlate_fast_opt_q15(
 
     blkCnt--;
 
-
     /* Store the results in the accumulators in the destination buffer. */
     *pOut = (__SSAT(acc0 >> 15U, 16));
     pOut += inc;
@@ -434,20 +427,16 @@ void arm_correlate_fast_opt_q15(
     *pOut = (__SSAT(acc3 >> 15U, 16));
     pOut += inc;
 
-
     /* Initialization of inputB pointer */
     pIn2 = py;
 
     pScratch += 4U;
-
   }
-
 
   blkCnt = (srcALen + srcBLen - 1U) & 0x3;
 
   /* Calculate correlation for remaining samples of Bigger length sequence */
-  while (blkCnt > 0)
-  {
+  while (blkCnt > 0) {
     /* Initialze temporary scratch pointer as scratch1 */
     pScr = pScratch;
 
@@ -456,8 +445,7 @@ void arm_correlate_fast_opt_q15(
 
     tapCnt = (srcBLen) >> 1U;
 
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
 
       acc0 += (*pScr++ * *pIn2++);
       acc0 += (*pScr++ * *pIn2++);
@@ -466,11 +454,10 @@ void arm_correlate_fast_opt_q15(
       tapCnt--;
     }
 
-    tapCnt = (srcBLen) & 1U;
+    tapCnt = (srcBLen)&1U;
 
     /* apply same above for remaining samples of smaller length sequence */
-    while (tapCnt > 0U)
-    {
+    while (tapCnt > 0U) {
 
       /* accumlate the results */
       acc0 += (*pScr++ * *pIn2++);
@@ -483,7 +470,7 @@ void arm_correlate_fast_opt_q15(
 
     /* Store the result in the accumulator in the destination buffer. */
 
-    *pOut = (q15_t) (__SSAT((acc0 >> 15), 16));
+    *pOut = (q15_t)(__SSAT((acc0 >> 15), 16));
 
     pOut += inc;
 
@@ -491,7 +478,6 @@ void arm_correlate_fast_opt_q15(
     pIn2 = py;
 
     pScratch += 1U;
-
   }
 }
 

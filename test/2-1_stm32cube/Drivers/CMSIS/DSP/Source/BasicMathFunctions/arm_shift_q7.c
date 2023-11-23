@@ -37,11 +37,11 @@
  * @{
  */
 
-
 /**
  * @brief  Shifts the elements of a Q7 vector a specified number of bits.
  * @param[in]  *pSrc points to the input vector
- * @param[in]  shiftBits number of bits to shift.  A positive value shifts left; a negative value shifts right.
+ * @param[in]  shiftBits number of bits to shift.  A positive value shifts left;
+ * a negative value shifts right.
  * @param[out]  *pDst points to the output vector
  * @param[in]  blockSize number of samples in the vector
  * @return none.
@@ -56,23 +56,18 @@
  * Results outside of the allowable Q7 range [0x8 0x7F] will be saturated.
  */
 
-void arm_shift_q7(
-  q7_t * pSrc,
-  int8_t shiftBits,
-  q7_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
-  uint8_t sign;                                  /* Sign of shiftBits */
+void arm_shift_q7(q7_t *pSrc, int8_t shiftBits, q7_t *pDst,
+                  uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counter */
+  uint8_t sign;    /* Sign of shiftBits */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
-  q7_t in1;                                      /* Input value1 */
-  q7_t in2;                                      /* Input value2 */
-  q7_t in3;                                      /* Input value3 */
-  q7_t in4;                                      /* Input value4 */
-
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  q7_t in1; /* Input value1 */
+  q7_t in2; /* Input value2 */
+  q7_t in3; /* Input value3 */
+  q7_t in4; /* Input value4 */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
@@ -81,12 +76,11 @@ void arm_shift_q7(
   sign = (shiftBits & 0x80);
 
   /* If the shift value is positive then do right shift else left shift */
-  if (sign == 0U)
-  {
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  if (sign == 0U) {
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+     *time.
      ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A << shiftBits */
       /* Read 4 inputs */
       in1 = *pSrc;
@@ -94,11 +88,11 @@ void arm_shift_q7(
       in3 = *(pSrc + 2);
       in4 = *(pSrc + 3);
 
-      /* Store the Shifted result in the destination buffer in single cycle by packing the outputs */
-      *__SIMD32(pDst)++ = __PACKq7(__SSAT((in1 << shiftBits), 8),
-                                   __SSAT((in2 << shiftBits), 8),
-                                   __SSAT((in3 << shiftBits), 8),
-                                   __SSAT((in4 << shiftBits), 8));
+      /* Store the Shifted result in the destination buffer in single cycle by
+       * packing the outputs */
+      *__SIMD32(pDst)++ = __PACKq7(
+          __SSAT((in1 << shiftBits), 8), __SSAT((in2 << shiftBits), 8),
+          __SSAT((in3 << shiftBits), 8), __SSAT((in4 << shiftBits), 8));
       /* Update source pointer to process next sampels */
       pSrc += 4U;
 
@@ -106,27 +100,25 @@ void arm_shift_q7(
       blkCnt--;
     }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+    /* If the blockSize is not a multiple of 4, compute any remaining output
+     *samples here.
      ** No loop unrolling is used. */
     blkCnt = blockSize % 0x4U;
 
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A << shiftBits */
       /* Shift the input and then store the result in the destination buffer. */
-      *pDst++ = (q7_t) __SSAT((*pSrc++ << shiftBits), 8);
+      *pDst++ = (q7_t)__SSAT((*pSrc++ << shiftBits), 8);
 
       /* Decrement the loop counter */
       blkCnt--;
     }
-  }
-  else
-  {
+  } else {
     shiftBits = -shiftBits;
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+     *time.
      ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A >> shiftBits */
       /* Read 4 inputs */
       in1 = *pSrc;
@@ -134,10 +126,10 @@ void arm_shift_q7(
       in3 = *(pSrc + 2);
       in4 = *(pSrc + 3);
 
-      /* Store the Shifted result in the destination buffer in single cycle by packing the outputs */
+      /* Store the Shifted result in the destination buffer in single cycle by
+       * packing the outputs */
       *__SIMD32(pDst)++ = __PACKq7((in1 >> shiftBits), (in2 >> shiftBits),
                                    (in3 >> shiftBits), (in4 >> shiftBits));
-
 
       pSrc += 4U;
 
@@ -145,12 +137,12 @@ void arm_shift_q7(
       blkCnt--;
     }
 
-    /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+    /* If the blockSize is not a multiple of 4, compute any remaining output
+     *samples here.
      ** No loop unrolling is used. */
     blkCnt = blockSize % 0x4U;
 
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A >> shiftBits */
       /* Shift the input and then store the result in the destination buffer. */
       in1 = *pSrc++;
@@ -169,28 +161,23 @@ void arm_shift_q7(
   sign = (shiftBits & 0x80);
 
   /* If the shift value is positive then do right shift else left shift */
-  if (sign == 0U)
-  {
+  if (sign == 0U) {
     /* Initialize blkCnt with number of samples */
     blkCnt = blockSize;
 
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A << shiftBits */
       /* Shift the input and then store the result in the destination buffer. */
-      *pDst++ = (q7_t) __SSAT(((q15_t) * pSrc++ << shiftBits), 8);
+      *pDst++ = (q7_t)__SSAT(((q15_t)*pSrc++ << shiftBits), 8);
 
       /* Decrement the loop counter */
       blkCnt--;
     }
-  }
-  else
-  {
+  } else {
     /* Initialize blkCnt with number of samples */
     blkCnt = blockSize;
 
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A >> shiftBits */
       /* Shift the input and then store the result in the destination buffer. */
       *pDst++ = (*pSrc++ >> -shiftBits);

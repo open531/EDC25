@@ -53,65 +53,62 @@
  * result is added without saturation to a 64-bit accumulator in 34.30 format.
  * With 33 guard bits in the accumulator, there is no risk of overflow, and the
  * full precision of the intermediate multiplication is preserved.
- * Finally, the 34.30 result is truncated to 34.15 format by discarding the lower
- * 15 bits, and then saturated to yield a result in 1.15 format.
+ * Finally, the 34.30 result is truncated to 34.15 format by discarding the
+ * lower 15 bits, and then saturated to yield a result in 1.15 format.
  */
 
-void arm_std_q15(
-  q15_t * pSrc,
-  uint32_t blockSize,
-  q15_t * pResult)
-{
-  q31_t sum = 0;                                 /* Accumulator */
-  q31_t meanOfSquares, squareOfMean;             /* square of mean and mean of square */
-  uint32_t blkCnt;                               /* loop counter */
-  q63_t sumOfSquares = 0;                        /* Accumulator */
-#if defined (ARM_MATH_DSP)
-  q31_t in;                                      /* input value */
-  q15_t in1;                                     /* input value */
+void arm_std_q15(q15_t *pSrc, uint32_t blockSize, q15_t *pResult) {
+  q31_t sum = 0;                     /* Accumulator */
+  q31_t meanOfSquares, squareOfMean; /* square of mean and mean of square */
+  uint32_t blkCnt;                   /* loop counter */
+  q63_t sumOfSquares = 0;            /* Accumulator */
+#if defined(ARM_MATH_DSP)
+  q31_t in;  /* input value */
+  q15_t in1; /* input value */
 #else
-  q15_t in;                                      /* input value */
+  q15_t in; /* input value */
 #endif
 
-  if (blockSize == 1U)
-  {
+  if (blockSize == 1U) {
     *pResult = 0;
     return;
   }
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1])  */
+  while (blkCnt > 0U) {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1])
+     */
     /* Compute Sum of squares of the input samples
      * and then store the result in a temporary variable, sum. */
     in = *__SIMD32(pSrc)++;
     sum += ((in << 16U) >> 16U);
-    sum +=  (in >> 16U);
+    sum += (in >> 16U);
     sumOfSquares = __SMLALD(in, in, sumOfSquares);
     in = *__SIMD32(pSrc)++;
     sum += ((in << 16U) >> 16U);
-    sum +=  (in >> 16U);
+    sum += (in >> 16U);
     sumOfSquares = __SMLALD(in, in, sumOfSquares);
 
     /* Decrement the loop counter */
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
-  while (blkCnt > 0U)
-  {
-    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
+  while (blkCnt > 0U) {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1])
+     */
     /* Compute Sum of squares of the input samples
      * and then store the result in a temporary variable, sum. */
     in1 = *pSrc++;
@@ -127,7 +124,8 @@ void arm_std_q15(
   meanOfSquares = (q31_t)(sumOfSquares / (q63_t)(blockSize - 1U));
 
   /* Compute square of mean */
-  squareOfMean = (q31_t)((q63_t)sum * sum / (q63_t)(blockSize * (blockSize - 1U)));
+  squareOfMean =
+      (q31_t)((q63_t)sum * sum / (q63_t)(blockSize * (blockSize - 1U)));
 
   /* mean of the squares minus the square of the mean. */
   /* Compute standard deviation and store the result to the destination */
@@ -139,16 +137,17 @@ void arm_std_q15(
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
-  while (blkCnt > 0U)
-  {
-    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
+  while (blkCnt > 0U) {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1])
+     */
     /* Compute Sum of squares of the input samples
      * and then store the result in a temporary variable, sumOfSquares. */
     in = *pSrc++;
     sumOfSquares += (in * in);
 
     /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
-    /* Compute sum of all input values and then store the result in a temporary variable, sum. */
+    /* Compute sum of all input values and then store the result in a temporary
+     * variable, sum. */
     sum += in;
 
     /* Decrement the loop counter */
@@ -160,7 +159,8 @@ void arm_std_q15(
   meanOfSquares = (q31_t)(sumOfSquares / (q63_t)(blockSize - 1U));
 
   /* Compute square of mean */
-  squareOfMean = (q31_t)((q63_t)sum * sum / (q63_t)(blockSize * (blockSize - 1U)));
+  squareOfMean =
+      (q31_t)((q63_t)sum * sum / (q63_t)(blockSize * (blockSize - 1U)));
 
   /* mean of the squares minus the square of the mean. */
   /* Compute standard deviation and store the result to the destination */

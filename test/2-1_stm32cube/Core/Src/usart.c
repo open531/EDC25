@@ -30,8 +30,7 @@ UART_HandleTypeDef huart1;
 
 /* USART1 init function */
 
-void MX_USART1_UART_Init(void)
-{
+void MX_USART1_UART_Init(void) {
 
   /* USER CODE BEGIN USART1_Init 0 */
 
@@ -48,8 +47,7 @@ void MX_USART1_UART_Init(void)
   huart1.Init.Mode = UART_MODE_TX_RX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
-  {
+  if (HAL_UART_Init(&huart1) != HAL_OK) {
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
@@ -57,12 +55,10 @@ void MX_USART1_UART_Init(void)
   /* USER CODE END USART1_Init 2 */
 }
 
-void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
-{
+void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle) {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if (uartHandle->Instance == USART1)
-  {
+  if (uartHandle->Instance == USART1) {
     /* USER CODE BEGIN USART1_MspInit 0 */
 
     /* USER CODE END USART1_MspInit 0 */
@@ -90,11 +86,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
   }
 }
 
-void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
-{
+void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle) {
 
-  if (uartHandle->Instance == USART1)
-  {
+  if (uartHandle->Instance == USART1) {
     /* USER CODE BEGIN USART1_MspDeInit 0 */
 
     /* USER CODE END USART1_MspDeInit 0 */
@@ -114,8 +108,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void u1_printf(char *fmt, ...)
-{
+void u1_printf(char *fmt, ...) {
   uint16_t len;
   va_list ap;
   va_start(ap, fmt);
@@ -123,6 +116,8 @@ void u1_printf(char *fmt, ...)
   vsprintf((char *)buf, fmt, ap);
   va_end(ap);
   len = strlen((char *)buf);
-  HAL_UART_Transmit(&huart1, buf, len, HAL_MAX_DELAY); // 若使用了其他UART通道，将对应通道（参数1）修改即可。该函数在（6.补充）中会进行说明。
+  HAL_UART_Transmit(
+      &huart1, buf, len,
+      HAL_MAX_DELAY); // 若使用了其他UART通道，将对应通道（参数1）修改即可。该函数在（6.补充）中会进行说明。
 }
 /* USER CODE END 1 */

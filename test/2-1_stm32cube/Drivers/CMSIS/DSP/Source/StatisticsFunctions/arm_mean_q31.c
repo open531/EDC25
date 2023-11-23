@@ -37,7 +37,6 @@
  * @{
  */
 
-
 /**
  * @brief Mean value of a Q31 vector.
  * @param[in]       *pSrc points to the input vector
@@ -57,15 +56,11 @@
  *
  */
 
-void arm_mean_q31(
-  q31_t * pSrc,
-  uint32_t blockSize,
-  q31_t * pResult)
-{
-  q63_t sum = 0;                                 /* Temporary result storage */
-  uint32_t blkCnt;                               /* loop counter */
+void arm_mean_q31(q31_t *pSrc, uint32_t blockSize, q31_t *pResult) {
+  q63_t sum = 0;   /* Temporary result storage */
+  uint32_t blkCnt; /* loop counter */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   q31_t in1, in2, in3, in4;
@@ -73,10 +68,10 @@ void arm_mean_q31(
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
     in1 = *pSrc++;
     in2 = *pSrc++;
@@ -92,7 +87,8 @@ void arm_mean_q31(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -104,8 +100,7 @@ void arm_mean_q31(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
     sum += *pSrc++;
 
@@ -115,7 +110,7 @@ void arm_mean_q31(
 
   /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) / blockSize  */
   /* Store the result to the destination */
-  *pResult = (q31_t) (sum / (int32_t) blockSize);
+  *pResult = (q31_t)(sum / (int32_t)blockSize);
 }
 
 /**

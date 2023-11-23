@@ -43,65 +43,62 @@
  * @param[in]       *pSrcB points to the second input matrix structure
  * @param[out]      *pDst points to output matrix structure
  * @return     		The function returns either
- * <code>ARM_MATH_SIZE_MISMATCH</code> or <code>ARM_MATH_SUCCESS</code> based on the outcome of size checking.
+ * <code>ARM_MATH_SIZE_MISMATCH</code> or <code>ARM_MATH_SUCCESS</code> based on
+ * the outcome of size checking.
  *
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * The function uses saturating arithmetic.
- * Results outside of the allowable Q31 range [0x80000000 0x7FFFFFFF] will be saturated.
+ * Results outside of the allowable Q31 range [0x80000000 0x7FFFFFFF] will be
+ * saturated.
  */
 
+arm_status arm_mat_sub_q31(const arm_matrix_instance_q31 *pSrcA,
+                           const arm_matrix_instance_q31 *pSrcB,
+                           arm_matrix_instance_q31 *pDst) {
+  q31_t *pIn1 = pSrcA->pData; /* input data matrix pointer A */
+  q31_t *pIn2 = pSrcB->pData; /* input data matrix pointer B */
+  q31_t *pOut = pDst->pData;  /* output data matrix pointer */
+  q31_t inA1, inB1;           /* temporary variables */
 
-arm_status arm_mat_sub_q31(
-  const arm_matrix_instance_q31 * pSrcA,
-  const arm_matrix_instance_q31 * pSrcB,
-  arm_matrix_instance_q31 * pDst)
-{
-  q31_t *pIn1 = pSrcA->pData;                    /* input data matrix pointer A */
-  q31_t *pIn2 = pSrcB->pData;                    /* input data matrix pointer B */
-  q31_t *pOut = pDst->pData;                     /* output data matrix pointer */
-  q31_t inA1, inB1;                              /* temporary variables */
+#if defined(ARM_MATH_DSP)
 
-#if defined (ARM_MATH_DSP)
-
-  q31_t inA2, inB2;                              /* temporary variables */
-  q31_t out1, out2;                              /* temporary variables */
+  q31_t inA2, inB2; /* temporary variables */
+  q31_t out1, out2; /* temporary variables */
 
 #endif //      #if defined (ARM_MATH_DSP)
 
-  uint32_t numSamples;                           /* total number of elements in the matrix  */
-  uint32_t blkCnt;                               /* loop counters */
-  arm_status status;                             /* status of matrix subtraction */
-
+  uint32_t numSamples; /* total number of elements in the matrix  */
+  uint32_t blkCnt;     /* loop counters */
+  arm_status status;   /* status of matrix subtraction */
 
 #ifdef ARM_MATH_MATRIX_CHECK
   /* Check for matrix mismatch condition  */
   if ((pSrcA->numRows != pSrcB->numRows) ||
-     (pSrcA->numCols != pSrcB->numCols) ||
-     (pSrcA->numRows != pDst->numRows) || (pSrcA->numCols != pDst->numCols))
-  {
+      (pSrcA->numCols != pSrcB->numCols) || (pSrcA->numRows != pDst->numRows) ||
+      (pSrcA->numCols != pDst->numCols)) {
     /* Set status as ARM_MATH_SIZE_MISMATCH */
     status = ARM_MATH_SIZE_MISMATCH;
-  }
-  else
+  } else
 #endif
   {
     /* Total number of samples in the input matrix */
-    numSamples = (uint32_t) pSrcA->numRows * pSrcA->numCols;
+    numSamples = (uint32_t)pSrcA->numRows * pSrcA->numCols;
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
     /* Run the below code for Cortex-M4 and Cortex-M3 */
 
     /* Loop Unrolling */
     blkCnt = numSamples >> 2U;
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+     *time.
      ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C(m,n) = A(m,n) - B(m,n) */
-      /* Subtract, saturate and then store the results in the destination buffer. */
+      /* Subtract, saturate and then store the results in the destination
+       * buffer. */
       /* Read values from source A */
       inA1 = pIn1[0];
 
@@ -155,7 +152,8 @@ arm_status arm_mat_sub_q31(
       blkCnt--;
     }
 
-    /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+    /* If the numSamples is not a multiple of 4, compute any remaining output
+     *samples here.
      ** No loop unrolling is used. */
     blkCnt = numSamples % 0x4U;
 
@@ -168,10 +166,10 @@ arm_status arm_mat_sub_q31(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C(m,n) = A(m,n) - B(m,n) */
-      /* Subtract, saturate and then store the results in the destination buffer. */
+      /* Subtract, saturate and then store the results in the destination
+       * buffer. */
       inA1 = *pIn1++;
       inB1 = *pIn2++;
 

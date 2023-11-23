@@ -39,7 +39,8 @@
  * The underlying algorithm is used:
  *
  * <pre>
- * 	Result = pSrc[0] * pSrc[0] + pSrc[1] * pSrc[1] + pSrc[2] * pSrc[2] + ... + pSrc[blockSize-1] * pSrc[blockSize-1];
+ * 	Result = pSrc[0] * pSrc[0] + pSrc[1] * pSrc[1] + pSrc[2] * pSrc[2] + ...
+ * + pSrc[blockSize-1] * pSrc[blockSize-1];
  * </pre>
  *
  * There are separate functions for floating point, Q31, Q15, and Q7 data types.
@@ -50,7 +51,6 @@
  * @{
  */
 
-
 /**
  * @brief Sum of the squares of the elements of a floating-point vector.
  * @param[in]       *pSrc points to the input vector
@@ -60,27 +60,23 @@
  *
  */
 
+void arm_power_f32(float32_t *pSrc, uint32_t blockSize, float32_t *pResult) {
+  float32_t sum = 0.0f; /* accumulator */
+  float32_t in;         /* Temporary variable to store input value */
+  uint32_t blkCnt;      /* loop counter */
 
-void arm_power_f32(
-  float32_t * pSrc,
-  uint32_t blockSize,
-  float32_t * pResult)
-{
-  float32_t sum = 0.0f;                          /* accumulator */
-  float32_t in;                                  /* Temporary variable to store input value */
-  uint32_t blkCnt;                               /* loop counter */
-
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
+  while (blkCnt > 0U) {
+    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] *
+     * A[blockSize-1] */
     /* Compute Power and then store the result in a temporary variable, sum. */
     in = *pSrc++;
     sum += in * in;
@@ -95,10 +91,10 @@ void arm_power_f32(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
-
 
 #else
   /* Run the below code for Cortex-M0 */
@@ -108,10 +104,9 @@ void arm_power_f32(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-
-  while (blkCnt > 0U)
-  {
-    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
+  while (blkCnt > 0U) {
+    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] *
+     * A[blockSize-1] */
     /* compute power and then store the result in a temporary variable, sum. */
     in = *pSrc++;
     sum += in * in;

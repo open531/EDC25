@@ -13,15 +13,14 @@ uint8_t MySerial2_Buf[8];
 void u1_printf(char *fmt, ...);
 void u2_printf(char *fmt, ...);
 
-void setup()
-{
+void setup() {
   MySerial1.begin(115200);
   MySerial2.begin(9600);
 }
 
-void loop()
-{
-  while (MySerial2.readBytes(MySerial2_Buf, sizeof(MySerial2_Buf)) < sizeof(MySerial2_Buf))
+void loop() {
+  while (MySerial2.readBytes(MySerial2_Buf, sizeof(MySerial2_Buf)) <
+         sizeof(MySerial2_Buf))
     ;
   u1_printf("received:");
   MySerial1.setTimeout(HAL_MAX_DELAY);
@@ -32,8 +31,7 @@ void loop()
   delay(100);
 }
 
-void u1_printf(char *fmt, ...)
-{
+void u1_printf(char *fmt, ...) {
   uint16_t len;
   va_list ap;
   va_start(ap, fmt);
@@ -44,8 +42,7 @@ void u1_printf(char *fmt, ...)
   MySerial1.write(buf, len);
 }
 
-void u2_printf(char *fmt, ...)
-{
+void u2_printf(char *fmt, ...) {
   uint16_t len;
   va_list ap;
   va_start(ap, fmt);

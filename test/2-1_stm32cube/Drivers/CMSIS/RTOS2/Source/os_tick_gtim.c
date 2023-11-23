@@ -1,9 +1,9 @@
-/**************************************************************************//**
- * @file     os_tick_gtim.c
- * @brief    CMSIS OS Tick implementation for Generic Timer
- * @version  V1.0.1
- * @date     24. November 2017
- ******************************************************************************/
+/**************************************************************************/ /**
+                                                                              * @file     os_tick_gtim.c
+                                                                              * @brief    CMSIS OS Tick implementation for Generic Timer
+                                                                              * @version  V1.0.1
+                                                                              * @date     24. November 2017
+                                                                              ******************************************************************************/
 /*
  * Copyright (c) 2017 ARM Limited. All rights reserved.
  *
@@ -22,18 +22,18 @@
  * limitations under the License.
  */
 
-#include "os_tick.h"
 #include "irq_ctrl.h"
+#include "os_tick.h"
 
 #include "RTE_Components.h"
 #include CMSIS_device_header
 
 #ifndef GTIM_IRQ_PRIORITY
-#define GTIM_IRQ_PRIORITY           0xFFU
+#define GTIM_IRQ_PRIORITY 0xFFU
 #endif
 
 #ifndef GTIM_IRQ_NUM
-#define GTIM_IRQ_NUM                SecurePhyTimer_IRQn
+#define GTIM_IRQ_NUM SecurePhyTimer_IRQn
 #endif
 
 // Timer interrupt pending flag
@@ -46,7 +46,7 @@ static uint32_t GTIM_Clock;
 static uint32_t GTIM_Load;
 
 // Setup OS Tick.
-int32_t OS_Tick_Setup (uint32_t freq, IRQHandler_t handler) {
+int32_t OS_Tick_Setup(uint32_t freq, IRQHandler_t handler) {
   uint32_t prio, bits;
 
   if (freq == 0U) {
@@ -57,7 +57,7 @@ int32_t OS_Tick_Setup (uint32_t freq, IRQHandler_t handler) {
 
   // Get timer clock
 #ifdef SCTR_BASE
-  GTIM_Clock = *(uint32_t*)(SCTR_BASE+0x20);
+  GTIM_Clock = *(uint32_t *)(SCTR_BASE + 0x20);
 #else
   // FVP REFCLK CNTControl 100MHz
   GTIM_Clock = 100000000UL;
@@ -92,12 +92,12 @@ int32_t OS_Tick_Setup (uint32_t freq, IRQHandler_t handler) {
     }
     prio >>= 1;
   }
-  
+
   // Adjust configured priority to the number of implemented priority bits
   prio = (GTIM_IRQ_PRIORITY << bits) & 0xFFUL;
 
   // Set Private Timer interrupt priority
-  IRQ_SetPriority(GTIM_IRQ_NUM, prio-1U);
+  IRQ_SetPriority(GTIM_IRQ_NUM, prio - 1U);
 
   // Set edge-triggered IRQ
   IRQ_SetMode(GTIM_IRQ_NUM, IRQ_MODE_TRIG_EDGE);
@@ -110,7 +110,7 @@ int32_t OS_Tick_Setup (uint32_t freq, IRQHandler_t handler) {
 
   // Enable system counter and timer control
 #ifdef SCTR_BASE
-  *(uint32_t*)SCTR_BASE |= 3U;
+  *(uint32_t *)SCTR_BASE |= 3U;
 #endif
 
   // Enable timer control
@@ -120,13 +120,13 @@ int32_t OS_Tick_Setup (uint32_t freq, IRQHandler_t handler) {
 }
 
 /// Enable OS Tick.
-void OS_Tick_Enable (void) {
+void OS_Tick_Enable(void) {
   uint32_t ctrl;
 
   // Set pending interrupt if flag set
   if (GTIM_PendIRQ != 0U) {
     GTIM_PendIRQ = 0U;
-    IRQ_SetPending (GTIM_IRQ_NUM);
+    IRQ_SetPending(GTIM_IRQ_NUM);
   }
 
   // Start the Private Timer
@@ -137,7 +137,7 @@ void OS_Tick_Enable (void) {
 }
 
 /// Disable OS Tick.
-void OS_Tick_Disable (void) {
+void OS_Tick_Disable(void) {
   uint32_t ctrl;
 
   // Stop the Private Timer
@@ -154,33 +154,25 @@ void OS_Tick_Disable (void) {
 }
 
 // Acknowledge OS Tick IRQ.
-void OS_Tick_AcknowledgeIRQ (void) {
-  IRQ_ClearPending (GTIM_IRQ_NUM);
+void OS_Tick_AcknowledgeIRQ(void) {
+  IRQ_ClearPending(GTIM_IRQ_NUM);
   PL1_SetLoadValue(GTIM_Load);
 }
 
 // Get OS Tick IRQ number.
-int32_t  OS_Tick_GetIRQn (void) {
-  return (GTIM_IRQ_NUM);
-}
+int32_t OS_Tick_GetIRQn(void) { return (GTIM_IRQ_NUM); }
 
 // Get OS Tick clock.
-uint32_t OS_Tick_GetClock (void) {
-  return (GTIM_Clock);
-}
+uint32_t OS_Tick_GetClock(void) { return (GTIM_Clock); }
 
 // Get OS Tick interval.
-uint32_t OS_Tick_GetInterval (void) {
-  return (GTIM_Load + 1U);
-}
+uint32_t OS_Tick_GetInterval(void) { return (GTIM_Load + 1U); }
 
 // Get OS Tick count value.
-uint32_t OS_Tick_GetCount (void) {
-  return (GTIM_Load - PL1_GetCurrentValue());
-}
+uint32_t OS_Tick_GetCount(void) { return (GTIM_Load - PL1_GetCurrentValue()); }
 
 // Get OS Tick overflow status.
-uint32_t OS_Tick_GetOverflow (void) {
+uint32_t OS_Tick_GetOverflow(void) {
   CNTP_CTL_Type cntp_ctl;
   cntp_ctl.w = PL1_GetControl();
   return (cntp_ctl.b.ISTATUS);

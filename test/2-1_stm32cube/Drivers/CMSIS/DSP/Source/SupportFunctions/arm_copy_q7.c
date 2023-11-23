@@ -46,24 +46,20 @@
  *
  */
 
-void arm_copy_q7(
-  q7_t * pSrc,
-  q7_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
+void arm_copy_q7(q7_t *pSrc, q7_t *pDst, uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counter */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A */
     /* Copy and then store the results in the destination buffer */
     /* 4 samples are copied and stored at a time using SIMD */
@@ -73,7 +69,8 @@ void arm_copy_q7(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -86,9 +83,7 @@ void arm_copy_q7(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A */
     /* Copy and then store the results in the destination buffer */
     *pDst++ = *pSrc++;

@@ -32,12 +32,10 @@
  * @ingroup groupStats
  */
 
-
 /**
  * @addtogroup Min
  * @{
  */
-
 
 /**
  * @brief Minimum value of a Q31 vector.
@@ -48,17 +46,14 @@
  * @return none.
  */
 
-void arm_min_q31(
-  q31_t * pSrc,
-  uint32_t blockSize,
-  q31_t * pResult,
-  uint32_t * pIndex)
-{
-#if defined (ARM_MATH_DSP)
+void arm_min_q31(q31_t *pSrc, uint32_t blockSize, q31_t *pResult,
+                 uint32_t *pIndex) {
+#if defined(ARM_MATH_DSP)
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
-  q31_t minVal1, minVal2, out;                   /* Temporary variables to store the output value. */
-  uint32_t blkCnt, outIndex, count;              /* loop counter */
+  q31_t minVal1, minVal2,
+      out; /* Temporary variables to store the output value. */
+  uint32_t blkCnt, outIndex, count; /* loop counter */
 
   /* Initialise the count value. */
   count = 0U;
@@ -70,23 +65,20 @@ void arm_min_q31(
   /* Loop unrolling */
   blkCnt = (blockSize - 1U) >> 2U;
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* Initialize minVal to the next consecutive values one by one */
     minVal1 = *pSrc++;
     minVal2 = *pSrc++;
 
     /* compare for the minimum value */
-    if (out > minVal1)
-    {
+    if (out > minVal1) {
       /* Update the minimum value and its index */
       out = minVal1;
       outIndex = count + 1U;
     }
 
     /* compare for the minimum value */
-    if (out > minVal2)
-    {
+    if (out > minVal2) {
       /* Update the minimum value and its index */
       out = minVal2;
       outIndex = count + 2U;
@@ -97,16 +89,14 @@ void arm_min_q31(
     minVal2 = *pSrc++;
 
     /* compare for the minimum value */
-    if (out > minVal1)
-    {
+    if (out > minVal1) {
       /* Update the minimum value and its index */
       out = minVal1;
       outIndex = count + 3U;
     }
 
     /* compare for the minimum value */
-    if (out > minVal2)
-    {
+    if (out > minVal2) {
       /* Update the minimum value and its index */
       out = minVal2;
       outIndex = count + 4U;
@@ -124,8 +114,8 @@ void arm_min_q31(
 #else
   /* Run the below code for Cortex-M0 */
 
-  q31_t minVal1, out;                            /* Temporary variables to store the output value. */
-  uint32_t blkCnt, outIndex;                     /* loop counter */
+  q31_t minVal1, out; /* Temporary variables to store the output value. */
+  uint32_t blkCnt, outIndex; /* loop counter */
 
   /* Initialise the index value to zero. */
   outIndex = 0U;
@@ -136,14 +126,12 @@ void arm_min_q31(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* Initialize minVal to the next consecutive values one by one */
     minVal1 = *pSrc++;
 
     /* compare for the minimum value */
-    if (out > minVal1)
-    {
+    if (out > minVal1) {
       /* Update the minimum value and it's index */
       out = minVal1;
       outIndex = blockSize - blkCnt;

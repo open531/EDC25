@@ -40,7 +40,8 @@
  * The underlying algorithm is used:
  *
  * <pre>
- * 	Result = sqrt(((pSrc[0] * pSrc[0] + pSrc[1] * pSrc[1] + ... + pSrc[blockSize-1] * pSrc[blockSize-1]) / blockSize));
+ * 	Result = sqrt(((pSrc[0] * pSrc[0] + pSrc[1] * pSrc[1] + ... +
+ * pSrc[blockSize-1] * pSrc[blockSize-1]) / blockSize));
  * </pre>
  *
  * There are separate functions for floating point, Q31, and Q15 data types.
@@ -51,7 +52,6 @@
  * @{
  */
 
-
 /**
  * @brief Root Mean Square of the elements of a floating-point vector.
  * @param[in]       *pSrc points to the input vector
@@ -61,27 +61,25 @@
  *
  */
 
-void arm_rms_f32(
-  float32_t * pSrc,
-  uint32_t blockSize,
-  float32_t * pResult)
-{
-  float32_t sum = 0.0f;                          /* Accumulator */
-  float32_t in;                                  /* Tempoprary variable to store input value */
-  uint32_t blkCnt;                               /* loop counter */
+void arm_rms_f32(float32_t *pSrc, uint32_t blockSize, float32_t *pResult) {
+  float32_t sum = 0.0f; /* Accumulator */
+  float32_t in;         /* Tempoprary variable to store input value */
+  uint32_t blkCnt;      /* loop counter */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
   /* Run the below code for Cortex-M4 and Cortex-M3 */
 
   /* loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
-    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
-    /* Compute sum of the squares and then store the result in a temporary variable, sum  */
+  while (blkCnt > 0U) {
+    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] *
+     * A[blockSize-1] */
+    /* Compute sum of the squares and then store the result in a temporary
+     * variable, sum  */
     in = *pSrc++;
     sum += in * in;
     in = *pSrc++;
@@ -95,7 +93,8 @@ void arm_rms_f32(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -107,10 +106,11 @@ void arm_rms_f32(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
-    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] * A[blockSize-1] */
-    /* Compute sum of the squares and then store the results in a temporary variable, sum  */
+  while (blkCnt > 0U) {
+    /* C = A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + ... + A[blockSize-1] *
+     * A[blockSize-1] */
+    /* Compute sum of the squares and then store the results in a temporary
+     * variable, sum  */
     in = *pSrc++;
     sum += in * in;
 
@@ -119,7 +119,7 @@ void arm_rms_f32(
   }
 
   /* Compute Rms and store the result in the destination */
-  arm_sqrt_f32(sum / (float32_t) blockSize, pResult);
+  arm_sqrt_f32(sum / (float32_t)blockSize, pResult);
 }
 
 /**

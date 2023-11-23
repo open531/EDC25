@@ -37,7 +37,6 @@
  * @{
  */
 
-
 /**
  * @brief  Q31 complex-by-real multiplication
  * @param[in]  *pSrcCmplx points to the complex input vector
@@ -49,32 +48,29 @@
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * The function uses saturating arithmetic.
- * Results outside of the allowable Q31 range[0x80000000 0x7FFFFFFF] will be saturated.
+ * Results outside of the allowable Q31 range[0x80000000 0x7FFFFFFF] will be
+ * saturated.
  */
 
-void arm_cmplx_mult_real_q31(
-  q31_t * pSrcCmplx,
-  q31_t * pSrcReal,
-  q31_t * pCmplxDst,
-  uint32_t numSamples)
-{
-  q31_t inA1;                                    /* Temporary variable to store input value */
+void arm_cmplx_mult_real_q31(q31_t *pSrcCmplx, q31_t *pSrcReal,
+                             q31_t *pCmplxDst, uint32_t numSamples) {
+  q31_t inA1; /* Temporary variable to store input value */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
-  uint32_t blkCnt;                               /* loop counters */
-  q31_t inA2, inA3, inA4;                        /* Temporary variables to hold input data */
-  q31_t inB1, inB2;                              /* Temporary variabels to hold input data */
-  q31_t out1, out2, out3, out4;                  /* Temporary variables to hold output data */
+  uint32_t blkCnt;              /* loop counters */
+  q31_t inA2, inA3, inA4;       /* Temporary variables to hold input data */
+  q31_t inB1, inB2;             /* Temporary variabels to hold input data */
+  q31_t out1, out2, out3, out4; /* Temporary variables to hold output data */
 
   /* loop Unrolling */
   blkCnt = numSamples >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[2 * i] = A[2 * i] * B[i].            */
     /* C[2 * i + 1] = A[2 * i + 1] * B[i].        */
     /* read real input from complex input buffer */
@@ -88,10 +84,10 @@ void arm_cmplx_mult_real_q31(
     inA4 = *pSrcCmplx++;
 
     /* multiply complex input with real input */
-    out1 = ((q63_t) inA1 * inB1) >> 32;
-    out2 = ((q63_t) inA2 * inB1) >> 32;
-    out3 = ((q63_t) inA3 * inB2) >> 32;
-    out4 = ((q63_t) inA4 * inB2) >> 32;
+    out1 = ((q63_t)inA1 * inB1) >> 32;
+    out2 = ((q63_t)inA2 * inB1) >> 32;
+    out3 = ((q63_t)inA3 * inB2) >> 32;
+    out4 = ((q63_t)inA4 * inB2) >> 32;
 
     /* sature the result */
     out1 = __SSAT(out1, 31);
@@ -122,10 +118,10 @@ void arm_cmplx_mult_real_q31(
     inA4 = *pSrcCmplx++;
 
     /* multiply complex input with real input */
-    out1 = ((q63_t) inA1 * inB1) >> 32;
-    out2 = ((q63_t) inA2 * inB1) >> 32;
-    out3 = ((q63_t) inA3 * inB2) >> 32;
-    out4 = ((q63_t) inA4 * inB2) >> 32;
+    out1 = ((q63_t)inA1 * inB1) >> 32;
+    out2 = ((q63_t)inA2 * inB1) >> 32;
+    out3 = ((q63_t)inA3 * inB2) >> 32;
+    out4 = ((q63_t)inA4 * inB2) >> 32;
 
     /* sature the result */
     out1 = __SSAT(out1, 31);
@@ -149,12 +145,12 @@ void arm_cmplx_mult_real_q31(
     blkCnt--;
   }
 
-  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+  /* If the numSamples is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = numSamples % 0x4U;
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[2 * i] = A[2 * i] * B[i].            */
     /* C[2 * i + 1] = A[2 * i + 1] * B[i].        */
     /* read real input from complex input buffer */
@@ -164,8 +160,8 @@ void arm_cmplx_mult_real_q31(
     inB1 = *pSrcReal++;
 
     /* multiply complex input with real input */
-    out1 = ((q63_t) inA1 * inB1) >> 32;
-    out2 = ((q63_t) inA2 * inB1) >> 32;
+    out1 = ((q63_t)inA1 * inB1) >> 32;
+    out2 = ((q63_t)inA2 * inB1) >> 32;
 
     /* sature the result */
     out1 = __SSAT(out1, 31);
@@ -187,23 +183,19 @@ void arm_cmplx_mult_real_q31(
 
   /* Run the below code for Cortex-M0 */
 
-  while (numSamples > 0U)
-  {
+  while (numSamples > 0U) {
     /* realOut = realA * realB.            */
     /* imagReal = imagA * realB.               */
     inA1 = *pSrcReal++;
     /* store the result in the destination buffer. */
-    *pCmplxDst++ =
-      (q31_t) clip_q63_to_q31(((q63_t) * pSrcCmplx++ * inA1) >> 31);
-    *pCmplxDst++ =
-      (q31_t) clip_q63_to_q31(((q63_t) * pSrcCmplx++ * inA1) >> 31);
+    *pCmplxDst++ = (q31_t)clip_q63_to_q31(((q63_t)*pSrcCmplx++ * inA1) >> 31);
+    *pCmplxDst++ = (q31_t)clip_q63_to_q31(((q63_t)*pSrcCmplx++ * inA1) >> 31);
 
     /* Decrement the numSamples loop counter */
     numSamples--;
   }
 
 #endif /* #if defined (ARM_MATH_DSP) */
-
 }
 
 /**

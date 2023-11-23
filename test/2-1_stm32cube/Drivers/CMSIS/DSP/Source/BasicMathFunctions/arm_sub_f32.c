@@ -49,7 +49,6 @@
  * @{
  */
 
-
 /**
  * @brief Floating-point vector subtraction.
  * @param[in]       *pSrcA points to the first input vector
@@ -59,27 +58,23 @@
  * @return none.
  */
 
-void arm_sub_f32(
-  float32_t * pSrcA,
-  float32_t * pSrcB,
-  float32_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
+void arm_sub_f32(float32_t *pSrcA, float32_t *pSrcB, float32_t *pDst,
+                 uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counter */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
-/* Run the below code for Cortex-M4 and Cortex-M3 */
-  float32_t inA1, inA2, inA3, inA4;              /* temporary variables */
-  float32_t inB1, inB2, inB3, inB4;              /* temporary variables */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  float32_t inA1, inA2, inA3, inA4; /* temporary variables */
+  float32_t inB1, inB2, inB3, inB4; /* temporary variables */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A - B */
     /* Subtract and then store the results in the destination buffer. */
     /* Read 4 input samples from sourceA and sourceB */
@@ -99,7 +94,6 @@ void arm_sub_f32(
     *(pDst + 2) = inA3 - inB3;
     *(pDst + 3) = inA4 - inB4;
 
-
     /* Update pointers to process next sampels */
     pSrcA += 4U;
     pSrcB += 4U;
@@ -109,7 +103,8 @@ void arm_sub_f32(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -122,8 +117,7 @@ void arm_sub_f32(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A - B */
     /* Subtract and then store the results in the destination buffer. */
     *pDst++ = (*pSrcA++) - (*pSrcB++);

@@ -59,26 +59,21 @@
  * @return none.
  */
 
-void arm_negate_f32(
-  float32_t * pSrc,
-  float32_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
+void arm_negate_f32(float32_t *pSrc, float32_t *pDst, uint32_t blockSize) {
+  uint32_t blkCnt; /* loop counter */
 
+#if defined(ARM_MATH_DSP)
 
-#if defined (ARM_MATH_DSP)
-
-/* Run the below code for Cortex-M4 and Cortex-M3 */
-  float32_t in1, in2, in3, in4;                  /* temporary variables */
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
+  float32_t in1, in2, in3, in4; /* temporary variables */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* read inputs from source */
     in1 = *pSrc;
     in2 = *(pSrc + 1);
@@ -105,7 +100,8 @@ void arm_negate_f32(
     blkCnt--;
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -118,8 +114,7 @@ void arm_negate_f32(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = -A */
     /* Negate and then store the results in the destination buffer. */
     *pDst++ = -*pSrc++;

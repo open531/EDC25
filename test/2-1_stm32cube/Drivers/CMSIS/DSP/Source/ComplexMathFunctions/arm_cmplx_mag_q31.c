@@ -46,34 +46,30 @@
  *
  * <b>Scaling and Overflow Behavior:</b>
  * \par
- * The function implements 1.31 by 1.31 multiplications and finally output is converted into 2.30 format.
- * Input down scaling is not required.
+ * The function implements 1.31 by 1.31 multiplications and finally output is
+ * converted into 2.30 format. Input down scaling is not required.
  */
 
-void arm_cmplx_mag_q31(
-  q31_t * pSrc,
-  q31_t * pDst,
-  uint32_t numSamples)
-{
-  q31_t real, imag;                              /* Temporary variables to hold input values */
-  q31_t acc0, acc1;                              /* Accumulators */
-  uint32_t blkCnt;                               /* loop counter */
+void arm_cmplx_mag_q31(q31_t *pSrc, q31_t *pDst, uint32_t numSamples) {
+  q31_t real, imag; /* Temporary variables to hold input values */
+  q31_t acc0, acc1; /* Accumulators */
+  uint32_t blkCnt;  /* loop counter */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
-  q31_t real1, real2, imag1, imag2;              /* Temporary variables to hold input values */
-  q31_t out1, out2, out3, out4;                  /* Accumulators */
-  q63_t mul1, mul2, mul3, mul4;                  /* Temporary variables */
-
+  q31_t real1, real2, imag1,
+      imag2;                    /* Temporary variables to hold input values */
+  q31_t out1, out2, out3, out4; /* Accumulators */
+  q63_t mul1, mul2, mul3, mul4; /* Temporary variables */
 
   /*loop Unrolling */
   blkCnt = numSamples >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* read complex input from source buffer */
     real1 = pSrc[0];
     imag1 = pSrc[1];
@@ -81,16 +77,16 @@ void arm_cmplx_mag_q31(
     imag2 = pSrc[3];
 
     /* calculate power of input values */
-    mul1 = (q63_t) real1 *real1;
-    mul2 = (q63_t) imag1 *imag1;
-    mul3 = (q63_t) real2 *real2;
-    mul4 = (q63_t) imag2 *imag2;
+    mul1 = (q63_t)real1 * real1;
+    mul2 = (q63_t)imag1 * imag1;
+    mul3 = (q63_t)real2 * real2;
+    mul4 = (q63_t)imag2 * imag2;
 
     /* get the result to 3.29 format */
-    out1 = (q31_t) (mul1 >> 33);
-    out2 = (q31_t) (mul2 >> 33);
-    out3 = (q31_t) (mul3 >> 33);
-    out4 = (q31_t) (mul4 >> 33);
+    out1 = (q31_t)(mul1 >> 33);
+    out2 = (q31_t)(mul2 >> 33);
+    out3 = (q31_t)(mul3 >> 33);
+    out4 = (q31_t)(mul4 >> 33);
 
     /* add real and imaginary accumulators */
     out1 = out1 + out2;
@@ -106,21 +102,21 @@ void arm_cmplx_mag_q31(
     arm_sqrt_q31(out1, &pDst[0]);
 
     /* calculate power of input values */
-    mul1 = (q63_t) real1 *real1;
+    mul1 = (q63_t)real1 * real1;
 
     /* calculate square root */
     arm_sqrt_q31(out3, &pDst[1]);
 
     /* calculate power of input values */
-    mul2 = (q63_t) imag1 *imag1;
-    mul3 = (q63_t) real2 *real2;
-    mul4 = (q63_t) imag2 *imag2;
+    mul2 = (q63_t)imag1 * imag1;
+    mul3 = (q63_t)real2 * real2;
+    mul4 = (q63_t)imag2 * imag2;
 
     /* get the result to 3.29 format */
-    out1 = (q31_t) (mul1 >> 33);
-    out2 = (q31_t) (mul2 >> 33);
-    out3 = (q31_t) (mul3 >> 33);
-    out4 = (q31_t) (mul4 >> 33);
+    out1 = (q31_t)(mul1 >> 33);
+    out2 = (q31_t)(mul2 >> 33);
+    out3 = (q31_t)(mul3 >> 33);
+    out4 = (q31_t)(mul4 >> 33);
 
     /* add real and imaginary accumulators */
     out1 = out1 + out2;
@@ -142,7 +138,8 @@ void arm_cmplx_mag_q31(
     blkCnt--;
   }
 
-  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+  /* If the numSamples is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = numSamples % 0x4U;
 
@@ -153,13 +150,12 @@ void arm_cmplx_mag_q31(
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[0] = sqrt(A[0] * A[0] + A[1] * A[1]) */
     real = *pSrc++;
     imag = *pSrc++;
-    acc0 = (q31_t) (((q63_t) real * real) >> 33);
-    acc1 = (q31_t) (((q63_t) imag * imag) >> 33);
+    acc0 = (q31_t)(((q63_t)real * real) >> 33);
+    acc1 = (q31_t)(((q63_t)imag * imag) >> 33);
     /* store the result in 2.30 format in the destination buffer. */
     arm_sqrt_q31(acc0 + acc1, pDst++);
 

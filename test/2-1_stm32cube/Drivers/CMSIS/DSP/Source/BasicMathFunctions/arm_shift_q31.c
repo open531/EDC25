@@ -1,7 +1,8 @@
 /* ----------------------------------------------------------------------
  * Project:      CMSIS DSP Library
  * Title:        arm_shift_q31.c
- * Description:  Shifts the elements of a Q31 vector by a specified number of bits
+ * Description:  Shifts the elements of a Q31 vector by a specified number of
+ * bits
  *
  * $Date:        27. January 2017
  * $Revision:    V.1.5.1
@@ -42,11 +43,12 @@
  *     pDst[n] = pSrc[n] << shift,   0 <= n < blockSize.
  * </pre>
  *
- * If <code>shift</code> is positive then the elements of the vector are shifted to the left.
- * If <code>shift</code> is negative then the elements of the vector are shifted to the right.
+ * If <code>shift</code> is positive then the elements of the vector are shifted
+ * to the left. If <code>shift</code> is negative then the elements of the
+ * vector are shifted to the right.
  *
- * The functions support in-place computation allowing the source and destination
- * pointers to reference the same memory buffer.
+ * The functions support in-place computation allowing the source and
+ * destination pointers to reference the same memory buffer.
  */
 
 /**
@@ -57,7 +59,8 @@
 /**
  * @brief  Shifts the elements of a Q31 vector a specified number of bits.
  * @param[in]  *pSrc points to the input vector
- * @param[in]  shiftBits number of bits to shift.  A positive value shifts left; a negative value shifts right.
+ * @param[in]  shiftBits number of bits to shift.  A positive value shifts left;
+ * a negative value shifts right.
  * @param[out]  *pDst points to the output vector
  * @param[in]  blockSize number of samples in the vector
  * @return none.
@@ -66,35 +69,31 @@
  * <b>Scaling and Overflow Behavior:</b>
  * \par
  * The function uses saturating arithmetic.
- * Results outside of the allowable Q31 range [0x80000000 0x7FFFFFFF] will be saturated.
+ * Results outside of the allowable Q31 range [0x80000000 0x7FFFFFFF] will be
+ * saturated.
  */
 
-void arm_shift_q31(
-  q31_t * pSrc,
-  int8_t shiftBits,
-  q31_t * pDst,
-  uint32_t blockSize)
-{
-  uint32_t blkCnt;                               /* loop counter */
-  uint8_t sign = (shiftBits & 0x80);             /* Sign of shiftBits */
+void arm_shift_q31(q31_t *pSrc, int8_t shiftBits, q31_t *pDst,
+                   uint32_t blockSize) {
+  uint32_t blkCnt;                   /* loop counter */
+  uint8_t sign = (shiftBits & 0x80); /* Sign of shiftBits */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
-  q31_t in1, in2, in3, in4;                      /* Temporary input variables */
-  q31_t out1, out2, out3, out4;                  /* Temporary output variables */
+  q31_t in1, in2, in3, in4;     /* Temporary input variables */
+  q31_t out1, out2, out3, out4; /* Temporary output variables */
 
   /*loop Unrolling */
   blkCnt = blockSize >> 2U;
 
-
-  if (sign == 0U)
-  {
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  if (sign == 0U) {
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+     *time.
      ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A  << shiftBits */
-      /* Shift the input and then store the results in the destination buffer. */
+      /* Shift the input and then store the results in the destination buffer.
+       */
       in1 = *pSrc;
       in2 = *(pSrc + 1);
       out1 = in1 << shiftBits;
@@ -128,16 +127,15 @@ void arm_shift_q31(
       /* Decrement the loop counter */
       blkCnt--;
     }
-  }
-  else
-  {
+  } else {
 
-    /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+    /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+     *time.
      ** a second loop below computes the remaining 1 to 3 samples. */
-    while (blkCnt > 0U)
-    {
+    while (blkCnt > 0U) {
       /* C = A >>  shiftBits */
-      /* Shift the input and then store the results in the destination buffer. */
+      /* Shift the input and then store the results in the destination buffer.
+       */
       in1 = *pSrc;
       in2 = *(pSrc + 1);
       in3 = *(pSrc + 2);
@@ -148,16 +146,15 @@ void arm_shift_q31(
       *(pDst + 2) = (in3 >> -shiftBits);
       *(pDst + 3) = (in4 >> -shiftBits);
 
-
       pSrc += 4U;
       pDst += 4U;
 
       blkCnt--;
     }
-
   }
 
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  /* If the blockSize is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = blockSize % 0x4U;
 
@@ -165,25 +162,20 @@ void arm_shift_q31(
 
   /* Run the below code for Cortex-M0 */
 
-
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
 #endif /* #if defined (ARM_MATH_DSP) */
 
-
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C = A (>> or <<) shiftBits */
     /* Shift the input and then store the result in the destination buffer. */
-    *pDst++ = (sign == 0U) ? clip_q63_to_q31((q63_t) * pSrc++ << shiftBits) :
-      (*pSrc++ >> -shiftBits);
+    *pDst++ = (sign == 0U) ? clip_q63_to_q31((q63_t)*pSrc++ << shiftBits)
+                           : (*pSrc++ >> -shiftBits);
 
     /* Decrement the loop counter */
     blkCnt--;
   }
-
-
 }
 
 /**

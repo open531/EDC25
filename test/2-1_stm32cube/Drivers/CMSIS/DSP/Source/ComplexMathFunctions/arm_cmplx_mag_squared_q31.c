@@ -37,7 +37,6 @@
  * @{
  */
 
-
 /**
  * @brief  Q31 complex magnitude squared
  * @param  *pSrc points to the complex input vector
@@ -47,56 +46,52 @@
  *
  * <b>Scaling and Overflow Behavior:</b>
  * \par
- * The function implements 1.31 by 1.31 multiplications and finally output is converted into 3.29 format.
- * Input down scaling is not required.
+ * The function implements 1.31 by 1.31 multiplications and finally output is
+ * converted into 3.29 format. Input down scaling is not required.
  */
 
-void arm_cmplx_mag_squared_q31(
-  q31_t * pSrc,
-  q31_t * pDst,
-  uint32_t numSamples)
-{
-  q31_t real, imag;                              /* Temporary variables to store real and imaginary values */
-  q31_t acc0, acc1;                              /* Accumulators */
+void arm_cmplx_mag_squared_q31(q31_t *pSrc, q31_t *pDst, uint32_t numSamples) {
+  q31_t real, imag; /* Temporary variables to store real and imaginary values */
+  q31_t acc0, acc1; /* Accumulators */
 
-#if defined (ARM_MATH_DSP)
+#if defined(ARM_MATH_DSP)
 
   /* Run the below code for Cortex-M4 and Cortex-M3 */
-  uint32_t blkCnt;                               /* loop counter */
+  uint32_t blkCnt; /* loop counter */
 
   /* loop Unrolling */
   blkCnt = numSamples >> 2U;
 
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a
+   *time.
    ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[0] = (A[0] * A[0] + A[1] * A[1]) */
     real = *pSrc++;
     imag = *pSrc++;
-    acc0 = (q31_t) (((q63_t) real * real) >> 33);
-    acc1 = (q31_t) (((q63_t) imag * imag) >> 33);
+    acc0 = (q31_t)(((q63_t)real * real) >> 33);
+    acc1 = (q31_t)(((q63_t)imag * imag) >> 33);
     /* store the result in 3.29 format in the destination buffer. */
     *pDst++ = acc0 + acc1;
 
     real = *pSrc++;
     imag = *pSrc++;
-    acc0 = (q31_t) (((q63_t) real * real) >> 33);
-    acc1 = (q31_t) (((q63_t) imag * imag) >> 33);
+    acc0 = (q31_t)(((q63_t)real * real) >> 33);
+    acc1 = (q31_t)(((q63_t)imag * imag) >> 33);
     /* store the result in 3.29 format in the destination buffer. */
     *pDst++ = acc0 + acc1;
 
     real = *pSrc++;
     imag = *pSrc++;
-    acc0 = (q31_t) (((q63_t) real * real) >> 33);
-    acc1 = (q31_t) (((q63_t) imag * imag) >> 33);
+    acc0 = (q31_t)(((q63_t)real * real) >> 33);
+    acc1 = (q31_t)(((q63_t)imag * imag) >> 33);
     /* store the result in 3.29 format in the destination buffer. */
     *pDst++ = acc0 + acc1;
 
     real = *pSrc++;
     imag = *pSrc++;
-    acc0 = (q31_t) (((q63_t) real * real) >> 33);
-    acc1 = (q31_t) (((q63_t) imag * imag) >> 33);
+    acc0 = (q31_t)(((q63_t)real * real) >> 33);
+    acc1 = (q31_t)(((q63_t)imag * imag) >> 33);
     /* store the result in 3.29 format in the destination buffer. */
     *pDst++ = acc0 + acc1;
 
@@ -104,17 +99,17 @@ void arm_cmplx_mag_squared_q31(
     blkCnt--;
   }
 
-  /* If the numSamples is not a multiple of 4, compute any remaining output samples here.
+  /* If the numSamples is not a multiple of 4, compute any remaining output
+   *samples here.
    ** No loop unrolling is used. */
   blkCnt = numSamples % 0x4U;
 
-  while (blkCnt > 0U)
-  {
+  while (blkCnt > 0U) {
     /* C[0] = (A[0] * A[0] + A[1] * A[1]) */
     real = *pSrc++;
     imag = *pSrc++;
-    acc0 = (q31_t) (((q63_t) real * real) >> 33);
-    acc1 = (q31_t) (((q63_t) imag * imag) >> 33);
+    acc0 = (q31_t)(((q63_t)real * real) >> 33);
+    acc1 = (q31_t)(((q63_t)imag * imag) >> 33);
     /* store the result in 3.29 format in the destination buffer. */
     *pDst++ = acc0 + acc1;
 
@@ -126,13 +121,12 @@ void arm_cmplx_mag_squared_q31(
 
   /* Run the below code for Cortex-M0 */
 
-  while (numSamples > 0U)
-  {
+  while (numSamples > 0U) {
     /* out = ((real * real) + (imag * imag)) */
     real = *pSrc++;
     imag = *pSrc++;
-    acc0 = (q31_t) (((q63_t) real * real) >> 33);
-    acc1 = (q31_t) (((q63_t) imag * imag) >> 33);
+    acc0 = (q31_t)(((q63_t)real * real) >> 33);
+    acc1 = (q31_t)(((q63_t)imag * imag) >> 33);
     /* store the result in 3.29 format in the destination buffer. */
     *pDst++ = acc0 + acc1;
 
@@ -141,7 +135,6 @@ void arm_cmplx_mag_squared_q31(
   }
 
 #endif /* #if defined (ARM_MATH_DSP) */
-
 }
 
 /**
