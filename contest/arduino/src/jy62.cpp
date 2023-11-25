@@ -1,24 +1,30 @@
 #include "jy62.h"
 
-JY62::JY62(HardwareSerial *serial) {
+JY62::JY62(HardwareSerial *serial, int baud) {
   _serial = serial;
-  _serial->readBytes(receive, JY62_MESSAGE_LENTH);
+  _baud = baud;
+  _serial->begin(baud);
 }
 
 void JY62::messageRecord(void) {
-  if (receive[0] == 0x55) {
-    uint8_t sum = 0x00;
-    for (int i = 0; i < JY62_MESSAGE_LENTH - 1; i++) {
-      sum += receive[i];
-    }
-    if (sum == receive[JY62_MESSAGE_LENTH - 1]) {
-      for (int i = 0; i < JY62_MESSAGE_LENTH; i++) {
-        message[i] = receive[i];
-      }
-      decode();
+  while (1) {
+    if (_serial->available()) {
+      if (_serial->read() == 0x55)
+        break;
     }
   }
-  _serial->readBytes(receive, JY62_MESSAGE_LENTH);
+  receive[0] = 0x55;
+  _serial->readBytes(receive + 1, JY62_MESSAGE_LENTH - 1);
+  uint8_t sum = 0x55;
+  for (int i = 1; i < JY62_MESSAGE_LENTH - 1; i++) {
+    sum += receive[i];
+  }
+  if (sum == receive[JY62_MESSAGE_LENTH - 1]) {
+    for (int i = 0; i < JY62_MESSAGE_LENTH; i++) {
+      message[i] = receive[i];
+    }
+    decode();
+  }
 }
 
 void JY62::setBaud(int baud) {
@@ -48,17 +54,57 @@ float JY62::getRoll(void) { return _angl.roll; }
 float JY62::getPitch(void) { return _angl.pitch; }
 float JY62::getYaw(void) { return _angl.yaw; }
 float JY62::getTemp(void) { return _temp.temp; }
+bool JY62::isFreshValid(void) { return _freshValid; }
+
+// 0表示打印所有数据；1表示打印加速度；2表示打印角速度；3表示打印角度
+void JY62::printData(uint8_t type, HardwareSerial &serial) {
+  serial.println("*****************");
+  serial.println("jy62 data:");
+  serial.println("IsFreshValid:");
+  serial.println(_freshValid);
+  if (type == 1 || !type) {
+    serial.print("Accelerate_x:");
+    serial.println(_acce.x);
+    serial.print("Accelerate_y:");
+    serial.println(_acce.y);
+    serial.print("Accelerate_z:");
+    serial.println(_acce.z);
+  }
+  if (type == 2 || !type) {
+    serial.print("Velocity_x:");
+    serial.println(_velo.x);
+    serial.print("Velocity_y:");
+    serial.println(_velo.y);
+    serial.print("Velocity_z:");
+    serial.println(_velo.z);
+  }
+  if (type == 3 || !type) {
+    serial.print("Angle_roll:");
+    serial.println(_angl.roll);
+    serial.print("Angle_pitch:");
+    serial.println(_angl.pitch);
+    serial.print("Angle_yaw:");
+    serial.println(_angl.yaw);
+  }
+  serial.println("*****************");
+}
 
 void JY62::decode(void) {
-  switch (message[0]) {
+  switch (message[1]) {
   case 0x51:
     decodeAcce();
+    _freshValid = true;
     break;
   case 0x52:
     decodeVelo();
+    _freshValid = true;
     break;
   case 0x53:
     decodeAngl();
+    _freshValid = true;
+    break;
+  default:
+    _freshValid = false;
     break;
   }
   decodeTemp();
