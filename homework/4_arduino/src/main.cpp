@@ -43,8 +43,8 @@ void loop() {
   if (pid.getCount() >= 5000) {
     motor.turnLeft(64);
     while (!(
-        (abs(imu.getYaw() - angle) > 85 && abs(imu.getYaw() - angle) < 95) ||
-        (abs(imu.getYaw() - angle) > 265 && abs(imu.getYaw() - angle) < 275))) {
+        (abs(imu.getYaw() - angle) > 89 && abs(imu.getYaw() - angle) < 91) ||
+        (abs(imu.getYaw() - angle) > 269 && abs(imu.getYaw() - angle) < 271))) {
       if (SerialUART2.available()) {
         imu.messageRecord();
         if (millis() - lastUpdateTime > 1000) {
