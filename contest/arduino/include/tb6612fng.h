@@ -5,7 +5,8 @@
 
 class TB6612FNG {
 public:
-  TB6612FNG(int pwma, int ain1, int ain2, int pwmb, int bin1, int bin2);
+  TB6612FNG(int pwma, int ain1, int ain2, int pwmb, int bin1, int bin2,
+            int stby);
   void init(void);
 
   void forward(int speed);
@@ -20,6 +21,7 @@ public:
   void setPwmB(int pwmb);
   void setBin1(int bin1);
   void setBin2(int bin2);
+  void setStby(int stby);
 
   int getPwmA(void);
   int getAin1(void);
@@ -27,6 +29,7 @@ public:
   int getPwmB(void);
   int getBin1(void);
   int getBin2(void);
+  int getStby(void);
 
 private:
   int _pwma;
@@ -35,6 +38,7 @@ private:
   int _pwmb;
   int _bin1;
   int _bin2;
+  int _stby;
 };
 
 #endif // TB6612FNG_H
