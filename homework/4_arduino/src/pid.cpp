@@ -30,7 +30,6 @@ int PID::compute(float target, float current) {
   return output;
 }
 
-<<<<<<< HEAD
 void countA(PID &pid) {
   if (digitalRead(pid._enca) == digitalRead(pid._encb)) {
     pid._count += 1;
@@ -51,20 +50,3 @@ int PID::getEnca() { return _enca; }
 int PID::getEncb() { return _encb; }
 int64_t PID::getCount() { return _count; }
 void PID::resetCount() { _count = 0; }
-=======
-void PID::countA() {
-  if (digitalRead(_enca) == digitalRead(_encb)) {
-    _count += 1;
-  } else {
-    _count -= 1;
-  }
-}
-
-void PID::countB() {
-  if (digitalRead(_enca) == digitalRead(_encb)) {
-    _count -= 1;
-  } else {
-    _count += 1;
-  }
-}
->>>>>>> 4abe7484b916289e3985832f86ca5ab5c25f7de4
