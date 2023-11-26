@@ -12,6 +12,8 @@ HardwareSerial SerialUART2(PA3, PA2); // 和jy62通信串口
 JY62 imu(&SerialUART2, 115200);
 // PID pid(9, 10, 0.1, 0.1, 0.1);
 
+long long lastUpdateTime = 0;
+
 void setup() {
   SerialUART1.begin(115200);
   imu.setBaud(115200);
@@ -24,6 +26,9 @@ void setup() {
 void loop() {
   if (SerialUART2.available()) {
     imu.messageRecord();
-    imu.printData(0, SerialUART1);
+    if (millis() - lastUpdateTime > 1000) {
+      imu.printData(0, SerialUART1);
+      lastUpdateTime = millis();
+    }
   }
 }
