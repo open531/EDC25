@@ -1,12 +1,13 @@
 /*
  * @file    port.c
  * @author  Frederic Pillon <frederic.pillon@st.com> for STMicroelectronics.
- * @brief   Include source of FreeRTOS portable layer file to match Arduino library format
+ * @brief   Include source of FreeRTOS portable layer file to match Arduino
+ * library format
  */
 #include <Arduino.h>
 
 #ifndef __CORTEX_M
-#pragma GCC error  "no \"__CORTEX_M\" definition"
+#pragma GCC error "no \"__CORTEX_M\" definition"
 #endif
 
 #if (__CORTEX_M == 0U)

@@ -1,7 +1,8 @@
 /*
  * @file    cmsis_os.c
  * @author  Frederic Pillon <frederic.pillon@st.com> for STMicroelectronics.
- * @brief   Include source of FreeRTOS portable layer file to match Arduino library format
+ * @brief   Include source of FreeRTOS portable layer file to match Arduino
+ * library format
  */
 #include "FreeRTOS.h"
 
@@ -10,4 +11,3 @@
 #else
 #include "../portable/CMSIS_RTOS_V2/cmsis_os2.c"
 #endif
-

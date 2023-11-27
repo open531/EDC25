@@ -1,7 +1,8 @@
 /*
  * @file    portmacro.h
  * @author  Frederic Pillon <frederic.pillon@st.com> for STMicroelectronics.
- * @brief   Include header of FreeRTOS portable layer file to match Arduino library format
+ * @brief   Include header of FreeRTOS portable layer file to match Arduino
+ * library format
  */
 
 #ifndef _PORTMACRO_H_
@@ -9,13 +10,16 @@
 #include "stm32_def.h"
 
 #ifndef __CORTEX_M
-#pragma GCC error  "no \"__CORTEX_M\" definition"
+#pragma GCC error "no \"__CORTEX_M\" definition"
 #endif
 
 #if (__CORTEX_M == 0U)
 #include "../portable/GCC/ARM_CM0/portmacro.h"
 /* Stub for heap_useNewlib_ST */
-inline __attribute__(( always_inline )) static BaseType_t xPortIsInsideInterrupt( void ) { return pdFALSE; }
+inline __attribute__((always_inline)) static BaseType_t
+xPortIsInsideInterrupt(void) {
+  return pdFALSE;
+}
 #endif
 
 #if (__CORTEX_M == 3U)

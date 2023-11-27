@@ -18,4 +18,3 @@
 #endif
 
 #endif /* _ARDUINO_FREERTOS_CONFIG_H */
-
