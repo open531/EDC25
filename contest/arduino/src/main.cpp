@@ -42,8 +42,8 @@ TaskHandle_t xIMUPrintDataTask;
 static void vZigbeeMessageRecordTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-      zigbee.messageRecord();
-      vTaskDelay(configTICK_RATE_HZ);
+    zigbee.messageRecord();
+    vTaskDelay(configTICK_RATE_HZ);
   }
 }
 
