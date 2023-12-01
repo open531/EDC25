@@ -42,8 +42,8 @@ TaskHandle_t xIMUPrintDataTask;
 static void vZigbeeMessageRecordTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-      zigbee.messageRecord();
-      vTaskDelay(configTICK_RATE_HZ);
+    zigbee.messageRecord();
+    vTaskDelay(configTICK_RATE_HZ);
   }
 }
 
@@ -59,36 +59,7 @@ static void vPlayerUpdateTask(void *pvParameters) {
 static void vPlayerPrintInfoTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-    PlayerInfo playerInfo = player.getPlayerInfo();
-    SerialUART1.println("*****************");
-    SerialUART1.println("player info:");
-    SerialUART1.println("gameStage:");
-    SerialUART1.println(playerInfo.gameStage);
-    SerialUART1.println("elapsedTicks:");
-    SerialUART1.println(playerInfo.elapsedTicks);
-    SerialUART1.println("hasBed:");
-    SerialUART1.println(playerInfo.hasBed);
-    SerialUART1.println("hasBedOpponent:");
-    SerialUART1.println(playerInfo.hasBedOpponent);
-    SerialUART1.println("position:");
-    SerialUART1.println(playerInfo.position.x);
-    SerialUART1.println(playerInfo.position.y);
-    SerialUART1.println("positionOpponent:");
-    SerialUART1.println(playerInfo.positionOpponent.x);
-    SerialUART1.println(playerInfo.positionOpponent.y);
-    SerialUART1.println("agility:");
-    SerialUART1.println(playerInfo.agility);
-    SerialUART1.println("health:");
-    SerialUART1.println(playerInfo.health);
-    SerialUART1.println("maxHealth:");
-    SerialUART1.println(playerInfo.maxHealth);
-    SerialUART1.println("strength:");
-    SerialUART1.println(playerInfo.strength);
-    SerialUART1.println("emeraldCount:");
-    SerialUART1.println(playerInfo.emeraldCount);
-    SerialUART1.println("woolCount:");
-    SerialUART1.println(playerInfo.woolCount);
-    SerialUART1.println("*****************");
+    player.printInfo(SerialUART1);
     vTaskDelay(configTICK_RATE_HZ * 2);
   }
 }

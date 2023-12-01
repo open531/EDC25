@@ -62,21 +62,20 @@ public:
   void calibrate(void);     // 校准加速度计
   void sleepOrAwake(void);  // 设置休眠/唤醒
 
-  Velo getVelo(void);      // 获取角速度
-  float getVeloX(void);    // 获取x轴角速度
-  float getVeloY(void);    // 获取y轴角速度
-  float getVeloZ(void);    // 获取z轴角速度
-  Acce getAcce(void);      // 获取加速度
-  float getAcceX(void);    // 获取x轴加速度
-  float getAcceY(void);    // 获取y轴加速度
-  float getAcceZ(void);    // 获取z轴加速度
-  Angl getAngl(void);      // 获取角度
-  float getRoll(void);     // 获取绕x轴旋转角度（横滚角）
-  float getPitch(void);    // 获取绕y轴旋转角度（俯仰角）
-  float getYaw(void);      // 获取绕z轴旋转角度（偏航角）
-  float getTemp(void);     // 获取温度
-  bool isFreshValid(void); // 判断是否有新的有效数据
-  void printData(uint8_t type, HardwareSerial &serial);
+  Velo getVelo(void);   // 获取角速度
+  float getVeloX(void); // 获取x轴角速度
+  float getVeloY(void); // 获取y轴角速度
+  float getVeloZ(void); // 获取z轴角速度
+  Acce getAcce(void);   // 获取加速度
+  float getAcceX(void); // 获取x轴加速度
+  float getAcceY(void); // 获取y轴加速度
+  float getAcceZ(void); // 获取z轴加速度
+  Angl getAngl(void);   // 获取角度
+  float getRoll(void);  // 获取绕x轴旋转角度（横滚角）
+  float getPitch(void); // 获取绕y轴旋转角度（俯仰角）
+  float getYaw(void);   // 获取绕z轴旋转角度（偏航角）
+  float getTemp(void);  // 获取温度
+  void printData(uint8_t type, HardwareSerial &serial); // 打印数据
 
   void decode(void); // 解码
 
@@ -91,7 +90,6 @@ private:
   Angl _angl;              // 角度
   Temp _temp;              // 温度
   int _baud;               // 波特率
-  bool _freshValid;        // 上一次刷新是否有效
 
   void decodeVelo(void); // 解码角速度
   void decodeAcce(void); // 解码加速度

@@ -1,11 +1,21 @@
 #include "jy62.h"
 
+/**
+ * @brief 构造函数
+ *
+ * @param serial 串口
+ * @param baud 波特率
+ */
 JY62::JY62(HardwareSerial *serial, int baud) {
   _serial = serial;
   _baud = baud;
   _serial->begin(baud);
 }
 
+/**
+ * @brief 读取串口数据
+ *
+ */
 void JY62::messageRecord(void) {
   while (1) {
     if (_serial->available()) {
@@ -27,6 +37,11 @@ void JY62::messageRecord(void) {
   }
 }
 
+/**
+ * @brief 设置波特率
+ *
+ * @param baud 波特率，可选择115200或9600
+ */
 void JY62::setBaud(int baud) {
   if (baud == 115200) {
     _serial->write(msgSetBaud115200, 3);
@@ -35,33 +50,53 @@ void JY62::setBaud(int baud) {
   }
 }
 
+// @brief 设置为水平放置模式
 void JY62::setHorizontal(void) { _serial->write(msgSetHorizontal, 3); }
+// @brief 设置为垂直放置模式
 void JY62::setVertical(void) { _serial->write(msgSetVertical, 3); }
+// @brief 初始化z轴角度为0
 void JY62::initAngle(void) { _serial->write(msgInitAngle, 3); }
+// @brief 加速度计校准
 void JY62::calibrate(void) { _serial->write(msgCalibrateAcce, 3); }
+// @brief 设置休眠/唤醒
 void JY62::sleepOrAwake(void) { _serial->write(msgSleepAndAwake, 3); }
 
+// @brief 获取角速度
 Velo JY62::getVelo(void) { return _velo; }
+// @brief 获取x轴角速度
 float JY62::getVeloX(void) { return _velo.x; }
+// @brief 获取y轴角速度
 float JY62::getVeloY(void) { return _velo.y; }
+// @brief 获取z轴角速度
 float JY62::getVeloZ(void) { return _velo.z; }
+// @brief 获取加速度
 Acce JY62::getAcce(void) { return _acce; }
+// @brief 获取x轴加速度
 float JY62::getAcceX(void) { return _acce.x; }
+// @brief 获取y轴加速度
 float JY62::getAcceY(void) { return _acce.y; }
+// @brief 获取z轴加速度
 float JY62::getAcceZ(void) { return _acce.z; }
+// @brief 获取角度
 Angl JY62::getAngl(void) { return _angl; }
+// @brief 获取绕x轴旋转角度（横滚角）
 float JY62::getRoll(void) { return _angl.roll; }
+// @brief 获取绕y轴旋转角度（俯仰角）
 float JY62::getPitch(void) { return _angl.pitch; }
+// @brief 获取绕z轴旋转角度（偏航角）
 float JY62::getYaw(void) { return _angl.yaw; }
+// @brief 获取温度
 float JY62::getTemp(void) { return _temp.temp; }
-bool JY62::isFreshValid(void) { return _freshValid; }
 
-// 0表示打印所有数据；1表示打印加速度；2表示打印角速度；3表示打印角度
+/**
+ * @brief 打印数据
+ *
+ * @param type 1:加速度 2:角速度 3:角度 0:全部
+ * @param serial 串口
+ */
 void JY62::printData(uint8_t type, HardwareSerial &serial) {
-  serial.println("*****************");
+  serial.println("*****JY62 DATA BEGIN*****");
   serial.println("jy62 data:");
-  serial.println("IsFreshValid:");
-  serial.println(_freshValid);
   if (type == 1 || !type) {
     serial.print("Accelerate_x:");
     serial.println(_acce.x);
@@ -86,36 +121,45 @@ void JY62::printData(uint8_t type, HardwareSerial &serial) {
     serial.print("Angle_yaw:");
     serial.println(_angl.yaw);
   }
-  serial.println("*****************");
+  serial.println("*****JY62 DATA END*****");
+  serial.println();
 }
 
+/**
+ * @brief 解码
+ *
+ */
 void JY62::decode(void) {
   switch (message[1]) {
   case 0x51:
     decodeAcce();
-    _freshValid = true;
     break;
   case 0x52:
     decodeVelo();
-    _freshValid = true;
     break;
   case 0x53:
     decodeAngl();
-    _freshValid = true;
     break;
   default:
-    _freshValid = false;
     break;
   }
   decodeTemp();
 }
 
+/**
+ * @brief 解码角速度
+ *
+ */
 void JY62::decodeVelo(void) {
   _velo.x = (float)((int16_t)(message[3] << 8 | message[2])) / 32768.0 * 2000.0;
   _velo.y = (float)((int16_t)(message[5] << 8 | message[4])) / 32768.0 * 2000.0;
   _velo.z = (float)((int16_t)(message[7] << 8 | message[6])) / 32768.0 * 2000.0;
 }
 
+/**
+ * @brief 解码加速度
+ *
+ */
 void JY62::decodeAcce(void) {
   _acce.x =
       (float)((int16_t)(message[3] << 8 | message[2])) / 32768.0 * 16.0 * g;
@@ -125,6 +169,10 @@ void JY62::decodeAcce(void) {
       (float)((int16_t)(message[7] << 8 | message[6])) / 32768.0 * 16.0 * g;
 }
 
+/**
+ * @brief 解码角度
+ *
+ */
 void JY62::decodeAngl(void) {
   _angl.roll =
       (float)((int16_t)(message[3] << 8 | message[2])) / 32768.0 * 180.0;
@@ -134,6 +182,10 @@ void JY62::decodeAngl(void) {
       (float)((int16_t)(message[7] << 8 | message[6])) / 32768.0 * 180.0;
 }
 
+/**
+ * @brief 解码温度
+ *
+ */
 void JY62::decodeTemp(void) {
   _temp.temp = (float)((int16_t)(message[9] << 8 | message[8])) / 340.0 + 36.53;
 }

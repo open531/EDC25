@@ -37,6 +37,8 @@ public:
   void placeBlock(uint8_t chunk); // 放置方块
   void trade(uint8_t item);       // 交易
 
+  void printInfo(HardwareSerial &serial); // 打印玩家信息
+
   PlayerInfo getPlayerInfo(void); // 获取玩家信息
 
 private:
