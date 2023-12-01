@@ -14,13 +14,13 @@ void JY62::messageRecord(void) {
     }
   }
   receive[0] = 0x55;
-  _serial->readBytes(receive + 1, JY62_MESSAGE_LENTH - 1);
+  _serial->readBytes(receive + 1, JY62_MSG_LEN - 1);
   uint8_t sum = 0x55;
-  for (int i = 1; i < JY62_MESSAGE_LENTH - 1; i++) {
+  for (int i = 1; i < JY62_MSG_LEN - 1; i++) {
     sum += receive[i];
   }
-  if (sum == receive[JY62_MESSAGE_LENTH - 1]) {
-    for (int i = 0; i < JY62_MESSAGE_LENTH; i++) {
+  if (sum == receive[JY62_MSG_LEN - 1]) {
+    for (int i = 0; i < JY62_MSG_LEN; i++) {
       message[i] = receive[i];
     }
     decode();

@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
-#define JY62_MESSAGE_LENTH 11
+#define JY62_MSG_LEN 11
 #define g 9.8 // 重力加速度
 
 struct Acce { // 加速度
@@ -81,8 +81,8 @@ public:
   void decode(void); // 解码
 
 protected:
-  uint8_t receive[JY62_MESSAGE_LENTH]; // 实时记录收到的信息
-  uint8_t message[JY62_MESSAGE_LENTH]; // 确认无误后用于解码的信息
+  uint8_t receive[JY62_MSG_LEN]; // 实时记录收到的信息
+  uint8_t message[JY62_MSG_LEN]; // 确认无误后用于解码的信息
 
 private:
   HardwareSerial *_serial; // 串口
