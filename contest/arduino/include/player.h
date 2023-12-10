@@ -1,8 +1,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "canmvk210.h"
 #include "zigbee.h"
 #include <Arduino.h>
+#include <vector>
 
 enum GameStage { READY, RUNNING, BATTLING, FINISHED };
 
@@ -27,11 +29,19 @@ struct PlayerInfo {
   int8_t woolCount;          // 羊毛数量
 };
 
+struct MapInfo {
+  std::vector<Position> ironMine;    // 铁矿石
+  std::vector<Position> goldMine;    // 金矿石
+  std::vector<Position> diamondMine; // 钻石矿石
+};
+
 class Player {
 public:
-  Player(Zigbee *zigbee); // 构造函数
+  Player(Zigbee *zigbee);                       // 构造函数
+  Player(CanMVK210 *canmvk210, Zigbee *zigbee); // 构造函数
 
-  void update(void); // 更新玩家信息
+  void updatePlayerInfo(void); // 更新玩家信息
+  void updateMapInfo(void);    // 更新地图信息
 
   void attack(uint8_t chunk);     // 攻击
   void placeBlock(uint8_t chunk); // 放置方块
@@ -40,9 +50,12 @@ public:
   void printInfo(HardwareSerial &serial); // 打印玩家信息
 
   PlayerInfo getPlayerInfo(void); // 获取玩家信息
+  MapInfo getMapInfo(void);       // 获取地图信息
 
 private:
   PlayerInfo _playerInfo;   // 玩家信息
+  MapInfo _mapInfo;         // 地图信息
+  CanMVK210 *_canmvk210;    // CanMV K210
   Zigbee *_zigbee;          // Zigbee
   int32_t _lastUpdateTicks; // 上次更新的tick数
 };

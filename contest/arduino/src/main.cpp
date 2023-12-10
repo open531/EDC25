@@ -12,6 +12,7 @@
 HardwareSerial SerialUART1(PB7, PB6);   // 和电脑通信串口
 HardwareSerial SerialUART2(PA3, PA2);   // 和jy62通信串口
 HardwareSerial SerialUART3(PB11, PB10); // 和zigbee通信串口
+// HardwareSerial SerialUART4(PC10, PC11); // 和canmvk210通信串口
 
 // TB6612FNG motor(3, 4, 5, 6, 7, 8);
 // JY62 imu(&SerialUART2, 115200);
@@ -50,8 +51,8 @@ static void vZigbeeMessageRecordTask(void *pvParameters) {
 static void vPlayerUpdateTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-    player.update();
-    SerialUART1.println("player update");
+    player.updatePlayerInfo();
+    SerialUART1.println("player updatePlayerInfo");
     vTaskDelay(configTICK_RATE_HZ);
   }
 }
