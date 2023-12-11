@@ -4,6 +4,7 @@
 #include "canmvk210.h"
 #include "zigbee.h"
 #include <Arduino.h>
+#include <queue>
 #include <vector>
 
 enum GameStage { READY, RUNNING, BATTLING, FINISHED };
@@ -13,12 +14,17 @@ struct Position {
   float_t y;
 };
 
+struct Grid {
+  int8_t x;
+  int8_t y;
+};
+
 struct PlayerInfo {
   GameStage gameStage;       // 游戏阶段
   int32_t elapsedTicks;      // 已经过的tick数
   int8_t heightOfChunks[64]; // 64个区块的高度
-  boolean hasBed;            // 是否有床
-  boolean hasBedOpponent;    // 对手是否有床
+  bool hasBed;               // 是否有床
+  bool hasBedOpponent;       // 对手是否有床
   Position position;         // 位置
   Position positionOpponent; // 对手位置
   int8_t agility;            // 敏捷度

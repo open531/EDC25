@@ -61,8 +61,8 @@ void Player::updatePlayerInfo() {
     _playerInfo.gameStage = (GameStage)_zigbee->message[0 + 5];
     _playerInfo.elapsedTicks = *((int32_t *)(_zigbee->message + 1 + 5));
     memcpy(_playerInfo.heightOfChunks, _zigbee->message + 5 + 5, 64);
-    _playerInfo.hasBed = (boolean)_zigbee->message[69 + 5];
-    _playerInfo.hasBedOpponent = (boolean)_zigbee->message[70 + 5];
+    _playerInfo.hasBed = (bool)_zigbee->message[69 + 5];
+    _playerInfo.hasBedOpponent = (bool)_zigbee->message[70 + 5];
     _playerInfo.position.x = *((float_t *)(_zigbee->message + 71 + 5));
     _playerInfo.position.y = *((float_t *)(_zigbee->message + 75 + 5));
     _playerInfo.positionOpponent.x = *((float_t *)(_zigbee->message + 79 + 5));

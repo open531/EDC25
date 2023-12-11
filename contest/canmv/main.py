@@ -23,16 +23,18 @@ uart_A = UART(UART.UART1, 115200, 8, 1, 0, timeout=1000,
               read_buf_len=4096)  # 创建一个串口对象
 
 # 设置颜色阈值
-thresholds = [
-    # (0, 20, -128, 127, -23, 2),  # 灰色阈值
-    (48, 100, -128, -8, -128, 127),  # 黄色阈值
-    (0, 100, 32, 127, -128, 0)  # 蓝色阈值
-]
+ithresholds = [(0, 40, -6, 127, -5, 127)] # 铁矿
+gthresholds = [(30, 100, -128, 16, 16, 127)] # 金矿
+dthresholds = [(0, 37, -128, 127, -53, -14)] # 钻石矿
 
 while (True):
     clock.tick()  # 更新时钟
     img = sensor.snapshot()  # 拍摄一张图片，返回图片对象
-    for blob in img.find_blobs(thresholds, pixels_threshold=100, area_threshold=100, merge=True):  # 找到颜色区域
+    for blob in img.find_blobs(gthresholds, pixels_threshold=100, area_threshold=100, merge=True):  # 找到颜色区域
         img.draw_rectangle(blob.rect())  # 标记颜色区域
         img.draw_cross(blob.cx(), blob.cy())  # 标记颜色区域的中心点
-        print("x = %d, y = %d" % (blob.cx(), blob.cy()))  # 打印颜色区域的中心点坐标
+        #print("gold x = %d, y = %d" % (blob.cx(), blob.cy()))  # 打印颜色区域的中心点坐标
+    for blob in img.find_blobs(dthresholds, pixels_threshold=100, area_threshold=100, merge=True):  # 找到颜色区域
+        img.draw_rectangle(blob.rect())  # 标记颜色区域
+        img.draw_cross(blob.cx(), blob.cy())  # 标记颜色区域的中心点
+        #print("diamond x = %d, y = %d" % (blob.cx(), blob.cy()))  # 打印颜色区域的中心点坐标
