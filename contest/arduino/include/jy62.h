@@ -5,7 +5,7 @@
 #include <HardwareSerial.h>
 
 #define JY62_MSG_LEN 11
-#define g 9.8 // 重力加速度
+#define JY62_G 9.8 // 重力加速度
 
 struct Acce { // 加速度
   float x;

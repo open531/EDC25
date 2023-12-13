@@ -161,12 +161,12 @@ void JY62::decodeVelo(void) {
  *
  */
 void JY62::decodeAcce(void) {
-  _acce.x =
-      (float)((int16_t)(message[3] << 8 | message[2])) / 32768.0 * 16.0 * g;
-  _acce.y =
-      (float)((int16_t)(message[5] << 8 | message[4])) / 32768.0 * 16.0 * g;
-  _acce.z =
-      (float)((int16_t)(message[7] << 8 | message[6])) / 32768.0 * 16.0 * g;
+  _acce.x = (float)((int16_t)(message[3] << 8 | message[2])) / 32768.0 * 16.0 *
+            JY62_G;
+  _acce.y = (float)((int16_t)(message[5] << 8 | message[4])) / 32768.0 * 16.0 *
+            JY62_G;
+  _acce.z = (float)((int16_t)(message[7] << 8 | message[6])) / 32768.0 * 16.0 *
+            JY62_G;
 }
 
 /**
