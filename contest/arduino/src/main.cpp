@@ -23,6 +23,8 @@ Player player;
 TaskHandle_t xIMUMessageRecordTask;
 TaskHandle_t xIMUPrintDataTask;
 
+long lastLoopTime = 0;
+
 static void vIMUMessageRecordTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
@@ -52,7 +54,6 @@ static void vPlayerUpdateTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
     player.updatePlayerInfo();
-    SerialUART1.println("player updatePlayerInfo");
     vTaskDelay(configTICK_RATE_HZ);
   }
 }
@@ -65,48 +66,56 @@ static void vPlayerPrintInfoTask(void *pvParameters) {
   }
 }
 
+static void vPlayerChangeStatusTask(void *pvParameters) {
+  UNUSED(pvParameters);
+  while (1) {
+    switch (player.getPlayerState()) {
+    case IDLE:
+      player.setPlayerState(COLLECTING);
+      break;
+    case COLLECTING:
+      player.setPlayerState(ATTACKING);
+      break;
+    case ATTACKING:
+      player.setPlayerState(FLEEING);
+      break;
+    case FLEEING:
+      player.setPlayerState(IDLE);
+      break;
+    }
+    vTaskDelay(configTICK_RATE_HZ / 2);
+  }
+}
+
 void setup() {
   SerialUART1.begin(115200);
   imu.setBaud(115200);
   imu.setHorizontal();
   imu.initAngle();
   imu.calibrate();
+  motor.init();
+  motor.forward(DEFAULT_SPEED);
   player.setJY62(&imu);
   player.setPID(&pid);
   player.setTB6612FNG(&motor);
   player.setZigbee(&zigbee);
   xTaskCreate(vIMUMessageRecordTask, "IMUMessageRecordTask", 128, NULL,
-              tskIDLE_PRIORITY + 2, &xIMUMessageRecordTask);
+              tskIDLE_PRIORITY, &xIMUMessageRecordTask);
   // xTaskCreate(vIMUPrintDataTask, "IMUPrintDataTask", 128, NULL,
-  //             tskIDLE_PRIORITY + 2, &xIMUPrintDataTask);
+  //             tskIDLE_PRIORITY, &xIMUPrintDataTask);
   xTaskCreate(vZigbeeMessageRecordTask, "ZigbeeMessageRecordTask", 256, NULL,
-              tskIDLE_PRIORITY + 2, NULL);
+              tskIDLE_PRIORITY, NULL);
   xTaskCreate(vPlayerUpdateTask, "PlayerUpdateTask", 128, NULL,
-              tskIDLE_PRIORITY + 2, NULL);
+              tskIDLE_PRIORITY, NULL);
   xTaskCreate(vPlayerPrintInfoTask, "PlayerPrintInfoTask", 128, NULL,
-              tskIDLE_PRIORITY + 2, NULL);
+              tskIDLE_PRIORITY, NULL);
 
   vTaskStartScheduler();
 }
 
 void loop() {
-  switch (player.getPlayerState()) {
-  case IDLE:
-    if (player.getPlayerInfo().health / player.getPlayerInfo().maxHealth <
-        0.2) {
-      player.setPlayerState(FLEEING);
-    } else if (player.getPlayerInfo().emeraldCount > 8) {
-      player.setPlayerState(ATTACKING);
-    } else {
-      player.setPlayerState(COLLECTING);
-    }
-    break;
-  case COLLECTING:
-
-    break;
-  case ATTACKING:
-    break;
-  case FLEEING:
-    break;
+  if (millis() - lastLoopTime > 1000) {
+    SerialUART1.println("Hello, world!");
+    lastLoopTime = millis();
   }
 }

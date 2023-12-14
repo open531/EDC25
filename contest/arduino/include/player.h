@@ -14,6 +14,14 @@
 
 enum GameStage { READY, RUNNING, BATTLING, FINISHED };
 
+enum Item {
+  AGILITY_BOOST,
+  HEALTH_BOOST,
+  STRENGTH_BOOST,
+  WOOL,
+  POTION_OF_HEALING
+};
+
 struct Position {
   float_t x;
   float_t y;
@@ -89,7 +97,7 @@ public:
 
   void attack(uint8_t chunk);     // 攻击
   void placeBlock(uint8_t chunk); // 放置方块
-  void trade(uint8_t item);       // 交易
+  void trade(Item item);          // 交易
 
   std::vector<Grid> AStar(Grid src, Grid dst); // A*寻路
   std::vector<Grid> BFS(Grid src, Grid dst);   // BFS寻路

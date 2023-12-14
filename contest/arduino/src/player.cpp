@@ -170,9 +170,10 @@ void Player::placeBlock(uint8_t chunk) {
  *
  * @param item 物品
  */
-void Player::trade(uint8_t item) {
+void Player::trade(Item item) {
   if (_zigbee != NULL) {
-    uint8_t msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, (uint8_t)(0x02 ^ item),
+    uint8_t msg[8] = {0x55, 0xAA, 0x00,
+                      0x00, 0x02, (uint8_t)(0x02 ^ (uint8_t)item),
                       0x02, item};
     _zigbee->send(msg, 8);
   }
@@ -324,6 +325,8 @@ void Player::faceTo(Grid dst, int speed = DEFAULT_SPEED) {
       if (abs(angleCurrent - angleTarget) > 1) {
         angleCurrent = _jy62->getAngl().yaw;
         _tb6612fng->turnLeft(speed);
+      } else {
+        _tb6612fng->stop();
       }
     } else {
       if (angleTarget - angleCurrent < -180) {
@@ -332,6 +335,8 @@ void Player::faceTo(Grid dst, int speed = DEFAULT_SPEED) {
       if (abs(angleCurrent - angleTarget) > 1) {
         angleCurrent = _jy62->getAngl().yaw;
         _tb6612fng->turnRight(speed);
+      } else {
+        _tb6612fng->stop();
       }
     }
   }
