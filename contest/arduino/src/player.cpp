@@ -27,6 +27,7 @@ Player::Player() {
   _mapInfo.ironMine.clear();
   _mapInfo.goldMine.clear();
   _mapInfo.diamondMine.clear();
+  _playerState = IDLE;
   _directionFix = 0;
   _lastUpdateTicks = -1;
 }
@@ -230,13 +231,47 @@ std::vector<Grid> Player::BFS(Grid src, Grid dst) {
 }
 
 /**
+ * @brief 计算角度
+ *
+ * @param src 起点
+ * @param dst 终点
+ * @return double 角度
+ */
+double Player::calculateAngle(Position src, Position dst) {
+  double angle = atan2(dst.y - src.y, dst.x - src.x) * 180 / PI;
+  if (angle > 180) {
+    angle -= 360;
+  } else if (angle < -180) {
+    angle += 360;
+  }
+  return angle;
+}
+
+/**
+ * @brief 计算角度
+ *
+ * @param src 起点
+ * @param dst 终点
+ * @return double 角度
+ */
+double Player::calculateAngle(Position src, Grid dst) {
+  double angle = atan2(dst.y + 0.5 - src.y, dst.x + 0.5 - src.x) * 180 / PI;
+  if (angle > 180) {
+    angle -= 360;
+  } else if (angle < -180) {
+    angle += 360;
+  }
+  return angle;
+}
+
+/**
  * @brief 左转
  *
- * @param angle
- * @param speed
+ * @param angle 角度
+ * @param speed 速度
  */
-void Player::turnLeft(double angle, int speed) {
-  if (_tb6612fng != NULL) {
+void Player::turnLeft(double angle, int speed = DEFAULT_SPEED) {
+  if (_jy62 != NULL && _tb6612fng != NULL) {
     double angleCurrent = _jy62->getAngl().yaw;
     double angleTarget = angleCurrent + angle;
     if (angleTarget > 180) {
@@ -244,22 +279,21 @@ void Player::turnLeft(double angle, int speed) {
     } else if (angleTarget < -180) {
       angleTarget += 360;
     }
-    while (abs(angleCurrent - angleTarget) > 1) {
+    if (abs(angleCurrent - angleTarget) > 1) {
       angleCurrent = _jy62->getAngl().yaw;
       _tb6612fng->turnLeft(speed);
     }
-    _tb6612fng->stop();
   }
 }
 
 /**
  * @brief 右转
  *
- * @param angle
- * @param speed
+ * @param angle 角度
+ * @param speed 速度
  */
-void Player::turnRight(double angle, int speed) {
-  if (_tb6612fng != NULL) {
+void Player::turnRight(double angle, int speed = DEFAULT_SPEED) {
+  if (_jy62 != NULL && _tb6612fng != NULL) {
     double angleCurrent = _jy62->getAngl().yaw;
     double angleTarget = angleCurrent - angle;
     if (angleTarget > 180) {
@@ -267,11 +301,55 @@ void Player::turnRight(double angle, int speed) {
     } else if (angleTarget < -180) {
       angleTarget += 360;
     }
-    while (abs(angleCurrent - angleTarget) > 1) {
+    if (abs(angleCurrent - angleTarget) > 1) {
       angleCurrent = _jy62->getAngl().yaw;
       _tb6612fng->turnRight(speed);
     }
-    _tb6612fng->stop();
+  }
+}
+
+void Player::faceTo(Grid dst, int speed = DEFAULT_SPEED) {
+  if (_jy62 != NULL && _tb6612fng != NULL) {
+    double angleCurrent = _jy62->getAngl().yaw;
+    double angleTarget = calculateAngle(_playerInfo.position, dst);
+    if (angleTarget > 180) {
+      angleTarget -= 360;
+    } else if (angleTarget < -180) {
+      angleTarget += 360;
+    }
+    if (angleTarget - angleCurrent > 0) {
+      if (angleTarget - angleCurrent > 180) {
+        angleTarget -= 360;
+      }
+      if (abs(angleCurrent - angleTarget) > 1) {
+        angleCurrent = _jy62->getAngl().yaw;
+        _tb6612fng->turnLeft(speed);
+      }
+    } else {
+      if (angleTarget - angleCurrent < -180) {
+        angleTarget += 360;
+      }
+      if (abs(angleCurrent - angleTarget) > 1) {
+        angleCurrent = _jy62->getAngl().yaw;
+        _tb6612fng->turnRight(speed);
+      }
+    }
+  }
+}
+
+/**
+ * @brief 移动到目标
+ *
+ * @param dst 目的地
+ * @param speed 速度
+ */
+void Player::moveTo(Grid dst, int speed = DEFAULT_SPEED) {
+  if (_jy62 != NULL && _tb6612fng != NULL) {
+    std::vector<Grid> path = BFS(_playerInfo.position, dst);
+    if (path.size() > 1) {
+      faceTo(path[1], speed);
+      _tb6612fng->forward(speed);
+    }
   }
 }
 
@@ -281,11 +359,25 @@ PlayerInfo Player::getPlayerInfo() { return _playerInfo; }
 // @brief 获取地图信息
 MapInfo Player::getMapInfo() { return _mapInfo; }
 
+// @brief 获取玩家状态
+PlayerState Player::getPlayerState() { return _playerState; }
+
+// @brief 获取上次更新的tick数
+int32_t Player::getLastUpdateTicks() { return _lastUpdateTicks; }
+
+// @brief 获取期望的绿宝石数量
+int8_t Player::getDesiredEmeraldCount() { return _desiredEmeraldCount; }
+
 // @brief 设置玩家信息
 void Player::setPlayerInfo(PlayerInfo playerInfo) { _playerInfo = playerInfo; }
 
 // @brief 设置地图信息
 void Player::setMapInfo(MapInfo mapInfo) { _mapInfo = mapInfo; }
+
+// @brief 设置玩家状态
+void Player::setPlayerState(PlayerState playerState) {
+  _playerState = playerState;
+}
 
 // @brief 设置CanMV K210
 void Player::setCanMVK210(CanMVK210 *canmvk210) { _canmvk210 = canmvk210; }
@@ -305,4 +397,9 @@ void Player::setZigbee(Zigbee *zigbee) { _zigbee = zigbee; }
 // @brief 设置上次更新的tick数
 void Player::setLastUpdateTicks(int32_t lastUpdateTicks) {
   _lastUpdateTicks = lastUpdateTicks;
+}
+
+// @brief 设置期望的绿宝石数量
+void Player::setDesiredEmeraldCount(int8_t desiredEmeraldCount) {
+  _desiredEmeraldCount = desiredEmeraldCount;
 }

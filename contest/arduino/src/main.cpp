@@ -83,10 +83,30 @@ void setup() {
               tskIDLE_PRIORITY + 2, NULL);
   xTaskCreate(vPlayerUpdateTask, "PlayerUpdateTask", 128, NULL,
               tskIDLE_PRIORITY + 2, NULL);
-  // xTaskCreate(vPlayerPrintInfoTask, "PlayerPrintInfoTask", 128, NULL,
-  //             tskIDLE_PRIORITY + 2, NULL);
+  xTaskCreate(vPlayerPrintInfoTask, "PlayerPrintInfoTask", 128, NULL,
+              tskIDLE_PRIORITY + 2, NULL);
 
   vTaskStartScheduler();
 }
 
-void loop() {}
+void loop() {
+  switch (player.getPlayerState()) {
+  case IDLE:
+    if (player.getPlayerInfo().health / player.getPlayerInfo().maxHealth <
+        0.2) {
+      player.setPlayerState(FLEEING);
+    } else if (player.getPlayerInfo().emeraldCount > 8) {
+      player.setPlayerState(ATTACKING);
+    } else {
+      player.setPlayerState(COLLECTING);
+    }
+    break;
+  case COLLECTING:
+
+    break;
+  case ATTACKING:
+    break;
+  case FLEEING:
+    break;
+  }
+}
