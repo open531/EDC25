@@ -67,7 +67,7 @@ static void vPlayerUpdatePlayerInfoTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
     player.updatePlayerInfo();
-    vTaskDelay(configTICK_RATE_HZ);
+    vTaskDelay(250 / portTICK_PERIOD_MS);
   }
 }
 
