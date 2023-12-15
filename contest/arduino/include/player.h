@@ -11,7 +11,6 @@
 #include <vector>
 
 #define DEFAULT_SPEED 63
-#define SAFE_HOME_HEIGHT 2
 
 enum GameStage { READY, RUNNING, BATTLING, FINISHED };
 
@@ -125,6 +124,8 @@ public:
   void trade(Item item);          // 交易
   void
   updateStrategy(); // 升级属性//根据目前的属性和持有的绿宝石数量判断最优的升级策略
+
+  void shop(); // 在购物窗口将要关闭前花光绿宝石用于升级属性
 
   Grid findMineral(); // 根据过去采矿的记录、矿物价值和距离判断要开采的矿物
 

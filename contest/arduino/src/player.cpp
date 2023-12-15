@@ -33,8 +33,8 @@ Player::Player() {
   _home.y = 0;
   _lastUpdateTicks = -1;
   _lastAttackTicks = -1;
-  _desiredEmeraldCount = 5;
-  _leastEmeraldCount = 3;
+  _desiredEmeraldCount = 100;
+  _leastEmeraldCount = 8;
   _attackCooldown = 8.5;
   _homeHeight = 0;
   _safeHomeHeight = 2;
@@ -247,13 +247,38 @@ void Player::trade(Item item) {
 }
 
 void Player::updateStrategy() {
-  while (getPlayerInfo().emeraldCount >= getLeastEmeraldCount()) {
-    if (getPlayerInfo().maxHealth / 6 > getPlayerInfo().strength) {
+  do {
+    if (getPlayerInfo().maxHealth / 6 > getPlayerInfo().strength &&
+        getPlayerInfo().emeraldCount >= 64) {
       trade(STRENGTH_BOOST);
-    } else {
+    } else if (getPlayerInfo().emeraldCount >= 32) {
       trade(HEALTH_BOOST);
     }
+  } while (getPlayerInfo().emeraldCount >= getLeastEmeraldCount());
+}
+
+void Player::shop() { // 应该采用什么样的加点策略呢？
+  // 优先把血条补满吗？但是可能导致手上剩下31个绿宝石没有用
+  // 优先升级属性吗？但是可能导致血条只剩五格血而暴毙
+  int8_t best_boost = 0, Potion = 0;
+  int8_t money = getPlayerInfo().emeraldCount;
+  int8_t minus = getPlayerInfo().maxHealth - getPlayerInfo().health;
+  for (int8_t i = 0; 32 * i <= money; i++) {
+    int8_t boost = 3 * i;
+    int8_t PotionCount = money / 4 - i * 8;
+    if (PotionCount > minus)
+      boost += minus;
+    else
+      boost += PotionCount;
+    if (boost >= best_boost) {
+      best_boost = boost;
+      Potion = PotionCount;
+    }
   }
+  for (int8_t i = 0; i < (money - 4 * Potion) / 32; i++)
+    trade(HEALTH_BOOST);
+  while (getPlayerInfo().emeraldCount >= 4)
+    trade(POTION_OF_HEALING);
 }
 
 Grid Player::findMineral() {
@@ -634,13 +659,17 @@ int32_t Player::getLastAttackTicks() { return _lastAttackTicks; }
 // @brief 获取期望的绿宝石数量
 int8_t Player::getDesiredEmeraldCount() { return _desiredEmeraldCount; }
 // @brief 获取至少保留的绿宝石数量
-int8_t Player::getLeastEmeraldCount() { return _leastEmeraldCount; }
+int8_t Player::getLeastEmeraldCount() {
+  return _leastEmeraldCount + getPlayerInfo().elapsedTicks * 3 / 2000;
+}
 // @brief 获取攻击冷却
 double_t Player::getAttackCooldown() { return _attackCooldown; }
 // @brief 获取家的高度
 int8_t Player::getHomeHeight() { return _homeHeight; }
 // @brief 获取安全的家的高度
-int8_t Player::getSafeHomeHeight() { return _safeHomeHeight; }
+int8_t Player::getSafeHomeHeight() {
+  return _safeHomeHeight + getPlayerInfo().elapsedTicks / 4000;
+}
 
 // @brief 设置玩家信息
 void Player::setPlayerInfo(PlayerInfo playerInfo) { _playerInfo = playerInfo; }

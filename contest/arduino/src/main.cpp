@@ -118,67 +118,22 @@ static void vPlayerUpdateMineInfoTask(void *pvParameters) {
   }
 }
 
-// static void vPlayerChangeStatusTask(void *pvParameters) {
-//   UNUSED(pvParameters);
-//   while (1) {
-//     if (player.getPlayerInfo().gameStage == RUNNING ||
-//         player.getPlayerInfo().gameStage == BATTLING) {
-//       switch (player.getPlayerState()) {
-//       case IDLE:
-//         if (player.getPlayerInfo().health < 5 ||
-//             player.getHomeHeight() < SAFE_HOME_HEIGHT) {
-//           player.setPlayerState(FLEEING);
-//         } else if (player.calculateDistance(
-//                        player.getPlayerInfo().position,
-//                        player.getPlayerInfo().positionOpponent) < 8) {
-//           player.setPlayerState(ATTACKING);
-//         } else if (player.getPlayerInfo().emeraldCount < 5) {
-//           player.setPlayerState(COLLECTING);
-//         }
-//         break;
-//       case COLLECTING:
-//         if (player.getPlayerInfo().emeraldCount >=
-//             player.getDesiredEmeraldCount()) {
-//           player.setPlayerState(IDLE);
-//         }
-//         break;
-//       case ATTACKING:
-//         if (player.getPlayerInfo().health < 5) {
-//           player.setPlayerState(FLEEING);
-//         } else if (player.calculateDistance(
-//                        player.getPlayerInfo().position,
-//                        player.getPlayerInfo().positionOpponent) >= 8) {
-//           player.setPlayerState(IDLE);
-//         } else if (player.getPlayerInfo().elapsedTicks -
-//                        player.getLastAttackTicks() <
-//                    (player.getAttackCooldown() - 0.5) * 1000) {
-//           player.setPlayerState(FLEEING);
-//         }
-//         break;
-//       case FLEEING:
-//         if ((int8_t)player.getPlayerInfo().position.x == player.getHome().x
-//         &&
-//             (int8_t)player.getPlayerInfo().position.y == player.getHome().y)
-//             {
-//           player.setPlayerState(IDLE);
-//         }
-//         break;
-//       }
-//     }
-//     vTaskDelay(configTICK_RATE_HZ / 2);
-//   }
-// }
-
 static void vPlayerTradeWoolTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-    if (player.getPlayerInfo().gameStage == RUNNING ||
-        player.getPlayerInfo().gameStage == BATTLING) {
-      if (player.getPlayerInfo().woolCount <= 1) {
+    if (player.getPlayerInfo().gameStage == RUNNING &&
+        player.getPlayerInfo().elapsedTicks < 11400) {
+      if (player.getPlayerInfo().woolCount <= 1 &&
+          player.getPlayerInfo().emeraldCount >= 2) {
         player.trade(WOOL);
       }
+      if (player.getPlayerInfo().health <=
+              player.getPlayerInfo().maxHealth / 4 &&
+          player.getPlayerInfo().emeraldCount >= 4) {
+        player.trade(POTION_OF_HEALING);
+      }
     }
-    vTaskDelay(configTICK_RATE_HZ / 10);
+    vTaskDelay(configTICK_RATE_HZ / 4);
   }
 }
 
@@ -211,6 +166,8 @@ void setup() {
   //             tskIDLE_PRIORITY, NULL);
   xTaskCreate(vPlayerUpdateMineInfoTask, "PlayerUpdateMineInfoTask", 128, NULL,
               tskIDLE_PRIORITY, NULL);
+  xTaskCreate(vPlayerTradeWoolTask, "PlayerTradeWoolTask", 128, NULL,
+              tskIDLE_PRIORITY, NULL);
   vTaskStartScheduler();
 }
 
@@ -240,18 +197,22 @@ void loop() {
       player.isHome()) {
     player.updateStrategy();
   } // 升级属性
-  if (player.getHomeHeight() < player.getSafeHomeHeight() &&
-      !player.isNear(player.getPlayerInfo().position, player.getHome())) {
+
+  if (player.getPlayerInfo().elapsedTicks >= 11400 &&
+      player.getPlayerInfo().gameStage == RUNNING) {
     player.moveTo(player.getHome(), DEFAULT_SPEED);
-  } else if ((player.getPlayerInfo().gameStage == RUNNING ||
-              player.getPlayerInfo().gameStage == BATTLING) &&
+    player.shop();
+  } else if (player.getHomeHeight() < player.getSafeHomeHeight() &&
+             !player.isNear(player.getPlayerInfo().position,
+                            player.getHome())) {
+    player.moveTo(player.getHome(), DEFAULT_SPEED);
+  } else if (player.getPlayerInfo().gameStage == RUNNING &&
              player.getPlayerInfo().emeraldCount >
                  player.getDesiredEmeraldCount()) {
     player.moveTo(player.getHome(), DEFAULT_SPEED);
-  } else if (player.getPlayerInfo().gameStage == RUNNING ||
-             player.getPlayerInfo().gameStage == BATTLING) {
+  } else if (player.getPlayerInfo().gameStage == RUNNING) {
     Grid target = player.findMineral();
-    if (player.calculateDistance(player.getPlayerInfo().position, target) >=
+    if (player.calculateDistance(player.getPlayerInfo().position, target) <
         (player.getPlayerInfo().woolCount +
          player.getPlayerInfo().emeraldCount / 2)) {
       player.moveTo(target, DEFAULT_SPEED);
