@@ -147,30 +147,39 @@ void loop() {
        player.getPlayerInfo().gameStage == BATTLING) &&
       player.getPlayerInfo().health == 0) {
     player.reborn();
-  }
+  } // 若游戏进行阶段死亡则复活
   if ((player.getPlayerInfo().gameStage == RUNNING ||
        player.getPlayerInfo().gameStage == BATTLING) &&
       !setHome) {
     player.setHome(player.getPlayerInfo().position);
     setHome = true;
-  }
+  } // 初始化床的位置
   if (player.isNear(player.getPlayerInfo().position,
                     player.getPlayerInfo().positionOpponent)) {
     player.attack(player.getPlayerInfo().positionOpponent);
-  }
+  } // 若在攻击范围内则攻击
   if (player.isNear(player.getPlayerInfo().position, player.getHome()) &&
       player.getHomeHeight() < SAFE_HOME_HEIGHT) {
     player.placeBlock(player.getHome());
+  } // 若家的高度低于设定的安全高度则回家补充羊毛
+  if ((player.getPlayerInfo().gameStage == RUNNING ||
+       player.getPlayerInfo().gameStage == BATTLING) &&
+      player.isHome()) {
+    player.updateStrategy();
+  } // 升级属性
+
+  if (player.getHomeHeight() < SAFE_HOME_HEIGHT &&
+      !player.isNear(player.getPlayerInfo().position, player.getHome())) {
+    player.moveTo(player.getHome(), DEFAULT_SPEED);
+  } else if ((player.getPlayerInfo().gameStage == RUNNING ||
+              player.getPlayerInfo().gameStage == BATTLING) &&
+             player.getPlayerInfo().emeraldCount >
+                 player.getDesiredEmeraldCount()) {
+    player.moveTo(player.getHome(), DEFAULT_SPEED);
+  } else if (player.getPlayerInfo().gameStage == RUNNING ||
+             player.getPlayerInfo().gameStage == BATTLING) {
+    player.moveTo(player.findMineral(), DEFAULT_SPEED);
   }
-  switch (player.getPlayerState()) {
-  case IDLE:
-    break;
-  case COLLECTING:
-    break;
-  case ATTACKING:
-    break;
-  case FLEEING:
-    break;
-  }
+
   vTaskDelay(50);
 }

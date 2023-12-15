@@ -123,6 +123,10 @@ public:
   void placeBlock(uint8_t chunk); // 放置方块
   void placeBlock(Grid chunk);    // 放置方块
   void trade(Item item);          // 交易
+  void
+  updateStrategy(); // 升级属性//根据目前的属性和持有的绿宝石数量判断最优的升级策略
+
+  Grid findMineral(); // 根据过去采矿的记录、矿物价值和距离判断要开采的矿物
 
   std::vector<Grid> BFS(Grid src, Grid dst);     // BFS寻路
   std::vector<Grid> BFSPlus(Grid src, Grid dst); // BFS+寻路
@@ -132,6 +136,7 @@ public:
   int8_t calculateDistance(Position src, Position dst); // 计算距离
   int8_t calculateDistance(Position src, Grid dst);     // 计算距离
   boolean isNear(Position src, Grid dst);               // 是否相邻
+  boolean isHome();                                     // 是否在家
 
   void turnLeft(double angle, int speed);   // 左转
   void turnRight(double angle, int speed);  // 右转
@@ -154,6 +159,7 @@ public:
   int32_t getLastUpdateTicks(void);    // 获取上次更新的tick数
   int32_t getLastAttackTicks(void);    // 获取上次攻击的tick数
   int8_t getDesiredEmeraldCount(void); // 获取期望的绿宝石数量
+  int8_t getLeastEmeralddCount(void);  // 获取至少保留的绿宝石数量
   double_t getAttackCooldown(void);    // 获取攻击冷却
   int8_t getHomeHeight(void);          // 获取家的高度
   int8_t getSafeHomeHeight(void);      // 获取安全的家的高度
@@ -187,6 +193,7 @@ private:
   int32_t _lastUpdateTicks;    // 上次更新的tick数
   int32_t _lastAttackTicks;    // 上次攻击的tick数
   int8_t _desiredEmeraldCount; // 期望的绿宝石数量
+  int8_t _leastEmeralddCount;  // 至少保留的绿宝石数量
   double_t _attackCooldown;    // 攻击冷却
   int8_t _homeHeight;          // 家的高度
   int8_t _safeHomeHeight;      // 安全的家的高度

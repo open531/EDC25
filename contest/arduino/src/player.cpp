@@ -213,6 +213,16 @@ void Player::trade(Item item) {
   }
 }
 
+void Player::updateStrategy() {
+  while (getPlayerInfo().emeraldCount >= getLeastEmeralddCount()) {
+    if (getPlayerInfo().maxHealth / 6 > getPlayerInfo().strength) {
+      trade(STRENGTH_BOOST);
+    } else {
+      trade(HEALTH_BOOST);
+    }
+  }
+}
+
 /**
  * @brief BFS算法
  *
@@ -380,6 +390,11 @@ int8_t Player::calculateDistance(Position src, Grid dst) {
 
 boolean Player::isNear(Position src, Grid dst) {
   return abs(dst.x + 0.5 - src.x) < 1.5 && abs(dst.y + 0.5 - src.y) < 1.5;
+}
+
+boolean Player::isHome() {
+  return (int8_t)getPlayerInfo().position.x == getHome().x &&
+         (int8_t)getPlayerInfo().position.y == getHome().y;
 }
 
 /**
