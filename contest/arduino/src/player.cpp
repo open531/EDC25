@@ -54,6 +54,7 @@ void Player::updatePlayerInfo() {
     _playerInfo.strength = _zigbee->message[90 + 5];
     _playerInfo.emeraldCount = _zigbee->message[91 + 5];
     _playerInfo.woolCount = _zigbee->message[92 + 5];
+    _attackCooldown = max(8.5 - 0.25 * _playerInfo.agility, 0.5);
   }
 }
 
@@ -149,6 +150,7 @@ void Player::attack(uint8_t chunk) {
   if (_zigbee != NULL) {
     uint8_t msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, chunk, 0x00, chunk};
     _zigbee->send(msg, 8);
+    _lastAttackTicks = _playerInfo.elapsedTicks;
   }
 }
 
@@ -266,6 +268,28 @@ double Player::calculateAngle(Position src, Grid dst) {
 }
 
 /**
+ * @brief 计算距离
+ *
+ * @param src 起点
+ * @param dst 终点
+ * @return int8_t 距离
+ */
+int8_t Player::calculateDistance(Position src, Position dst) {
+  return (int8_t)(abs(dst.x - src.x) + abs(dst.y - src.y));
+}
+
+/**
+ * @brief 计算距离
+ *
+ * @param src 起点
+ * @param dst 终点
+ * @return int8_t 距离
+ */
+int8_t Player::calculateDistance(Position src, Grid dst) {
+  return (int8_t)(abs(dst.x + 0.5 - src.x) + abs(dst.y + 0.5 - src.y));
+}
+
+/**
  * @brief 左转
  *
  * @param angle 角度
@@ -367,11 +391,23 @@ MapInfo Player::getMapInfo() { return _mapInfo; }
 // @brief 获取玩家状态
 PlayerState Player::getPlayerState() { return _playerState; }
 
+// @brief 获取方向修正
+double_t Player::getDirectionFix() { return _directionFix; }
+
+// @brief 获取家的位置
+Grid Player::getHome() { return _home; }
+
 // @brief 获取上次更新的tick数
 int32_t Player::getLastUpdateTicks() { return _lastUpdateTicks; }
 
+// @brief 获取上次攻击的tick数
+int32_t Player::getLastAttackTicks() { return _lastAttackTicks; }
+
 // @brief 获取期望的绿宝石数量
 int8_t Player::getDesiredEmeraldCount() { return _desiredEmeraldCount; }
+
+// @brief 获取攻击冷却
+double_t Player::getAttackCooldown() { return _attackCooldown; }
 
 // @brief 设置玩家信息
 void Player::setPlayerInfo(PlayerInfo playerInfo) { _playerInfo = playerInfo; }
@@ -383,6 +419,14 @@ void Player::setMapInfo(MapInfo mapInfo) { _mapInfo = mapInfo; }
 void Player::setPlayerState(PlayerState playerState) {
   _playerState = playerState;
 }
+
+// @brief 设置方向修正
+void Player::setDirectionFix(double_t directionFix) {
+  _directionFix = directionFix;
+}
+
+// @brief 设置家的位置
+void Player::setHome(Grid home) { _home = home; }
 
 // @brief 设置CanMV K210
 void Player::setCanMVK210(CanMVK210 *canmvk210) { _canmvk210 = canmvk210; }

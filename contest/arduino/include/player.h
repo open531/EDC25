@@ -25,6 +25,26 @@ enum Item {
 struct Position {
   float_t x;
   float_t y;
+  Position() {}
+  Position(float_t x, float_t y) : x(x), y(y) {}
+  Position(const Position &position) : x(position.x), y(position.y) {}
+  Position &operator=(const Position &position) {
+    x = position.x + 0.5;
+    y = position.y + 0.5;
+    return *this;
+  }
+  Position operator+(const Position &position) const {
+    return Position(x + position.x, y + position.y);
+  }
+  Position operator-(const Position &position) const {
+    return Position(x - position.x, y - position.y);
+  }
+  bool operator==(const Position &position) const {
+    return x == position.x && y == position.y;
+  }
+  bool operator!=(const Position &position) const {
+    return x != position.x || y != position.y;
+  }
 };
 
 struct Grid {
@@ -102,8 +122,10 @@ public:
   std::vector<Grid> AStar(Grid src, Grid dst); // A*寻路
   std::vector<Grid> BFS(Grid src, Grid dst);   // BFS寻路
 
-  double calculateAngle(Position src, Position dst); // 计算角度
-  double calculateAngle(Position src, Grid dst);     // 计算角度
+  double calculateAngle(Position src, Position dst);    // 计算角度
+  double calculateAngle(Position src, Grid dst);        // 计算角度
+  int8_t calculateDistance(Position src, Position dst); // 计算距离
+  int8_t calculateDistance(Position src, Grid dst);     // 计算距离
 
   void turnLeft(double angle, int speed);  // 左转
   void turnRight(double angle, int speed); // 右转
@@ -113,12 +135,18 @@ public:
   PlayerInfo getPlayerInfo(void);      // 获取玩家信息
   MapInfo getMapInfo(void);            // 获取地图信息
   PlayerState getPlayerState(void);    // 获取玩家状态
+  double_t getDirectionFix(void);      // 获取方向修正
+  Grid getHome(void);                  // 获取家的位置
   int32_t getLastUpdateTicks(void);    // 获取上次更新的tick数
+  int32_t getLastAttackTicks(void);    // 获取上次攻击的tick数
   int8_t getDesiredEmeraldCount(void); // 获取期望的绿宝石数量
+  double_t getAttackCooldown(void);    // 获取攻击冷却
 
   void setPlayerInfo(PlayerInfo playerInfo);        // 设置玩家信息
   void setMapInfo(MapInfo mapInfo);                 // 设置地图信息
   void setPlayerState(PlayerState playerState);     // 设置玩家状态
+  void setDirectionFix(double_t directionFix);      // 设置方向修正
+  void setHome(Grid home);                          // 设置家的位置
   void setCanMVK210(CanMVK210 *canmvk210);          // 设置CanMV K210
   void setJY62(JY62 *jy62);                         // 设置IMU
   void setPID(PID *pid);                            // 设置PID
@@ -133,13 +161,16 @@ private:
   MapInfo _mapInfo;            // 地图信息
   PlayerState _playerState;    // 玩家状态
   double_t _directionFix;      // 方向修正
+  Grid _home;                  // 家的位置
   CanMVK210 *_canmvk210;       // CanMV K210
   JY62 *_jy62;                 // IMU
   PID *_pid;                   // PID
   TB6612FNG *_tb6612fng;       // 电机驱动
   Zigbee *_zigbee;             // Zigbee
   int32_t _lastUpdateTicks;    // 上次更新的tick数
+  int32_t _lastAttackTicks;    // 上次攻击的tick数
   int8_t _desiredEmeraldCount; // 期望的绿宝石数量
+  double_t _attackCooldown;    // 攻击冷却
 };
 
 #endif // PLAYER_H
