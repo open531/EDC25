@@ -494,7 +494,7 @@ void Player::faceTo(Grid dst, int speed = DEFAULT_SPEED) {
  * @param dst 目的地
  * @param speed 速度
  */
-void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
+bool Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
   if (_jy62 != NULL && _tb6612fng != NULL) {
     faceTo(dst, speed);
     if (_playerInfo.heightOfChunks[dst.x * 8 + dst.y] == 0) {
@@ -502,7 +502,7 @@ void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
         placeBlock(dst);
       } else {
         _tb6612fng->stop();
-        return;
+        return false;
       }
     }
     while (calculateDistance(_playerInfo.position, dst) > 0.2) {
@@ -510,6 +510,7 @@ void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
     }
     _tb6612fng->backward(speed);
     _tb6612fng->stop();
+    return true;
   }
 }
 
@@ -519,15 +520,15 @@ void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
  * @param dst 目的地
  * @param speed 速度
  */
-void Player::moveTo(Grid dst, int speed = DEFAULT_SPEED) {
+bool Player::moveTo(Grid dst, int speed = DEFAULT_SPEED) {
   if (_jy62 != NULL && _tb6612fng != NULL) {
     std::vector<Grid> path = BFS(_playerInfo.position, dst);
     for (int i = 0; i < path.size(); i++) {
       if (i + 1 < path.size() &&
           calculateDistance(_playerInfo.position, path[i + 1]) < 1.5) {
-        moveToNextGrid(path[i + 1], speed);
+        return moveToNextGrid(path[i + 1], speed);
       } else {
-        moveToNextGrid(path[i], speed);
+        return moveToNextGrid(path[i], speed);
       }
     }
   }
