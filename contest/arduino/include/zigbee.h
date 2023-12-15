@@ -15,6 +15,8 @@ public:
   uint8_t receive[ZIGBEE_MSG_LEN]; // 实时记录收到的信息
   uint8_t message[ZIGBEE_MSG_LEN]; // 确认无误后用于解码的信息
 
+  HardwareSerial *getSerial(void); // 获取串口
+
 private:
   HardwareSerial *_serial; // 串口
   int _baud;               // 波特率

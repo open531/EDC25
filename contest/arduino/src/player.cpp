@@ -60,8 +60,26 @@ void Player::updatePlayerInfo() {
 }
 
 void Player::updateMapInfo() {
-  if (_canmvk210 != NULL) {
-    // TODO
+  if (_canmvk210 != NULL &&
+      (_canmvk210->message[0] == 0x55 || _canmvk210->message[0] == 0x56) &&
+      _canmvk210->message[1] == 0xAA) {
+    uint8_t type = _canmvk210->message[0];
+    uint8_t len = _canmvk210->message[2];
+    uint8_t *data = _canmvk210->message + 3;
+    if (type == 0x55) {
+      _mapInfo.goldMine.clear();
+      for (int i = 0; i < len / 8; i++) {
+        _mapInfo.goldMine.push_back(Position(*((float_t *)(data + i * 8 + 0)),
+                                             *((float_t *)(data + i * 8 + 4))));
+      }
+    } else if (type == 0x56) {
+      _mapInfo.diamondMine.clear();
+      for (int i = 0; i < len / 8; i++) {
+        _mapInfo.diamondMine.push_back(
+            Position(*((float_t *)(data + i * 8 + 0)),
+                     *((float_t *)(data + i * 8 + 4))));
+      }
+    }
   }
 }
 
