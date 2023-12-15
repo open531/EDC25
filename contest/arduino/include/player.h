@@ -10,7 +10,7 @@
 #include <queue>
 #include <vector>
 
-#define DEFAULT_SPEED 100
+#define DEFAULT_SPEED 63
 #define SAFE_HOME_HEIGHT 2
 
 enum GameStage { READY, RUNNING, BATTLING, FINISHED };

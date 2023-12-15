@@ -180,10 +180,13 @@ void Player::attack(uint8_t chunk) {
  */
 void Player::attack(Grid chunk) {
   if (_zigbee != NULL) {
-    uint8_t msg[8] = {0x55, 0xAA,
-                      0x00, 0x00,
-                      0x02, (uint8_t)(0x00 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
-                      0x00, (uint8_t)(chunk.x * 8 + chunk.y)};
+    uint8_t msg[7] = {0x55,
+                      0xAA,
+                      0x02,
+                      0x00,
+                      (uint8_t)(0x00 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
+                      0x00,
+                      (uint8_t)(chunk.x * 8 + chunk.y)};
     _zigbee->send(msg, 8);
     _lastAttackTicks = _playerInfo.elapsedTicks;
   }
@@ -196,7 +199,7 @@ void Player::attack(Grid chunk) {
  */
 void Player::placeBlock(uint8_t chunk) {
   if (_zigbee != NULL) {
-    uint8_t msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, (uint8_t)(0x01 ^ chunk),
+    uint8_t msg[7] = {0x55, 0xAA, 0x02, 0x00, (uint8_t)(0x01 ^ chunk),
                       0x01, chunk};
     _zigbee->send(msg, 8);
   }
@@ -209,10 +212,13 @@ void Player::placeBlock(uint8_t chunk) {
  */
 void Player::placeBlock(Grid chunk) {
   if (_zigbee != NULL) {
-    uint8_t msg[8] = {0x55, 0xAA,
-                      0x00, 0x00,
-                      0x02, (uint8_t)(0x01 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
-                      0x01, (uint8_t)(chunk.x * 8 + chunk.y)};
+    uint8_t msg[7] = {0x55,
+                      0xAA,
+                      0x02,
+                      0x00,
+                      (uint8_t)(0x01 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
+                      0x01,
+                      (uint8_t)(chunk.x * 8 + chunk.y)};
     _zigbee->send(msg, 8);
   }
 }
