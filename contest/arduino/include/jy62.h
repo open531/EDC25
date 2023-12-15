@@ -77,9 +77,10 @@ public:
   float getTemp(void);  // 获取温度
   void printData(uint8_t type, HardwareSerial &serial); // 打印数据
 
+  HardwareSerial *getSerial(void); // 获取串口
+
   void decode(void); // 解码
 
-protected:
   uint8_t receive[JY62_MSG_LEN]; // 实时记录收到的信息
   uint8_t message[JY62_MSG_LEN]; // 确认无误后用于解码的信息
 

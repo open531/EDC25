@@ -36,9 +36,7 @@ void Zigbee::messageRecord(void) {
     sum ^= receive[i];
   }
   if (sum == receive[4]) {
-    for (int i = 0; i < len + 5; i++) {
-      message[i] = receive[i];
-    }
+    memcpy(message, receive, len + 5);
   }
 }
 
@@ -49,3 +47,6 @@ void Zigbee::messageRecord(void) {
  * @param len 数据长度
  */
 void Zigbee::send(uint8_t *msg, uint8_t len) { _serial->write(msg, len); }
+
+// @brief 获取串口
+HardwareSerial *Zigbee::getSerial(void) { return _serial; }

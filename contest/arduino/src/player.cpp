@@ -60,8 +60,26 @@ void Player::updatePlayerInfo() {
 }
 
 void Player::updateMapInfo() {
-  if (_canmvk210 != NULL) {
-    // TODO
+  if (_canmvk210 != NULL &&
+      (_canmvk210->message[0] == 0x55 || _canmvk210->message[0] == 0x56) &&
+      _canmvk210->message[1] == 0xAA) {
+    uint8_t type = _canmvk210->message[0];
+    uint8_t len = _canmvk210->message[2];
+    uint8_t *data = _canmvk210->message + 3;
+    if (type == 0x55) {
+      _mapInfo.goldMine.clear();
+      for (int i = 0; i < len / 8; i++) {
+        _mapInfo.goldMine.push_back(Position(*((float_t *)(data + i * 8 + 0)),
+                                             *((float_t *)(data + i * 8 + 4))));
+      }
+    } else if (type == 0x56) {
+      _mapInfo.diamondMine.clear();
+      for (int i = 0; i < len / 8; i++) {
+        _mapInfo.diamondMine.push_back(
+            Position(*((float_t *)(data + i * 8 + 0)),
+                     *((float_t *)(data + i * 8 + 4))));
+      }
+    }
   }
 }
 
@@ -162,10 +180,13 @@ void Player::attack(uint8_t chunk) {
  */
 void Player::attack(Grid chunk) {
   if (_zigbee != NULL) {
-    uint8_t msg[8] = {0x55, 0xAA,
-                      0x00, 0x00,
-                      0x02, (uint8_t)(0x00 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
-                      0x00, (uint8_t)(chunk.x * 8 + chunk.y)};
+    uint8_t msg[7] = {0x55,
+                      0xAA,
+                      0x02,
+                      0x00,
+                      (uint8_t)(0x00 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
+                      0x00,
+                      (uint8_t)(chunk.x * 8 + chunk.y)};
     _zigbee->send(msg, 8);
     _lastAttackTicks = _playerInfo.elapsedTicks;
   }
@@ -178,7 +199,7 @@ void Player::attack(Grid chunk) {
  */
 void Player::placeBlock(uint8_t chunk) {
   if (_zigbee != NULL) {
-    uint8_t msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, (uint8_t)(0x01 ^ chunk),
+    uint8_t msg[7] = {0x55, 0xAA, 0x02, 0x00, (uint8_t)(0x01 ^ chunk),
                       0x01, chunk};
     _zigbee->send(msg, 8);
   }
@@ -191,10 +212,13 @@ void Player::placeBlock(uint8_t chunk) {
  */
 void Player::placeBlock(Grid chunk) {
   if (_zigbee != NULL) {
-    uint8_t msg[8] = {0x55, 0xAA,
-                      0x00, 0x00,
-                      0x02, (uint8_t)(0x01 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
-                      0x01, (uint8_t)(chunk.x * 8 + chunk.y)};
+    uint8_t msg[7] = {0x55,
+                      0xAA,
+                      0x02,
+                      0x00,
+                      (uint8_t)(0x01 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
+                      0x01,
+                      (uint8_t)(chunk.x * 8 + chunk.y)};
     _zigbee->send(msg, 8);
   }
 }
@@ -485,7 +509,7 @@ void Player::faceTo(Grid dst, int speed = DEFAULT_SPEED) {
  * @param dst 目的地
  * @param speed 速度
  */
-void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
+bool Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
   if (_jy62 != NULL && _tb6612fng != NULL) {
     faceTo(dst, speed);
     if (_playerInfo.heightOfChunks[dst.x * 8 + dst.y] == 0) {
@@ -493,7 +517,7 @@ void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
         placeBlock(dst);
       } else {
         _tb6612fng->stop();
-        return;
+        return false;
       }
     }
     while (calculateDistance(_playerInfo.position, dst) > 0.2) {
@@ -501,6 +525,7 @@ void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
     }
     _tb6612fng->backward(speed);
     _tb6612fng->stop();
+    return true;
   }
 }
 
@@ -510,15 +535,15 @@ void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
  * @param dst 目的地
  * @param speed 速度
  */
-void Player::moveTo(Grid dst, int speed = DEFAULT_SPEED) {
+bool Player::moveTo(Grid dst, int speed = DEFAULT_SPEED) {
   if (_jy62 != NULL && _tb6612fng != NULL) {
     std::vector<Grid> path = BFS(_playerInfo.position, dst);
     for (int i = 0; i < path.size(); i++) {
       if (i + 1 < path.size() &&
           calculateDistance(_playerInfo.position, path[i + 1]) < 1.5) {
-        moveToNextGrid(path[i + 1], speed);
+        return moveToNextGrid(path[i + 1], speed);
       } else {
-        moveToNextGrid(path[i], speed);
+        return moveToNextGrid(path[i], speed);
       }
     }
   }

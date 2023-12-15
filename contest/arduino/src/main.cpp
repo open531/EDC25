@@ -13,6 +13,7 @@ HardwareSerial SerialUART1(PB7, PB6);   // 和电脑通信串口
 HardwareSerial SerialUART2(PA3, PA2);   // 和jy62通信串口
 HardwareSerial SerialUART3(PB11, PB10); // 和zigbee通信串口
 
+CanMVK210 camera(&SerialUART1, 115200);
 JY62 imu(&SerialUART2, 115200);
 TB6612FNG motor(PB3, PC12, PD2, PB4, PC10, PC11, PB5);
 Zigbee zigbee(&SerialUART3, 115200);
@@ -27,46 +28,72 @@ boolean setHome = false;
 
 boolean runStatus = false;
 
+static void vCameraMessageRecordTask(void *pvParameters) {
+  UNUSED(pvParameters);
+  while (1) {
+    if (camera.getSerial()->available()) {
+      camera.messageRecord();
+    }
+  }
+}
+
 static void vIMUMessageRecordTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-    if (SerialUART2.available()) {
+    if (imu.getSerial()->available()) {
       imu.messageRecord();
     }
   }
 }
 
-static void vIMUPrintDataTask(void *pvParameters) {
-  UNUSED(pvParameters);
-  while (1) {
-    imu.printData(0, SerialUART1);
-    vTaskDelay(configTICK_RATE_HZ);
-  }
-}
+// static void vIMUPrintDataTask(void *pvParameters) {
+//   UNUSED(pvParameters);
+//   while (1) {
+//     imu.printData(0, SerialUART1);
+//     vTaskDelay(configTICK_RATE_HZ);
+//   }
+// }
 
 static void vZigbeeMessageRecordTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-    zigbee.messageRecord();
-    vTaskDelay(configTICK_RATE_HZ);
+    if (zigbee.getSerial()->available()) {
+      zigbee.messageRecord();
+    }
   }
 }
 
-static void vPlayerUpdateTask(void *pvParameters) {
+static void vPlayerUpdatePlayerInfoTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
     player.updatePlayerInfo();
+    vTaskDelay(250 / portTICK_PERIOD_MS);
+  }
+}
+
+// static void vPlayerPrintPlayerInfoTask(void *pvParameters) {
+//   UNUSED(pvParameters);
+//   while (1) {
+//     player.printPlayerInfo(SerialUART1);
+//     vTaskDelay(configTICK_RATE_HZ * 2);
+//   }
+// }
+
+static void vPlayerUpdateMapInfoTask(void *pvParameters) {
+  UNUSED(pvParameters);
+  while (1) {
+    player.updateMapInfo();
     vTaskDelay(configTICK_RATE_HZ);
   }
 }
 
-static void vPlayerPrintInfoTask(void *pvParameters) {
-  UNUSED(pvParameters);
-  while (1) {
-    player.printPlayerInfo(SerialUART1);
-    vTaskDelay(configTICK_RATE_HZ * 2);
-  }
-}
+// static void vPlayerPrintMapInfoTask(void *pvParameters) {
+//   UNUSED(pvParameters);
+//   while (1) {
+//     player.printMapInfo(SerialUART1);
+//     vTaskDelay(configTICK_RATE_HZ * 2);
+//   }
+// }
 
 static void vPlayerChangeStatusTask(void *pvParameters) {
   UNUSED(pvParameters);
@@ -124,18 +151,25 @@ void setup() {
   imu.initAngle();
   imu.calibrate();
   motor.init();
+  player.setCanMVK210(&camera);
   player.setJY62(&imu);
   player.setTB6612FNG(&motor);
   player.setZigbee(&zigbee);
+  xTaskCreate(vCameraMessageRecordTask, "CameraMessageRecordTask", 128, NULL,
+              tskIDLE_PRIORITY, NULL);
   xTaskCreate(vIMUMessageRecordTask, "IMUMessageRecordTask", 128, NULL,
               tskIDLE_PRIORITY, &xIMUMessageRecordTask);
   // xTaskCreate(vIMUPrintDataTask, "IMUPrintDataTask", 128, NULL,
   //             tskIDLE_PRIORITY, &xIMUPrintDataTask);
   xTaskCreate(vZigbeeMessageRecordTask, "ZigbeeMessageRecordTask", 256, NULL,
               tskIDLE_PRIORITY, NULL);
-  xTaskCreate(vPlayerUpdateTask, "PlayerUpdateTask", 128, NULL,
+  xTaskCreate(vPlayerUpdatePlayerInfoTask, "PlayerUpdatePlayerInfoTask", 128,
+              NULL, tskIDLE_PRIORITY, NULL);
+  // xTaskCreate(vPlayerPrintPlayerInfoTask, "PlayerPrintPlayerInfoTask", 128,
+  //             NULL, tskIDLE_PRIORITY, NULL);
+  xTaskCreate(vPlayerUpdateMapInfoTask, "PlayerUpdateMapInfoTask", 128, NULL,
               tskIDLE_PRIORITY, NULL);
-  // xTaskCreate(vPlayerPrintInfoTask, "PlayerPrintInfoTask", 128, NULL,
+  // xTaskCreate(vPlayerPrintMapInfoTask, "PlayerPrintMapInfoTask", 128, NULL,
   //             tskIDLE_PRIORITY, NULL);
   xTaskCreate(vPlayerChangeStatusTask, "PlayerChangeStatusTask", 128, NULL,
               tskIDLE_PRIORITY, NULL);

@@ -10,7 +10,7 @@
 #include <queue>
 #include <vector>
 
-#define DEFAULT_SPEED 100
+#define DEFAULT_SPEED 63
 #define SAFE_HOME_HEIGHT 2
 
 enum GameStage { READY, RUNNING, BATTLING, FINISHED };
@@ -141,8 +141,8 @@ public:
   void turnLeft(double angle, int speed);   // 左转
   void turnRight(double angle, int speed);  // 右转
   void faceTo(Grid dst, int speed);         // 面向目标
-  void moveToNextGrid(Grid dst, int speed); // 移动到下一个格子
-  void moveTo(Grid dst, int speed);         // 移动到目标
+  bool moveToNextGrid(Grid dst, int speed); // 移动到下一个格子
+  bool moveTo(Grid dst, int speed);         // 移动到目标
 
   void reborn(void); // 重生
 

@@ -30,9 +30,7 @@ void JY62::messageRecord(void) {
     sum += receive[i];
   }
   if (sum == receive[JY62_MSG_LEN - 1]) {
-    for (int i = 0; i < JY62_MSG_LEN; i++) {
-      message[i] = receive[i];
-    }
+    memcpy(message, receive, JY62_MSG_LEN);
     decode();
   }
 }
@@ -189,3 +187,6 @@ void JY62::decodeAngl(void) {
 void JY62::decodeTemp(void) {
   _temp.temp = (float)((int16_t)(message[9] << 8 | message[8])) / 340.0 + 36.53;
 }
+
+// @brief 获取串口
+HardwareSerial *JY62::getSerial(void) { return _serial; }
