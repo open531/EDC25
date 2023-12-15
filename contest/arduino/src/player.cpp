@@ -258,20 +258,23 @@ void Player::updateStrategy() {
 
 Grid Player::findMineral() {
   Grid mineral;
-  double distance = 100;
+  double score = -1;
   for (int i = 0; i < _mapInfo.goldMine.size(); i++) {
-    if (calculateDistance(_playerInfo.position, _mapInfo.goldMine[i]) <
-        distance) {
+    if ((_playerInfo.elapsedTicks - _lastVisitedGoldMine[i]) /
+            calculateDistance(_playerInfo.position, _mapInfo.goldMine[i]) >=
+        score) {
       mineral = _mapInfo.goldMine[i];
-      distance = calculateDistance(_playerInfo.position, _mapInfo.goldMine[i]);
+      score = (_playerInfo.elapsedTicks - _lastVisitedGoldMine[i]) /
+              calculateDistance(_playerInfo.position, _mapInfo.goldMine[i]);
     }
   }
   for (int i = 0; i < _mapInfo.diamondMine.size(); i++) {
-    if (calculateDistance(_playerInfo.position, _mapInfo.diamondMine[i]) <
-        distance) {
+    if ((_playerInfo.elapsedTicks - _lastVisitedDiamondMine[i]) * 4 /
+            calculateDistance(_playerInfo.position, _mapInfo.diamondMine[i]) >=
+        score) {
       mineral = _mapInfo.diamondMine[i];
-      distance =
-          calculateDistance(_playerInfo.position, _mapInfo.diamondMine[i]);
+      score = (_playerInfo.elapsedTicks - _lastVisitedDiamondMine[i]) * 4 /
+              calculateDistance(_playerInfo.position, _mapInfo.diamondMine[i]);
     }
   }
   return mineral;
