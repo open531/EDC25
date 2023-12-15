@@ -10,7 +10,8 @@
 #include <queue>
 #include <vector>
 
-#define DEFAULT_SPEED 255
+#define DEFAULT_SPEED 100
+#define SAFE_HOME_HEIGHT 2
 
 enum GameStage { READY, RUNNING, BATTLING, FINISHED };
 
@@ -21,6 +22,8 @@ enum Item {
   WOOL,
   POTION_OF_HEALING
 };
+
+const int8_t itemCost[5] = {32, 32, 64, 2, 4};
 
 struct Position {
   float_t x;
@@ -116,31 +119,44 @@ public:
   void printMapInfo(HardwareSerial &serial);    // 打印地图信息
 
   void attack(uint8_t chunk);     // 攻击
+  void attack(Grid chunk);        // 攻击
   void placeBlock(uint8_t chunk); // 放置方块
+  void placeBlock(Grid chunk);    // 放置方块
   void trade(Item item);          // 交易
 
-  std::vector<Grid> AStar(Grid src, Grid dst); // A*寻路
-  std::vector<Grid> BFS(Grid src, Grid dst);   // BFS寻路
+  std::vector<Grid> BFS(Grid src, Grid dst);     // BFS寻路
+  std::vector<Grid> BFSPlus(Grid src, Grid dst); // BFS+寻路
 
   double calculateAngle(Position src, Position dst);    // 计算角度
   double calculateAngle(Position src, Grid dst);        // 计算角度
   int8_t calculateDistance(Position src, Position dst); // 计算距离
   int8_t calculateDistance(Position src, Grid dst);     // 计算距离
+  boolean isNear(Position src, Grid dst);               // 是否相邻
 
-  void turnLeft(double angle, int speed);  // 左转
-  void turnRight(double angle, int speed); // 右转
-  void faceTo(Grid dst, int speed);        // 面向目标
-  void moveTo(Grid dst, int speed);        // 移动到目标
+  void turnLeft(double angle, int speed);   // 左转
+  void turnRight(double angle, int speed);  // 右转
+  void faceTo(Grid dst, int speed);         // 面向目标
+  void moveToNextGrid(Grid dst, int speed); // 移动到下一个格子
+  void moveTo(Grid dst, int speed);         // 移动到目标
+
+  void reborn(void); // 重生
 
   PlayerInfo getPlayerInfo(void);      // 获取玩家信息
   MapInfo getMapInfo(void);            // 获取地图信息
   PlayerState getPlayerState(void);    // 获取玩家状态
   double_t getDirectionFix(void);      // 获取方向修正
   Grid getHome(void);                  // 获取家的位置
+  CanMVK210 *getCanMVK210(void);       // 获取CanMV K210
+  JY62 *getJY62(void);                 // 获取IMU
+  PID *getPID(void);                   // 获取PID
+  TB6612FNG *getTB6612FNG(void);       // 获取电机驱动
+  Zigbee *getZigbee(void);             // 获取Zigbee
   int32_t getLastUpdateTicks(void);    // 获取上次更新的tick数
   int32_t getLastAttackTicks(void);    // 获取上次攻击的tick数
   int8_t getDesiredEmeraldCount(void); // 获取期望的绿宝石数量
   double_t getAttackCooldown(void);    // 获取攻击冷却
+  int8_t getHomeHeight(void);          // 获取家的高度
+  int8_t getSafeHomeHeight(void);      // 获取安全的家的高度
 
   void setPlayerInfo(PlayerInfo playerInfo);        // 设置玩家信息
   void setMapInfo(MapInfo mapInfo);                 // 设置地图信息
@@ -155,6 +171,7 @@ public:
   void setLastUpdateTicks(int32_t lastUpdateTicks); // 设置上次更新的tick数
   void
   setDesiredEmeraldCount(int8_t desiredEmeraldCount); // 设置期望的绿宝石数量
+  void setSafeHomeHeight(int8_t safeHomeHeight); // 设置家的高度
 
 private:
   PlayerInfo _playerInfo;      // 玩家信息
@@ -171,6 +188,8 @@ private:
   int32_t _lastAttackTicks;    // 上次攻击的tick数
   int8_t _desiredEmeraldCount; // 期望的绿宝石数量
   double_t _attackCooldown;    // 攻击冷却
+  int8_t _homeHeight;          // 家的高度
+  int8_t _safeHomeHeight;      // 安全的家的高度
 };
 
 #endif // PLAYER_H

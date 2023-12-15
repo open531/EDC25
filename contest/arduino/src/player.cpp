@@ -55,6 +55,7 @@ void Player::updatePlayerInfo() {
     _playerInfo.emeraldCount = _zigbee->message[91 + 5];
     _playerInfo.woolCount = _zigbee->message[92 + 5];
     _attackCooldown = max(8.5 - 0.25 * _playerInfo.agility, 0.5);
+    _homeHeight = _playerInfo.heightOfChunks[_home.x * 8 + _home.y];
   }
 }
 
@@ -155,6 +156,22 @@ void Player::attack(uint8_t chunk) {
 }
 
 /**
+ * @brief 攻击
+ *
+ * @param chunk 区块
+ */
+void Player::attack(Grid chunk) {
+  if (_zigbee != NULL) {
+    uint8_t msg[8] = {0x55, 0xAA,
+                      0x00, 0x00,
+                      0x02, (uint8_t)(0x00 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
+                      0x00, (uint8_t)(chunk.x * 8 + chunk.y)};
+    _zigbee->send(msg, 8);
+    _lastAttackTicks = _playerInfo.elapsedTicks;
+  }
+}
+
+/**
  * @brief 放置方块
  *
  * @param chunk 区块
@@ -163,6 +180,21 @@ void Player::placeBlock(uint8_t chunk) {
   if (_zigbee != NULL) {
     uint8_t msg[8] = {0x55, 0xAA, 0x00, 0x00, 0x02, (uint8_t)(0x01 ^ chunk),
                       0x01, chunk};
+    _zigbee->send(msg, 8);
+  }
+}
+
+/**
+ * @brief 放置方块
+ *
+ * @param chunk 区块
+ */
+void Player::placeBlock(Grid chunk) {
+  if (_zigbee != NULL) {
+    uint8_t msg[8] = {0x55, 0xAA,
+                      0x00, 0x00,
+                      0x02, (uint8_t)(0x01 ^ (uint8_t)(chunk.x * 8 + chunk.y)),
+                      0x01, (uint8_t)(chunk.x * 8 + chunk.y)};
     _zigbee->send(msg, 8);
   }
 }
@@ -194,11 +226,68 @@ std::vector<Grid> Player::BFS(Grid src, Grid dst) {
   for (int i = 0; i < 8; i++) {
     memcpy(map[i], _playerInfo.heightOfChunks + i * 8, 8);
   }
-  std::queue<Grid> q;
-  q.push(src);
   int8_t pre[8][8];
   memset(pre, -1, sizeof(pre));
   pre[src.x][src.y] = 0;
+  std::queue<Grid> q;
+  q.push(src);
+  Grid dir[4] = {Grid(0, 1), Grid(0, -1), Grid(1, 0), Grid(-1, 0)};
+  while (!q.empty()) {
+    Grid cur = q.front();
+    q.pop();
+    if (cur == dst) {
+      break;
+    }
+    for (int i = 0; i < 4; i++) {
+      Grid next = cur + dir[i];
+      if (next.x < 0 || next.x >= 8 || next.y < 0 || next.y >= 8) {
+        continue;
+      }
+      if (pre[next.x][next.y] != -1) {
+        continue;
+      }
+      if (map[next.x][next.y] == 0) {
+        continue;
+      }
+      pre[next.x][next.y] = i;
+      q.push(next);
+    }
+  }
+  if (pre[dst.x][dst.y] != -1) {
+    Grid cur = dst;
+    while (cur != src) {
+      path.push_back(cur);
+      cur = cur - dir[pre[cur.x][cur.y]];
+    }
+    path.push_back(src);
+    std::reverse(path.begin(), path.end());
+  }
+  return path;
+}
+
+/**
+ * @brief BFS算法
+ *
+ * @param src 起点
+ * @param dst 终点
+ * @return std::vector<Grid> 路径
+ */
+std::vector<Grid> Player::BFSPlus(Grid src, Grid dst) {
+  std::vector<Grid> path;
+  int8_t map[8][8];
+  for (int i = 0; i < 8; i++) {
+    memcpy(map[i], _playerInfo.heightOfChunks + i * 8, 8);
+  }
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 4; j++) {
+      map[i][j] += 1;
+    }
+  }
+  int8_t pre[8][8];
+  memset(pre, -1, sizeof(pre));
+  pre[src.x][src.y] = 0;
+  std::queue<Grid> q;
+  q.push(src);
   Grid dir[4] = {Grid(0, 1), Grid(0, -1), Grid(1, 0), Grid(-1, 0)};
   while (!q.empty()) {
     Grid cur = q.front();
@@ -289,6 +378,10 @@ int8_t Player::calculateDistance(Position src, Grid dst) {
   return (int8_t)(abs(dst.x + 0.5 - src.x) + abs(dst.y + 0.5 - src.y));
 }
 
+boolean Player::isNear(Position src, Grid dst) {
+  return abs(dst.x + 0.5 - src.x) < 1.5 && abs(dst.y + 0.5 - src.y) < 1.5;
+}
+
 /**
  * @brief 左转
  *
@@ -307,6 +400,9 @@ void Player::turnLeft(double angle, int speed = DEFAULT_SPEED) {
     if (abs(angleCurrent - angleTarget) > 1) {
       angleCurrent = _jy62->getAngl().yaw;
       _tb6612fng->turnLeft(speed);
+    } else {
+      _tb6612fng->turnRight(speed);
+      _tb6612fng->stop();
     }
   }
 }
@@ -326,10 +422,12 @@ void Player::turnRight(double angle, int speed = DEFAULT_SPEED) {
     } else if (angleTarget < -180) {
       angleTarget += 360;
     }
-    if (abs(angleCurrent - angleTarget) > 1) {
+    while (abs(angleCurrent - angleTarget) > 1) {
       angleCurrent = _jy62->getAngl().yaw;
       _tb6612fng->turnRight(speed);
     }
+    _tb6612fng->turnLeft(speed);
+    _tb6612fng->stop();
   }
 }
 
@@ -346,23 +444,48 @@ void Player::faceTo(Grid dst, int speed = DEFAULT_SPEED) {
       if (angleTarget - angleCurrent > 180) {
         angleTarget -= 360;
       }
-      if (abs(angleCurrent - angleTarget) > 1) {
+      while (abs(angleCurrent - angleTarget) > 1) {
         angleCurrent = _jy62->getAngl().yaw;
         _tb6612fng->turnLeft(speed);
-      } else {
-        _tb6612fng->stop();
       }
+      _tb6612fng->turnRight(speed);
+      _tb6612fng->stop();
     } else {
       if (angleTarget - angleCurrent < -180) {
         angleTarget += 360;
       }
-      if (abs(angleCurrent - angleTarget) > 1) {
+      while (abs(angleCurrent - angleTarget) > 1) {
         angleCurrent = _jy62->getAngl().yaw;
         _tb6612fng->turnRight(speed);
+      }
+      _tb6612fng->turnLeft(speed);
+      _tb6612fng->stop();
+    }
+  }
+}
+
+/**
+ * @brief 移动到下一个格子
+ *
+ * @param dst 目的地
+ * @param speed 速度
+ */
+void Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
+  if (_jy62 != NULL && _tb6612fng != NULL) {
+    faceTo(dst, speed);
+    if (_playerInfo.heightOfChunks[dst.x * 8 + dst.y] == 0) {
+      if (_playerInfo.woolCount > 0) {
+        placeBlock(dst);
       } else {
         _tb6612fng->stop();
+        return;
       }
     }
+    while (calculateDistance(_playerInfo.position, dst) > 0.2) {
+      _tb6612fng->forward(speed);
+    }
+    _tb6612fng->backward(speed);
+    _tb6612fng->stop();
   }
 }
 
@@ -375,10 +498,31 @@ void Player::faceTo(Grid dst, int speed = DEFAULT_SPEED) {
 void Player::moveTo(Grid dst, int speed = DEFAULT_SPEED) {
   if (_jy62 != NULL && _tb6612fng != NULL) {
     std::vector<Grid> path = BFS(_playerInfo.position, dst);
-    if (path.size() > 1) {
-      faceTo(path[1], speed);
-      _tb6612fng->forward(speed);
+    for (int i = 0; i < path.size(); i++) {
+      if (i + 1 < path.size() &&
+          calculateDistance(_playerInfo.position, path[i + 1]) < 1.5) {
+        moveToNextGrid(path[i + 1], speed);
+      } else {
+        moveToNextGrid(path[i], speed);
+      }
     }
+  }
+}
+
+/**
+ * @brief 重生
+ *
+ */
+void Player::reborn() {
+  if (_jy62 != NULL && _tb6612fng != NULL) {
+    faceTo(_home, DEFAULT_SPEED);
+    while (calculateDistance(_playerInfo.position, _home) > 0.5) {
+      _tb6612fng->forward(DEFAULT_SPEED);
+    }
+    _tb6612fng->stop();
+  }
+  while (!_playerInfo.health) {
+    _tb6612fng->stop();
   }
 }
 
@@ -397,6 +541,21 @@ double_t Player::getDirectionFix() { return _directionFix; }
 // @brief 获取家的位置
 Grid Player::getHome() { return _home; }
 
+// @brief 获取CanMV K210
+CanMVK210 *Player::getCanMVK210() { return _canmvk210; }
+
+// @brief 获取IMU
+JY62 *Player::getJY62() { return _jy62; }
+
+// @brief 获取PID
+PID *Player::getPID() { return _pid; }
+
+// @brief 获取电机驱动
+TB6612FNG *Player::getTB6612FNG() { return _tb6612fng; }
+
+// @brief 获取Zigbee
+Zigbee *Player::getZigbee() { return _zigbee; }
+
 // @brief 获取上次更新的tick数
 int32_t Player::getLastUpdateTicks() { return _lastUpdateTicks; }
 
@@ -408,6 +567,12 @@ int8_t Player::getDesiredEmeraldCount() { return _desiredEmeraldCount; }
 
 // @brief 获取攻击冷却
 double_t Player::getAttackCooldown() { return _attackCooldown; }
+
+// @brief 获取家的高度
+int8_t Player::getHomeHeight() { return _homeHeight; }
+
+// @brief 获取安全的家的高度
+int8_t Player::getSafeHomeHeight() { return _safeHomeHeight; }
 
 // @brief 设置玩家信息
 void Player::setPlayerInfo(PlayerInfo playerInfo) { _playerInfo = playerInfo; }
@@ -451,4 +616,9 @@ void Player::setLastUpdateTicks(int32_t lastUpdateTicks) {
 // @brief 设置期望的绿宝石数量
 void Player::setDesiredEmeraldCount(int8_t desiredEmeraldCount) {
   _desiredEmeraldCount = desiredEmeraldCount;
+}
+
+// @brief 设置家的高度
+void Player::setSafeHomeHeight(int8_t safeHomeHeight) {
+  _safeHomeHeight = safeHomeHeight;
 }

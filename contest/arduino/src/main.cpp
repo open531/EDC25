@@ -23,6 +23,9 @@ TaskHandle_t xIMUMessageRecordTask;
 TaskHandle_t xIMUPrintDataTask;
 
 long lastLoopTime = 0;
+boolean setHome = false;
+
+boolean runStatus = false;
 
 static void vIMUMessageRecordTask(void *pvParameters) {
   UNUSED(pvParameters);
@@ -68,43 +71,47 @@ static void vPlayerPrintInfoTask(void *pvParameters) {
 static void vPlayerChangeStatusTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-    switch (player.getPlayerState()) {
-    case IDLE:
-      if (player.getPlayerInfo().health < 5) {
-        player.setPlayerState(FLEEING);
-      } else if (player.calculateDistance(
-                     player.getPlayerInfo().position,
-                     player.getPlayerInfo().positionOpponent) < 8) {
-        player.setPlayerState(ATTACKING);
-      } else if (player.getPlayerInfo().emeraldCount < 5) {
-        player.setPlayerState(COLLECTING);
+    if (player.getPlayerInfo().gameStage == RUNNING ||
+        player.getPlayerInfo().gameStage == BATTLING) {
+      switch (player.getPlayerState()) {
+      case IDLE:
+        if (player.getPlayerInfo().health < 5 ||
+            player.getHomeHeight() < SAFE_HOME_HEIGHT) {
+          player.setPlayerState(FLEEING);
+        } else if (player.calculateDistance(
+                       player.getPlayerInfo().position,
+                       player.getPlayerInfo().positionOpponent) < 8) {
+          player.setPlayerState(ATTACKING);
+        } else if (player.getPlayerInfo().emeraldCount < 5) {
+          player.setPlayerState(COLLECTING);
+        }
+        break;
+      case COLLECTING:
+        if (player.getPlayerInfo().emeraldCount >=
+            player.getDesiredEmeraldCount()) {
+          player.setPlayerState(IDLE);
+        }
+        break;
+      case ATTACKING:
+        if (player.getPlayerInfo().health < 5) {
+          player.setPlayerState(FLEEING);
+        } else if (player.calculateDistance(
+                       player.getPlayerInfo().position,
+                       player.getPlayerInfo().positionOpponent) >= 8) {
+          player.setPlayerState(IDLE);
+        } else if (player.getPlayerInfo().elapsedTicks -
+                       player.getLastAttackTicks() <
+                   (player.getAttackCooldown() - 0.5) * 1000) {
+          player.setPlayerState(FLEEING);
+        }
+        break;
+      case FLEEING:
+        if ((int8_t)player.getPlayerInfo().position.x == player.getHome().x &&
+            (int8_t)player.getPlayerInfo().position.y == player.getHome().y) {
+          player.setPlayerState(IDLE);
+        }
+        break;
       }
-      break;
-    case COLLECTING:
-      if (player.getPlayerInfo().emeraldCount >=
-          player.getDesiredEmeraldCount()) {
-        player.setPlayerState(IDLE);
-      }
-      break;
-    case ATTACKING:
-      if (player.getPlayerInfo().health < 5) {
-        player.setPlayerState(FLEEING);
-      } else if (player.calculateDistance(
-                     player.getPlayerInfo().position,
-                     player.getPlayerInfo().positionOpponent) >= 8) {
-        player.setPlayerState(IDLE);
-      } else if (player.getPlayerInfo().elapsedTicks -
-                     player.getLastAttackTicks() <
-                 (player.getAttackCooldown() - 0.5) * 1000) {
-        player.setPlayerState(FLEEING);
-      }
-      break;
-    case FLEEING:
-      if ((int8_t)player.getPlayerInfo().position.x == player.getHome().x &&
-          (int8_t)player.getPlayerInfo().position.y == player.getHome().y) {
-        player.setPlayerState(IDLE);
-      }
-      break;
     }
     vTaskDelay(configTICK_RATE_HZ / 2);
   }
@@ -130,14 +137,40 @@ void setup() {
               tskIDLE_PRIORITY, NULL);
   // xTaskCreate(vPlayerPrintInfoTask, "PlayerPrintInfoTask", 128, NULL,
   //             tskIDLE_PRIORITY, NULL);
-
+  xTaskCreate(vPlayerChangeStatusTask, "PlayerChangeStatusTask", 128, NULL,
+              tskIDLE_PRIORITY, NULL);
   vTaskStartScheduler();
 }
 
 void loop() {
-  if (millis() - lastLoopTime > 1000) {
-    SerialUART1.println("Hello, world!");
+  if ((player.getPlayerInfo().gameStage == RUNNING ||
+       player.getPlayerInfo().gameStage == BATTLING) &&
+      player.getPlayerInfo().health == 0) {
+    player.reborn();
   }
-  motor.forward(DEFAULT_SPEED);
-  lastLoopTime = xTaskGetTickCount();
+  if ((player.getPlayerInfo().gameStage == RUNNING ||
+       player.getPlayerInfo().gameStage == BATTLING) &&
+      !setHome) {
+    player.setHome(player.getPlayerInfo().position);
+    setHome = true;
+  }
+  if (player.isNear(player.getPlayerInfo().position,
+                    player.getPlayerInfo().positionOpponent)) {
+    player.attack(player.getPlayerInfo().positionOpponent);
+  }
+  if (player.isNear(player.getPlayerInfo().position, player.getHome()) &&
+      player.getHomeHeight() < SAFE_HOME_HEIGHT) {
+    player.placeBlock(player.getHome());
+  }
+  switch (player.getPlayerState()) {
+  case IDLE:
+    break;
+  case COLLECTING:
+    break;
+  case ATTACKING:
+    break;
+  case FLEEING:
+    break;
+  }
+  vTaskDelay(50);
 }
