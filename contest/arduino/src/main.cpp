@@ -169,6 +169,19 @@ static void vPlayerUpdateMineInfoTask(void *pvParameters) {
 //   }
 // }
 
+static void vPlayerTradeWoolTask(void *pvParameters) {
+  UNUSED(pvParameters);
+  while (1) {
+    if (player.getPlayerInfo().gameStage == RUNNING ||
+        player.getPlayerInfo().gameStage == BATTLING) {
+      if (player.getPlayerInfo().woolCount <= 1) {
+        player.trade(WOOL);
+      }
+    }
+    vTaskDelay(configTICK_RATE_HZ / 10);
+  }
+}
+
 void setup() {
   SerialUART1.begin(115200);
   imu.setBaud(115200);
@@ -217,16 +230,16 @@ void loop() {
                     player.getPlayerInfo().positionOpponent)) {
     player.attack(player.getPlayerInfo().positionOpponent);
   } // 若在攻击范围内则攻击
-  if (player.isNear(player.getPlayerInfo().position, player.getHome()) &&
-      player.getHomeHeight() < player.getSafeHomeHeight()) {
-    player.placeBlock(player.getHome());
+  if (player.isNear(player.getPlayerInfo().position, player.getHome())) {
+    while (player.getHomeHeight() < player.getSafeHomeHeight()) {
+      player.placeBlock(player.getHome());
+    }
   } // 若家的高度低于设定的安全高度则回家补充羊毛
   if ((player.getPlayerInfo().gameStage == RUNNING ||
        player.getPlayerInfo().gameStage == BATTLING) &&
       player.isHome()) {
     player.updateStrategy();
   } // 升级属性
-
   if (player.getHomeHeight() < player.getSafeHomeHeight() &&
       !player.isNear(player.getPlayerInfo().position, player.getHome())) {
     player.moveTo(player.getHome(), DEFAULT_SPEED);
@@ -237,7 +250,12 @@ void loop() {
     player.moveTo(player.getHome(), DEFAULT_SPEED);
   } else if (player.getPlayerInfo().gameStage == RUNNING ||
              player.getPlayerInfo().gameStage == BATTLING) {
-    player.moveTo(player.findMineral(), DEFAULT_SPEED);
+    Grid target = player.findMineral();
+    if (player.calculateDistance(player.getPlayerInfo().position, target) >=
+        (player.getPlayerInfo().woolCount +
+         player.getPlayerInfo().emeraldCount / 2)) {
+      player.moveTo(target, DEFAULT_SPEED);
+    }
   }
 
   vTaskDelay(50);
