@@ -570,7 +570,7 @@ bool Player::moveToNextGrid(Grid dst, int speed = DEFAULT_SPEED) {
  */
 bool Player::moveTo(Grid dst, int speed = DEFAULT_SPEED) {
   if (_jy62 != NULL && _tb6612fng != NULL) {
-    std::vector<Grid> path = BFS(_playerInfo.position, dst);
+    std::vector<Grid> path = BFSPlus(_playerInfo.position, dst);
     for (int i = 0; i < path.size(); i++) {
       if (i + 1 < path.size() &&
           calculateDistance(_playerInfo.position, path[i + 1]) < 1.5) {
