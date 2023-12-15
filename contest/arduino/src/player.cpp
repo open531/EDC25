@@ -30,6 +30,12 @@ Player::Player() {
   _playerState = IDLE;
   _directionFix = 0;
   _lastUpdateTicks = -1;
+  _lastAttackTicks = -1;
+  _desiredEmeraldCount = 5;
+  _leastEmeraldCount = 3;
+  _attackCooldown = 8.5;
+  _homeHeight = 0;
+  _safeHomeHeight = 2;
 }
 
 /**
@@ -238,13 +244,34 @@ void Player::trade(Item item) {
 }
 
 void Player::updateStrategy() {
-  while (getPlayerInfo().emeraldCount >= getLeastEmeralddCount()) {
+  while (getPlayerInfo().emeraldCount >= getLeastEmeraldCount()) {
     if (getPlayerInfo().maxHealth / 6 > getPlayerInfo().strength) {
       trade(STRENGTH_BOOST);
     } else {
       trade(HEALTH_BOOST);
     }
   }
+}
+
+Grid Player::findMineral() {
+  Grid mineral;
+  double distance = 100;
+  for (int i = 0; i < _mapInfo.goldMine.size(); i++) {
+    if (calculateDistance(_playerInfo.position, _mapInfo.goldMine[i]) <
+        distance) {
+      mineral = _mapInfo.goldMine[i];
+      distance = calculateDistance(_playerInfo.position, _mapInfo.goldMine[i]);
+    }
+  }
+  for (int i = 0; i < _mapInfo.diamondMine.size(); i++) {
+    if (calculateDistance(_playerInfo.position, _mapInfo.diamondMine[i]) <
+        distance) {
+      mineral = _mapInfo.diamondMine[i];
+      distance =
+          calculateDistance(_playerInfo.position, _mapInfo.diamondMine[i]);
+    }
+  }
+  return mineral;
 }
 
 /**
@@ -604,6 +631,9 @@ int32_t Player::getLastAttackTicks() { return _lastAttackTicks; }
 
 // @brief 获取期望的绿宝石数量
 int8_t Player::getDesiredEmeraldCount() { return _desiredEmeraldCount; }
+
+// @brief 获取至少保留的绿宝石数量
+int8_t Player::getLeastEmeraldCount() { return _leastEmeraldCount; }
 
 // @brief 获取攻击冷却
 double_t Player::getAttackCooldown() { return _attackCooldown; }
