@@ -8,7 +8,7 @@ from machine import UART
 # 设置摄像头分辨率和颜色模式
 sensor.reset()  # 初始化摄像头
 sensor.set_pixformat(sensor.RGB565)  # 设置颜色模式为RGB565
-sensor.set_framesize(sensor.QVGA)  # 设置图像分辨率为QVGA (320x240)
+sensor.set_framesize(sensor.QQVGA)  # 设置图像分辨率为QVGA (320x240)
 sensor.skip_frames(time=2000)  # 跳过2000ms的图像，使新设置生效
 sensor.set_auto_gain(False)  # 关闭自动增益
 sensor.set_auto_whitebal(False)  # 关闭白平衡
