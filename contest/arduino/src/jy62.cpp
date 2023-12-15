@@ -30,7 +30,9 @@ void JY62::messageRecord(void) {
     sum += receive[i];
   }
   if (sum == receive[JY62_MSG_LEN - 1]) {
-    memcpy(message, receive, JY62_MSG_LEN);
+    for (int i = 0; i < JY62_MSG_LEN; i++) {
+      message[i] = receive[i];
+    }
     decode();
   }
 }

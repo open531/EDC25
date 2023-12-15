@@ -27,7 +27,9 @@ void CanMVK210::messageRecord() {
     sum += receive[i];
   }
   if (sum == receive[len + 3]) {
-    memcpy(message, receive, len + 4);
+    for (int i = 0; i < len + 4; i++) {
+      message[i] = receive[i];
+    }
   }
 }
 

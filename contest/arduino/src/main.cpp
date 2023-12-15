@@ -95,54 +95,79 @@ static void vPlayerUpdateMapInfoTask(void *pvParameters) {
 //   }
 // }
 
-static void vPlayerChangeStatusTask(void *pvParameters) {
+static void vPlayerUpdateMineInfoTask(void *pvParameters) {
   UNUSED(pvParameters);
   while (1) {
-    if (player.getPlayerInfo().gameStage == RUNNING ||
-        player.getPlayerInfo().gameStage == BATTLING) {
-      switch (player.getPlayerState()) {
-      case IDLE:
-        if (player.getPlayerInfo().health < 5 ||
-            player.getHomeHeight() < SAFE_HOME_HEIGHT) {
-          player.setPlayerState(FLEEING);
-        } else if (player.calculateDistance(
-                       player.getPlayerInfo().position,
-                       player.getPlayerInfo().positionOpponent) < 8) {
-          player.setPlayerState(ATTACKING);
-        } else if (player.getPlayerInfo().emeraldCount < 5) {
-          player.setPlayerState(COLLECTING);
-        }
-        break;
-      case COLLECTING:
-        if (player.getPlayerInfo().emeraldCount >=
-            player.getDesiredEmeraldCount()) {
-          player.setPlayerState(IDLE);
-        }
-        break;
-      case ATTACKING:
-        if (player.getPlayerInfo().health < 5) {
-          player.setPlayerState(FLEEING);
-        } else if (player.calculateDistance(
-                       player.getPlayerInfo().position,
-                       player.getPlayerInfo().positionOpponent) >= 8) {
-          player.setPlayerState(IDLE);
-        } else if (player.getPlayerInfo().elapsedTicks -
-                       player.getLastAttackTicks() <
-                   (player.getAttackCooldown() - 0.5) * 1000) {
-          player.setPlayerState(FLEEING);
-        }
-        break;
-      case FLEEING:
-        if ((int8_t)player.getPlayerInfo().position.x == player.getHome().x &&
-            (int8_t)player.getPlayerInfo().position.y == player.getHome().y) {
-          player.setPlayerState(IDLE);
-        }
-        break;
+    for (int i = 0; i < player.getMapInfo().goldMine.size(); i++) {
+      if (player.getMapInfo().goldMine[i] == player.getPlayerInfo().position ||
+          player.getMapInfo().goldMine[i] ==
+              player.getPlayerInfo().positionOpponent) {
+        player.getLastVisitedGoldMine()[i] =
+            player.getPlayerInfo().elapsedTicks;
       }
     }
-    vTaskDelay(configTICK_RATE_HZ / 2);
+    for (int i = 0; i < player.getMapInfo().diamondMine.size(); i++) {
+      if (player.getMapInfo().diamondMine[i] ==
+              player.getPlayerInfo().position ||
+          player.getMapInfo().diamondMine[i] ==
+              player.getPlayerInfo().positionOpponent) {
+        player.getLastVisitedDiamondMine()[i] =
+            player.getPlayerInfo().elapsedTicks;
+      }
+    }
   }
 }
+
+// static void vPlayerChangeStatusTask(void *pvParameters) {
+//   UNUSED(pvParameters);
+//   while (1) {
+//     if (player.getPlayerInfo().gameStage == RUNNING ||
+//         player.getPlayerInfo().gameStage == BATTLING) {
+//       switch (player.getPlayerState()) {
+//       case IDLE:
+//         if (player.getPlayerInfo().health < 5 ||
+//             player.getHomeHeight() < SAFE_HOME_HEIGHT) {
+//           player.setPlayerState(FLEEING);
+//         } else if (player.calculateDistance(
+//                        player.getPlayerInfo().position,
+//                        player.getPlayerInfo().positionOpponent) < 8) {
+//           player.setPlayerState(ATTACKING);
+//         } else if (player.getPlayerInfo().emeraldCount < 5) {
+//           player.setPlayerState(COLLECTING);
+//         }
+//         break;
+//       case COLLECTING:
+//         if (player.getPlayerInfo().emeraldCount >=
+//             player.getDesiredEmeraldCount()) {
+//           player.setPlayerState(IDLE);
+//         }
+//         break;
+//       case ATTACKING:
+//         if (player.getPlayerInfo().health < 5) {
+//           player.setPlayerState(FLEEING);
+//         } else if (player.calculateDistance(
+//                        player.getPlayerInfo().position,
+//                        player.getPlayerInfo().positionOpponent) >= 8) {
+//           player.setPlayerState(IDLE);
+//         } else if (player.getPlayerInfo().elapsedTicks -
+//                        player.getLastAttackTicks() <
+//                    (player.getAttackCooldown() - 0.5) * 1000) {
+//           player.setPlayerState(FLEEING);
+//         }
+//         break;
+//       case FLEEING:
+//         if ((int8_t)player.getPlayerInfo().position.x == player.getHome().x
+//         &&
+//             (int8_t)player.getPlayerInfo().position.y == player.getHome().y)
+//             {
+//           player.setPlayerState(IDLE);
+//         }
+//         break;
+//       }
+//     }
+//     vTaskDelay(configTICK_RATE_HZ / 2);
+//   }
+// }
 
 void setup() {
   SerialUART1.begin(115200);
@@ -171,7 +196,7 @@ void setup() {
               tskIDLE_PRIORITY, NULL);
   // xTaskCreate(vPlayerPrintMapInfoTask, "PlayerPrintMapInfoTask", 128, NULL,
   //             tskIDLE_PRIORITY, NULL);
-  xTaskCreate(vPlayerChangeStatusTask, "PlayerChangeStatusTask", 128, NULL,
+  xTaskCreate(vPlayerUpdateMineInfoTask, "PlayerUpdateMineInfoTask", 128, NULL,
               tskIDLE_PRIORITY, NULL);
   vTaskStartScheduler();
 }
@@ -193,7 +218,7 @@ void loop() {
     player.attack(player.getPlayerInfo().positionOpponent);
   } // 若在攻击范围内则攻击
   if (player.isNear(player.getPlayerInfo().position, player.getHome()) &&
-      player.getHomeHeight() < SAFE_HOME_HEIGHT) {
+      player.getHomeHeight() < player.getSafeHomeHeight()) {
     player.placeBlock(player.getHome());
   } // 若家的高度低于设定的安全高度则回家补充羊毛
   if ((player.getPlayerInfo().gameStage == RUNNING ||
@@ -202,7 +227,7 @@ void loop() {
     player.updateStrategy();
   } // 升级属性
 
-  if (player.getHomeHeight() < SAFE_HOME_HEIGHT &&
+  if (player.getHomeHeight() < player.getSafeHomeHeight() &&
       !player.isNear(player.getPlayerInfo().position, player.getHome())) {
     player.moveTo(player.getHome(), DEFAULT_SPEED);
   } else if ((player.getPlayerInfo().gameStage == RUNNING ||

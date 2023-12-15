@@ -101,9 +101,9 @@ struct PlayerInfo {
 };
 
 struct MapInfo {
-  std::vector<Position> ironMine;    // 铁矿石
-  std::vector<Position> goldMine;    // 金矿石
-  std::vector<Position> diamondMine; // 钻石矿石
+  std::vector<Grid> ironMine;    // 铁矿石
+  std::vector<Grid> goldMine;    // 金矿石
+  std::vector<Grid> diamondMine; // 钻石矿石
 };
 
 enum PlayerState { IDLE, COLLECTING, ATTACKING, FLEEING };
@@ -146,18 +146,22 @@ public:
 
   void reborn(void); // 重生
 
-  PlayerInfo getPlayerInfo(void);      // 获取玩家信息
-  MapInfo getMapInfo(void);            // 获取地图信息
-  PlayerState getPlayerState(void);    // 获取玩家状态
-  double_t getDirectionFix(void);      // 获取方向修正
-  Grid getHome(void);                  // 获取家的位置
-  CanMVK210 *getCanMVK210(void);       // 获取CanMV K210
-  JY62 *getJY62(void);                 // 获取IMU
-  PID *getPID(void);                   // 获取PID
-  TB6612FNG *getTB6612FNG(void);       // 获取电机驱动
-  Zigbee *getZigbee(void);             // 获取Zigbee
-  int32_t getLastUpdateTicks(void);    // 获取上次更新的tick数
-  int32_t getLastAttackTicks(void);    // 获取上次攻击的tick数
+  PlayerInfo getPlayerInfo(void); // 获取玩家信息
+  MapInfo getMapInfo(void);       // 获取地图信息
+  std::vector<int32_t>
+  getLastVisitedGoldMine(void); // 获取上次访问金矿石的tick数
+  std::vector<int32_t>
+  getLastVisitedDiamondMine(void);  // 获取上次访问钻石矿石的tick数
+  PlayerState getPlayerState(void); // 获取玩家状态
+  double_t getDirectionFix(void);   // 获取方向修正
+  Grid getHome(void);               // 获取家的位置
+  CanMVK210 *getCanMVK210(void);    // 获取CanMV K210
+  JY62 *getJY62(void);              // 获取IMU
+  PID *getPID(void);                // 获取PID
+  TB6612FNG *getTB6612FNG(void);    // 获取电机驱动
+  Zigbee *getZigbee(void);          // 获取Zigbee
+  int32_t getLastUpdateTicks(void); // 获取上次更新的tick数
+  int32_t getLastAttackTicks(void); // 获取上次攻击的tick数
   int8_t getDesiredEmeraldCount(void); // 获取期望的绿宝石数量
   int8_t getLeastEmeraldCount(void);   // 获取至少保留的绿宝石数量
   double_t getAttackCooldown(void);    // 获取攻击冷却
@@ -180,23 +184,25 @@ public:
   void setSafeHomeHeight(int8_t safeHomeHeight); // 设置家的高度
 
 private:
-  PlayerInfo _playerInfo;      // 玩家信息
-  MapInfo _mapInfo;            // 地图信息
-  PlayerState _playerState;    // 玩家状态
-  double_t _directionFix;      // 方向修正
-  Grid _home;                  // 家的位置
-  CanMVK210 *_canmvk210;       // CanMV K210
-  JY62 *_jy62;                 // IMU
-  PID *_pid;                   // PID
-  TB6612FNG *_tb6612fng;       // 电机驱动
-  Zigbee *_zigbee;             // Zigbee
-  int32_t _lastUpdateTicks;    // 上次更新的tick数
-  int32_t _lastAttackTicks;    // 上次攻击的tick数
-  int8_t _desiredEmeraldCount; // 期望的绿宝石数量
-  int8_t _leastEmeraldCount;   // 至少保留的绿宝石数量
-  double_t _attackCooldown;    // 攻击冷却
-  int8_t _homeHeight;          // 家的高度
-  int8_t _safeHomeHeight;      // 安全的家的高度
+  PlayerInfo _playerInfo;                    // 玩家信息
+  MapInfo _mapInfo;                          // 地图信息
+  std::vector<int32_t> _lastVisitedGoldMine; // 上次访问金矿石的tick数
+  std::vector<int32_t> _lastVisitedDiamondMine; // 上次访问钻石矿石的tick数
+  PlayerState _playerState;                     // 玩家状态
+  double_t _directionFix;                       // 方向修正
+  Grid _home;                                   // 家的位置
+  CanMVK210 *_canmvk210;                        // CanMV K210
+  JY62 *_jy62;                                  // IMU
+  PID *_pid;                                    // PID
+  TB6612FNG *_tb6612fng;                        // 电机驱动
+  Zigbee *_zigbee;                              // Zigbee
+  int32_t _lastUpdateTicks;                     // 上次更新的tick数
+  int32_t _lastAttackTicks;                     // 上次攻击的tick数
+  int8_t _desiredEmeraldCount;                  // 期望的绿宝石数量
+  int8_t _leastEmeraldCount; // 至少保留的绿宝石数量
+  double_t _attackCooldown;  // 攻击冷却
+  int8_t _homeHeight;        // 家的高度
+  int8_t _safeHomeHeight;    // 安全的家的高度
 };
 
 #endif // PLAYER_H

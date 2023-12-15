@@ -29,6 +29,8 @@ Player::Player() {
   _mapInfo.diamondMine.clear();
   _playerState = IDLE;
   _directionFix = 0;
+  _home.x = 0;
+  _home.y = 0;
   _lastUpdateTicks = -1;
   _lastAttackTicks = -1;
   _desiredEmeraldCount = 5;
@@ -36,6 +38,8 @@ Player::Player() {
   _attackCooldown = 8.5;
   _homeHeight = 0;
   _safeHomeHeight = 2;
+  _lastVisitedDiamondMine.clear();
+  _lastVisitedGoldMine.clear();
 }
 
 /**
@@ -74,16 +78,15 @@ void Player::updateMapInfo() {
     uint8_t *data = _canmvk210->message + 3;
     if (type == 0x55) {
       _mapInfo.goldMine.clear();
-      for (int i = 0; i < len / 8; i++) {
-        _mapInfo.goldMine.push_back(Position(*((float_t *)(data + i * 8 + 0)),
-                                             *((float_t *)(data + i * 8 + 4))));
+      for (int i = 0; i < len / 2; i++) {
+        _mapInfo.goldMine.push_back(Grid(data[i * 2], data[i * 2 + 1]));
+        _lastVisitedGoldMine.push_back(-1);
       }
     } else if (type == 0x56) {
       _mapInfo.diamondMine.clear();
-      for (int i = 0; i < len / 8; i++) {
-        _mapInfo.diamondMine.push_back(
-            Position(*((float_t *)(data + i * 8 + 0)),
-                     *((float_t *)(data + i * 8 + 4))));
+      for (int i = 0; i < len / 2; i++) {
+        _mapInfo.diamondMine.push_back(Grid(data[i * 2], data[i * 2 + 1]));
+        _lastVisitedDiamondMine.push_back(-1);
       }
     }
   }
@@ -595,99 +598,79 @@ void Player::reborn() {
 
 // @brief 获取玩家信息
 PlayerInfo Player::getPlayerInfo() { return _playerInfo; }
-
 // @brief 获取地图信息
 MapInfo Player::getMapInfo() { return _mapInfo; }
-
+// @brief 获取上次访问金矿石的tick数
+std::vector<int32_t> Player::getLastVisitedGoldMine() {
+  return _lastVisitedGoldMine;
+}
+// @brief 获取上次访问钻石矿石的tick数
+std::vector<int32_t> Player::getLastVisitedDiamondMine() {
+  return _lastVisitedDiamondMine;
+}
 // @brief 获取玩家状态
 PlayerState Player::getPlayerState() { return _playerState; }
-
 // @brief 获取方向修正
 double_t Player::getDirectionFix() { return _directionFix; }
-
 // @brief 获取家的位置
 Grid Player::getHome() { return _home; }
-
 // @brief 获取CanMV K210
 CanMVK210 *Player::getCanMVK210() { return _canmvk210; }
-
 // @brief 获取IMU
 JY62 *Player::getJY62() { return _jy62; }
-
 // @brief 获取PID
 PID *Player::getPID() { return _pid; }
-
 // @brief 获取电机驱动
 TB6612FNG *Player::getTB6612FNG() { return _tb6612fng; }
-
 // @brief 获取Zigbee
 Zigbee *Player::getZigbee() { return _zigbee; }
-
 // @brief 获取上次更新的tick数
 int32_t Player::getLastUpdateTicks() { return _lastUpdateTicks; }
-
 // @brief 获取上次攻击的tick数
 int32_t Player::getLastAttackTicks() { return _lastAttackTicks; }
-
 // @brief 获取期望的绿宝石数量
 int8_t Player::getDesiredEmeraldCount() { return _desiredEmeraldCount; }
-
 // @brief 获取至少保留的绿宝石数量
 int8_t Player::getLeastEmeraldCount() { return _leastEmeraldCount; }
-
 // @brief 获取攻击冷却
 double_t Player::getAttackCooldown() { return _attackCooldown; }
-
 // @brief 获取家的高度
 int8_t Player::getHomeHeight() { return _homeHeight; }
-
 // @brief 获取安全的家的高度
 int8_t Player::getSafeHomeHeight() { return _safeHomeHeight; }
 
 // @brief 设置玩家信息
 void Player::setPlayerInfo(PlayerInfo playerInfo) { _playerInfo = playerInfo; }
-
 // @brief 设置地图信息
 void Player::setMapInfo(MapInfo mapInfo) { _mapInfo = mapInfo; }
-
 // @brief 设置玩家状态
 void Player::setPlayerState(PlayerState playerState) {
   _playerState = playerState;
 }
-
 // @brief 设置方向修正
 void Player::setDirectionFix(double_t directionFix) {
   _directionFix = directionFix;
 }
-
 // @brief 设置家的位置
 void Player::setHome(Grid home) { _home = home; }
-
 // @brief 设置CanMV K210
 void Player::setCanMVK210(CanMVK210 *canmvk210) { _canmvk210 = canmvk210; }
-
 // @brief 设置IMU
 void Player::setJY62(JY62 *jy62) { _jy62 = jy62; }
-
 // @brief 设置PID
 void Player::setPID(PID *pid) { _pid = pid; }
-
 // @brief 设置电机驱动
 void Player::setTB6612FNG(TB6612FNG *tb6612fng) { _tb6612fng = tb6612fng; }
-
 // @brief 设置Zigbee
 void Player::setZigbee(Zigbee *zigbee) { _zigbee = zigbee; }
-
 // @brief 设置上次更新的tick数
 void Player::setLastUpdateTicks(int32_t lastUpdateTicks) {
   _lastUpdateTicks = lastUpdateTicks;
 }
-
 // @brief 设置期望的绿宝石数量
 void Player::setDesiredEmeraldCount(int8_t desiredEmeraldCount) {
   _desiredEmeraldCount = desiredEmeraldCount;
 }
-
 // @brief 设置家的高度
 void Player::setSafeHomeHeight(int8_t safeHomeHeight) {
   _safeHomeHeight = safeHomeHeight;

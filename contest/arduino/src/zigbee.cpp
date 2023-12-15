@@ -36,7 +36,9 @@ void Zigbee::messageRecord(void) {
     sum ^= receive[i];
   }
   if (sum == receive[4]) {
-    memcpy(message, receive, len + 5);
+    for (int i = 0; i < len + 5; i++) {
+      message[i] = receive[i];
+    }
   }
 }
 
